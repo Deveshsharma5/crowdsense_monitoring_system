@@ -1,0 +1,469 @@
+{
+    "report_id": "20260930_085004",
+    "generated_at": "2026-09-30 08:50:04",
+    "venue": {
+        "name": "pcce hall",
+        "capacity": 2,
+        "shape": "rectangle",
+        "length": 10.0,
+        "width": 10.0,
+        "diameter": 0.0
+    },
+    "session": {
+        "session_id": "SESSION93",
+        "venue": "Room",
+        "capacity": 2,
+        "cameras": [
+            {
+                "camera_id": "CAMERA1",
+                "source": "0",
+                "enabled": true
+            }
+        ],
+        "start_time": "2026-09-29 20:07:38",
+        "end_time": null,
+        "duration_seconds": 45741,
+        "status": "ACTIVE",
+        "peak_people": 6,
+        "average_people": 1.67,
+        "peak_occupancy": 300.0,
+        "warning_events": 0,
+        "critical_events": 5,
+        "total_updates": 63,
+        "last_people": 2,
+        "last_update": "2026-09-30 08:49:59",
+        "report_log_records": 252,
+        "report_alerts": 27,
+        "report_incidents": 0
+    },
+    "analytics": {
+        "venue": "pcce hall",
+        "capacity": 2,
+        "time_range": {
+            "start_time": "2026-09-29 20:07:41",
+            "end_time": "2026-09-30 08:49:59",
+            "duration_seconds": 45738
+        },
+        "people": {
+            "peak_people": 6,
+            "average_people": 1.65,
+            "minimum_people": 0,
+            "total_records": 63
+        },
+        "occupancy": {
+            "peak_occupancy": 300.0,
+            "average_occupancy": 82.5,
+            "minimum_occupancy": 0.0
+        },
+        "density": {
+            "peak_density": 0.2,
+            "average_density": 0.0165,
+            "minimum_density": 0.0
+        },
+        "risk": {
+            "safe_records": 57,
+            "warning_records": 0,
+            "critical_records": 6
+        },
+        "alerts": {
+            "warning": 0,
+            "critical": 27,
+            "total": 27
+        },
+        "incidents": {
+            "warning": 0,
+            "critical": 0,
+            "total": 0
+        },
+        "zones": {
+            "A1": {
+                "zone_id": "A1",
+                "people": 0,
+                "density": 0.0,
+                "risk": "SAFE",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 63
+            },
+            "A2": {
+                "zone_id": "A2",
+                "people": 0,
+                "density": 0.0,
+                "risk": "SAFE",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 63
+            },
+            "B1": {
+                "zone_id": "B1",
+                "people": 1,
+                "density": 0.04,
+                "risk": "SAFE",
+                "peak_people": 5,
+                "peak_density": 0.2,
+                "average_people": 0.7,
+                "warning_records": 0,
+                "critical_records": 1,
+                "records": 63
+            },
+            "B2": {
+                "zone_id": "B2",
+                "people": 1,
+                "density": 0.04,
+                "risk": "SAFE",
+                "peak_people": 2,
+                "peak_density": 0.08,
+                "average_people": 0.95,
+                "warning_records": 0,
+                "critical_records": 5,
+                "records": 63
+            }
+        },
+        "most_crowded_zone": {
+            "zone_id": "B1",
+            "people": 1,
+            "density": 0.04,
+            "risk": "SAFE",
+            "peak_people": 5,
+            "peak_density": 0.2,
+            "average_people": 0.7,
+            "warning_records": 0,
+            "critical_records": 1,
+            "records": 63
+        }
+    },
+    "alerts": [
+        {
+            "alert_id": "ALERT697",
+            "timestamp": "2026-09-29 20:07:41",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 5,
+            "density": 0.2,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B1",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT698",
+            "timestamp": "2026-09-29 20:07:41",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 6,
+            "density": 0.0,
+            "special_type": "CAPACITY",
+            "camera_id": "",
+            "message": "Critical crowd level in zone VENUE",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT699",
+            "timestamp": "2026-09-29 20:07:57",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B1",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT700",
+            "timestamp": "2026-09-29 20:08:06",
+            "zone_id": "A1",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "exit",
+            "camera_id": "",
+            "message": "Critical crowd level in zone A1",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT701",
+            "timestamp": "2026-09-29 20:08:06",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.12,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B1",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT702",
+            "timestamp": "2026-09-29 20:08:06",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.0,
+            "special_type": "CAPACITY",
+            "camera_id": "",
+            "message": "Critical crowd level in zone VENUE",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT703",
+            "timestamp": "2026-09-29 20:08:18",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B1",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT704",
+            "timestamp": "2026-09-29 20:08:18",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B2",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT705",
+            "timestamp": "2026-09-29 20:08:18",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.0,
+            "special_type": "CAPACITY",
+            "camera_id": "",
+            "message": "Critical crowd level in zone VENUE",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT706",
+            "timestamp": "2026-09-29 20:08:32",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B2",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT707",
+            "timestamp": "2026-09-29 20:08:41",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B2",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT708",
+            "timestamp": "2026-09-29 20:08:50",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B2",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT709",
+            "timestamp": "2026-09-29 20:08:58",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B2",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT710",
+            "timestamp": "2026-09-29 20:08:59",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.0,
+            "special_type": "CAPACITY",
+            "camera_id": "",
+            "message": "Critical crowd level in zone VENUE",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT711",
+            "timestamp": "2026-09-29 20:09:06",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.12,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B2",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT712",
+            "timestamp": "2026-09-29 20:09:12",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.0,
+            "special_type": "CAPACITY",
+            "camera_id": "",
+            "message": "Critical crowd level in zone VENUE",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT713",
+            "timestamp": "2026-09-29 20:09:14",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B2",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT714",
+            "timestamp": "2026-09-29 20:09:21",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.0,
+            "special_type": "CAPACITY",
+            "camera_id": "",
+            "message": "Critical crowd level in zone VENUE",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT715",
+            "timestamp": "2026-09-29 20:09:22",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B2",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT716",
+            "timestamp": "2026-09-29 20:09:29",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.0,
+            "special_type": "CAPACITY",
+            "camera_id": "",
+            "message": "Critical crowd level in zone VENUE",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT717",
+            "timestamp": "2026-09-29 20:09:30",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B2",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT718",
+            "timestamp": "2026-09-29 20:09:38",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.0,
+            "special_type": "CAPACITY",
+            "camera_id": "",
+            "message": "Critical crowd level in zone VENUE",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT719",
+            "timestamp": "2026-09-29 20:09:38",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B2",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT720",
+            "timestamp": "2026-09-29 20:09:47",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.12,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B2",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT721",
+            "timestamp": "2026-09-29 20:09:47",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.0,
+            "special_type": "CAPACITY",
+            "camera_id": "",
+            "message": "Critical crowd level in zone VENUE",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT722",
+            "timestamp": "2026-09-30 08:46:56",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B1",
+            "status": "OPEN"
+        },
+        {
+            "alert_id": "ALERT723",
+            "timestamp": "2026-09-30 08:47:33",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.08,
+            "special_type": "",
+            "camera_id": "",
+            "message": "Critical crowd level in zone B1",
+            "status": "OPEN"
+        }
+    ],
+    "incidents": [],
+    "log_records": 252
+}

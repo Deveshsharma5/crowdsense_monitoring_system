@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CrowdSense - Sessions</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #050805;
+            color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        header {
+            background: #0b120d;
+            border-bottom: 1px solid #1f3b26;
+            padding: 18px 25px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .title {
+            color: #32ff6a;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #9ca89f;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #d9e0da;
+
+            background: #111a13;
+            border: 1px solid #243d29;
+
+            padding: 9px 13px;
+            border-radius: 6px;
+
+            font-size: 13px;
+        }
+
+        nav a:hover {
+            border-color: #32ff6a;
+            color: #32ff6a;
+        }
+
+        nav a.active {
+            background: #12351c;
+            border-color: #32ff6a;
+            color: #32ff6a;
+        }
+
+        main {
+            max-width: 1500px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            flex-wrap: wrap;
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin: 0;
+        }
+
+        button {
+            border: none;
+            border-radius: 6px;
+
+            padding: 10px 16px;
+
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .refresh {
+            background: #32ff6a;
+            color: #031007;
+        }
+
+        .refresh:hover {
+            background: #20d653;
+        }
+
+        .refresh:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #0b120d;
+
+            border: 1px solid #1d3623;
+
+            border-radius: 10px;
+
+            padding: 18px;
+        }
+
+        .card-title {
+            color: #8e9c91;
+
+            font-size: 13px;
+
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            color: #32ff6a;
+
+            font-size: 28px;
+
+            font-weight: bold;
+        }
+
+        .warning {
+            color: #ffd43b;
+        }
+
+        .danger {
+            color: #ff3b3b;
+        }
+
+        .section {
+            background: #0b120d;
+
+            border: 1px solid #1d3623;
+
+            border-radius: 10px;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+        }
+
+        .section h3 {
+            color: #32ff6a;
+
+            margin-top: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+
+            padding: 12px;
+
+            background: #111a13;
+
+            color: #32ff6a;
+
+            border-bottom: 1px solid #28452f;
+
+            font-size: 13px;
+        }
+
+        td {
+            padding: 12px;
+
+            border-bottom: 1px solid #17251a;
+
+            color: #d9dfda;
+
+            font-size: 13px;
+        }
+
+        tr:hover {
+            background: #0e170f;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .status-active {
+            color: #32ff6a;
+        }
+
+        .status-ended {
+            color: #8e9c91;
+        }
+
+        .status-warning {
+            color: #ffd43b;
+        }
+
+        .status-critical {
+            color: #ff3b3b;
+        }
+
+        .empty {
+            text-align: center;
+
+            color: #68736b;
+
+            padding: 25px;
+        }
+
+        .error {
+            color: #ff3b3b;
+
+            padding: 10px 0;
+        }
+
+        @media (max-width: 1000px) {
+
+            .cards {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            main {
+                padding: 15px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div>
+
+        <div class="title">
+            CROWDSENSE
+        </div>
+
+        <div class="subtitle">
+            Session & Monitoring History
+        </div>
+
+    </div>
+
+
+    <nav>
+
+        <a href="/">
+            Dashboard
+        </a>
+
+        <a href="/cameras">
+            Cameras
+        </a>
+
+        <a href="/venue">
+            Venue
+        </a>
+
+        <a href="/zones">
+            Zones
+        </a>
+
+        <a href="/alerts">
+            Alerts
+        </a>
+
+        <a href="/analytics">
+            Analytics
+        </a>
+
+        <a
+            href="/session"
+            class="active"
+        >
+            Session
+        </a>
+
+    </nav>
+
+</header>
+
+
+<main>
+
+
+    <!-- TOP BAR -->
+
+    <div class="topbar">
+
+        <div>
+
+            <h2>
+                Sessions
+            </h2>
+
+            <div class="subtitle">
+                Crowd monitoring session history
+            </div>
+
+        </div>
+
+
+        <button
+            id="refreshButton"
+            class="refresh"
+            type="button"
+            onclick="refreshSessions()"
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <!-- CURRENT SESSION -->
+
+    <div class="section">
+
+        <h3>
+            Current Session
+        </h3>
+
+
+        <div class="cards">
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Status
+                </div>
+
+                <div
+                    id="currentStatus"
+                    class="card-value"
+                >
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    People
+                </div>
+
+                <div
+                    id="currentPeople"
+                    class="card-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Peak People
+                </div>
+
+                <div
+                    id="currentPeak"
+                    class="card-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Occupancy
+                </div>
+
+                <div
+                    id="currentOccupancy"
+                    class="card-value"
+                >
+                    0%
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- SESSION HISTORY -->
+
+    <div class="section">
+
+        <h3>
+            Session History
+        </h3>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Session ID
+                        </th>
+
+                        <th>
+                            Start Time
+                        </th>
+
+                        <th>
+                            End Time
+                        </th>
+
+                        <th>
+                            Duration
+                        </th>
+
+                        <th>
+                            Peak People
+                        </th>
+
+                        <th>
+                            Average People
+                        </th>
+
+                        <th>
+                            Average Occupancy
+                        </th>
+
+                        <th>
+                            Warnings
+                        </th>
+
+                        <th>
+                            Critical
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="sessionTable">
+
+                    <tr>
+
+                        <td
+                            colspan="10"
+                            class="empty"
+                        >
+                            Loading sessions...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- SESSION SUMMARY -->
+
+    <div class="section">
+
+        <h3>
+            Session Summary
+        </h3>
+
+
+        <div id="summary">
+            Loading...
+        </div>
+
+    </div>
+
+
+</main>
+
+
+<script>
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+
+function number(value) {
+
+    const n =
+        Number(value);
+
+
+    if (
+        !Number.isFinite(n)
+    ) {
+
+        return 0;
+
+    }
+
+
+    return n;
+
+}
+
+
+function formatNumber(value) {
+
+    return number(value)
+        .toLocaleString(
+            undefined,
+            {
+                maximumFractionDigits: 1
+            }
+        );
+
+}
+
+
+function formatDate(value) {
+
+    if (!value) {
+
+        return "-";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return value;
+
+    }
+
+
+    return date.toLocaleString();
+
+}
+
+
+function formatDuration(seconds) {
+
+    seconds =
+        number(seconds);
+
+
+    if (
+        seconds <= 0
+    ) {
+
+        return "-";
+
+    }
+
+
+    const hours =
+        Math.floor(
+            seconds / 3600
+        );
+
+
+    const minutes =
+        Math.floor(
+            (seconds % 3600) / 60
+        );
+
+
+    const secs =
+        Math.floor(
+            seconds % 60
+        );
+
+
+    if (
+        hours > 0
+    ) {
+
+        return (
+            `${hours}h ${minutes}m`
+        );
+
+    }
+
+
+    if (
+        minutes > 0
+    ) {
+
+        return (
+            `${minutes}m ${secs}s`
+        );
+
+    }
+
+
+    return (
+        `${secs}s`
+    );
+
+}
+
+
+function statusClass(status) {
+
+    status =
+        String(
+            status || ""
+        )
+        .toUpperCase();
+
+
+    if (
+        status === "ACTIVE" ||
+        status === "RUNNING"
+    ) {
+
+        return "status-active";
+
+    }
+
+
+    if (
+        status === "CRITICAL"
+    ) {
+
+        return "status-critical";
+
+    }
+
+
+    if (
+        status === "WARNING"
+    ) {
+
+        return "status-warning";
+
+    }
+
+
+    return "status-ended";
+
+}
+
+
+/* =========================================================
+   CURRENT PEOPLE
+========================================================= */
+
+function getCurrentPeople(
+    session
+) {
+
+    /*
+     * IMPORTANT:
+     *
+     * SessionManager stores the live detected
+     * people count in "last_people".
+     *
+     * This must be checked before the older
+     * generic fields.
+     */
+
+    if (
+        session.last_people !== undefined &&
+        session.last_people !== null
+    ) {
+
+        return number(
+            session.last_people
+        );
+
+    }
+
+
+    /*
+     * Compatibility with other possible
+     * session response formats.
+     */
+
+    if (
+        session.people !== undefined &&
+        session.people !== null
+    ) {
+
+        return number(
+            session.people
+        );
+
+    }
+
+
+    if (
+        session.current_people !== undefined &&
+        session.current_people !== null
+    ) {
+
+        return number(
+            session.current_people
+        );
+
+    }
+
+
+    if (
+        session.total_people !== undefined &&
+        session.total_people !== null
+    ) {
+
+        return number(
+            session.total_people
+        );
+
+    }
+
+
+    return 0;
+
+}
+
+
+/* =========================================================
+   CURRENT OCCUPANCY
+========================================================= */
+
+function getCurrentOccupancy(
+    session,
+    people
+) {
+
+    /*
+     * If the API already provides current occupancy,
+     * use it.
+     */
+
+    if (
+        session.occupancy !== undefined &&
+        session.occupancy !== null
+    ) {
+
+        return number(
+            session.occupancy
+        );
+
+    }
+
+
+    if (
+        session.current_occupancy !== undefined &&
+        session.current_occupancy !== null
+    ) {
+
+        return number(
+            session.current_occupancy
+        );
+
+    }
+
+
+    /*
+     * Otherwise calculate it from:
+     *
+     * current people / venue capacity × 100
+     */
+
+    const capacity =
+        number(
+            session.capacity ??
+            session.venue_capacity ??
+            0
+        );
+
+
+    if (
+        capacity > 0
+    ) {
+
+        return (
+            people /
+            capacity
+        ) * 100;
+
+    }
+
+
+    return 0;
+
+}
+
+
+/* =========================================================
+   MANUAL REFRESH
+========================================================= */
+
+
+async function refreshSessions() {
+
+    const button =
+        document.getElementById(
+            "refreshButton"
+        );
+
+
+    if (button) {
+
+        button.disabled = true;
+
+        button.textContent =
+            "Refreshing...";
+
+    }
+
+
+    try {
+
+        await loadSessions(
+            true
+        );
+
+    } finally {
+
+        if (button) {
+
+            button.disabled = false;
+
+            button.textContent =
+                "Refresh";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   CURRENT SESSION
+========================================================= */
+
+
+async function loadCurrentSession(
+    cacheBuster
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/session?_=" +
+                cacheBuster,
+                {
+                    method: "GET",
+
+                    cache: "no-store",
+
+                    headers: {
+                        "Cache-Control":
+                            "no-cache",
+
+                        "Pragma":
+                            "no-cache"
+                    }
+                }
+            );
+
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                "Current session API returned " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        renderCurrentSession(
+            data
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Current session error:",
+            error
+        );
+
+
+        const status =
+            document.getElementById(
+                "currentStatus"
+            );
+
+
+        status.textContent =
+            "OFFLINE";
+
+
+        status.className =
+            "card-value danger";
+
+    }
+
+}
+
+
+function renderCurrentSession(
+    data
+) {
+
+    if (!data) {
+
+        return;
+
+    }
+
+
+    const session =
+        data.session ||
+        data.current_session ||
+        data;
+
+
+    /*
+     * =====================================================
+     * LIVE PEOPLE COUNT
+     *
+     * This is the important fix.
+     *
+     * SessionManager stores the latest detected
+     * people count in:
+     *
+     * session.last_people
+     * =====================================================
+     */
+
+    const people =
+        getCurrentPeople(
+            session
+        );
+
+
+    const peak =
+        session.peak_people ??
+        session.peak ??
+        0;
+
+
+    const occupancy =
+        getCurrentOccupancy(
+            session,
+            people
+        );
+
+
+    const status =
+        session.status ||
+        (
+            session.active
+                ? "ACTIVE"
+                : "NO SESSION"
+        );
+
+
+    document.getElementById(
+        "currentStatus"
+    ).textContent =
+        String(
+            status
+        ).toUpperCase();
+
+
+    document.getElementById(
+        "currentStatus"
+    ).className =
+        "card-value " +
+        statusClass(
+            status
+        );
+
+
+    document.getElementById(
+        "currentPeople"
+    ).textContent =
+        formatNumber(
+            people
+        );
+
+
+    document.getElementById(
+        "currentPeak"
+    ).textContent =
+        formatNumber(
+            peak
+        );
+
+
+    document.getElementById(
+        "currentOccupancy"
+    ).textContent =
+        formatNumber(
+            occupancy
+        ) + "%";
+
+}
+
+
+/* =========================================================
+   SESSION HISTORY
+========================================================= */
+
+
+async function loadSessions(
+    forceRefresh = false
+) {
+
+    const cacheBuster =
+        Date.now();
+
+
+    await loadCurrentSession(
+        cacheBuster
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/sessions?_=" +
+                cacheBuster,
+                {
+                    method: "GET",
+
+                    cache: "no-store",
+
+                    headers: {
+                        "Cache-Control":
+                            "no-cache",
+
+                        "Pragma":
+                            "no-cache"
+                    }
+                }
+            );
+
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                "Sessions API returned " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        renderSessions(
+            data
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Sessions error:",
+            error
+        );
+
+
+        document.getElementById(
+            "sessionTable"
+        ).innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="10"
+                    class="error"
+                >
+
+                    Unable to load session history.
+
+                    <br><br>
+
+                    ${error.message}
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER SESSIONS
+========================================================= */
+
+
+function renderSessions(
+    data
+) {
+
+    let sessions =
+        data.sessions ||
+        data.history ||
+        data;
+
+
+    if (
+        !Array.isArray(
+            sessions
+        )
+    ) {
+
+        sessions = [];
+
+    }
+
+
+    const table =
+        document.getElementById(
+            "sessionTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    if (
+        sessions.length === 0
+    ) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="10"
+                    class="empty"
+                >
+
+                    No completed sessions yet.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        renderSummary(
+            []
+        );
+
+
+        return;
+
+    }
+
+
+    sessions =
+        [...sessions]
+        .reverse();
+
+
+    sessions.forEach(
+        session => {
+
+            const id =
+                session.session_id ||
+                session.id ||
+                "-";
+
+
+            const start =
+                session.start_time ||
+                session.started_at ||
+                session.start;
+
+
+            const end =
+                session.end_time ||
+                session.ended_at ||
+                session.end;
+
+
+            const peak =
+                session.peak_people ??
+                session.peak ??
+                0;
+
+
+            const average =
+                session.average_people ??
+                session.average ??
+                0;
+
+
+            const occupancy =
+                session.average_occupancy ??
+                session.occupancy ??
+                0;
+
+
+            const warnings =
+                session.warning_count ??
+                session.warnings ??
+                0;
+
+
+            const critical =
+                session.critical_count ??
+                session.critical ??
+                0;
+
+
+            const status =
+                session.status ||
+                (
+                    end
+                        ? "ENDED"
+                        : "ACTIVE"
+                );
+
+
+            let duration =
+                session.duration_seconds;
+
+
+            if (
+                duration === undefined &&
+                start &&
+                end
+            ) {
+
+                const startDate =
+                    new Date(
+                        start
+                    );
+
+
+                const endDate =
+                    new Date(
+                        end
+                    );
+
+
+                if (
+                    !Number.isNaN(
+                        startDate.getTime()
+                    ) &&
+                    !Number.isNaN(
+                        endDate.getTime()
+                    )
+                ) {
+
+                    duration =
+                        (
+                            endDate.getTime() -
+                            startDate.getTime()
+                        ) / 1000;
+
+                }
+
+            }
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${id}
+                </td>
+
+                <td>
+                    ${formatDate(
+                        start
+                    )}
+                </td>
+
+                <td>
+                    ${formatDate(
+                        end
+                    )}
+                </td>
+
+                <td>
+                    ${formatDuration(
+                        duration
+                    )}
+                </td>
+
+                <td>
+                    ${formatNumber(
+                        peak
+                    )}
+                </td>
+
+                <td>
+                    ${formatNumber(
+                        average
+                    )}
+                </td>
+
+                <td>
+                    ${formatNumber(
+                        occupancy
+                    )}%
+                </td>
+
+                <td class="warning">
+                    ${formatNumber(
+                        warnings
+                    )}
+                </td>
+
+                <td class="danger">
+                    ${formatNumber(
+                        critical
+                    )}
+                </td>
+
+                <td
+                    class="
+                        status
+                        ${statusClass(
+                            status
+                        )}
+                    "
+                >
+
+                    ${String(
+                        status
+                    ).toUpperCase()}
+
+                </td>
+
+            `;
+
+
+            table.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    renderSummary(
+        sessions
+    );
+
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+
+function renderSummary(
+    sessions
+) {
+
+    if (
+        !sessions.length
+    ) {
+
+        document.getElementById(
+            "summary"
+        ).innerHTML =
+            "No session data available.";
+
+        return;
+
+    }
+
+
+    let totalPeak = 0;
+
+    let totalAverage = 0;
+
+    let totalWarnings = 0;
+
+    let totalCritical = 0;
+
+
+    sessions.forEach(
+        session => {
+
+            totalPeak +=
+                number(
+                    session.peak_people ??
+                    session.peak ??
+                    0
+                );
+
+
+            totalAverage +=
+                number(
+                    session.average_people ??
+                    session.average ??
+                    0
+                );
+
+
+            totalWarnings +=
+                number(
+                    session.warning_count ??
+                    session.warnings ??
+                    0
+                );
+
+
+            totalCritical +=
+                number(
+                    session.critical_count ??
+                    session.critical ??
+                    0
+                );
+
+        }
+    );
+
+
+    const count =
+        sessions.length;
+
+
+    document.getElementById(
+        "summary"
+    ).innerHTML = `
+
+        <strong>
+            Sessions recorded:
+        </strong>
+
+        ${count}
+
+        &nbsp;&nbsp; | &nbsp;&nbsp;
+
+        <strong>
+            Total peak readings:
+        </strong>
+
+        ${formatNumber(
+            totalPeak
+        )}
+
+        &nbsp;&nbsp; | &nbsp;&nbsp;
+
+        <strong>
+            Average session people:
+        </strong>
+
+        ${formatNumber(
+            totalAverage / count
+        )}
+
+        &nbsp;&nbsp; | &nbsp;&nbsp;
+
+        <strong>
+            Warnings:
+        </strong>
+
+        <span class="warning">
+
+            ${formatNumber(
+                totalWarnings
+            )}
+
+        </span>
+
+        &nbsp;&nbsp; | &nbsp;&nbsp;
+
+        <strong>
+            Critical events:
+        </strong>
+
+        <span class="danger">
+
+            ${formatNumber(
+                totalCritical
+            )}
+
+        </span>
+
+    `;
+
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+loadSessions();
+
+
+/* =========================================================
+   AUTOMATIC REFRESH
+========================================================= */
+
+setInterval(
+    function() {
+
+        loadSessions(
+            true
+        );
+
+    },
+    10000
+);
+
+
+</script>
+
+
+</body>
+
+</html>

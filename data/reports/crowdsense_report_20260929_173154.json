@@ -1,0 +1,102 @@
+{
+    "report_id": "20260929_173154",
+    "generated_at": "2026-09-29 17:31:54",
+    "venue": {
+        "name": "Room",
+        "capacity": 2,
+        "shape": "circle",
+        "length": 5.0,
+        "width": 5.0,
+        "diameter": 5.0
+    },
+    "session": {
+        "session_id": "SESSION82",
+        "venue": "Room",
+        "capacity": 2,
+        "cameras": [
+            {
+                "camera_id": "CAMERA1",
+                "source": "0",
+                "enabled": true
+            }
+        ],
+        "start_time": "2026-09-29 17:28:51",
+        "end_time": null,
+        "duration_seconds": 181,
+        "status": "ACTIVE",
+        "peak_people": 1,
+        "average_people": 1.0,
+        "peak_occupancy": 50.0,
+        "warning_events": 0,
+        "critical_events": 0,
+        "total_updates": 35,
+        "last_people": 1,
+        "last_update": "2026-09-29 17:31:52",
+        "report_log_records": 35,
+        "report_alerts": 0,
+        "report_incidents": 0
+    },
+    "analytics": {
+        "venue": "Room",
+        "capacity": 2,
+        "time_range": {
+            "start_time": "2026-09-29 17:28:56",
+            "end_time": "2026-09-29 17:31:52",
+            "duration_seconds": 176
+        },
+        "people": {
+            "peak_people": 1,
+            "average_people": 1.0,
+            "minimum_people": 1,
+            "total_records": 35
+        },
+        "occupancy": {
+            "peak_occupancy": 50.0,
+            "average_occupancy": 50.0,
+            "minimum_occupancy": 50.0
+        },
+        "density": {
+            "peak_density": 0.04,
+            "average_density": 0.04,
+            "minimum_density": 0.04
+        },
+        "risk": {
+            "safe_records": 35,
+            "warning_records": 0,
+            "critical_records": 0
+        },
+        "alerts": {
+            "warning": 0,
+            "critical": 0,
+            "total": 0
+        },
+        "incidents": {
+            "warning": 0,
+            "critical": 0,
+            "total": 0
+        },
+        "zones": {
+            "C1_1": {
+                "zone_id": "C1_1",
+                "peak_people": 1,
+                "peak_density": 0.04,
+                "average_people": 1.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 35
+            }
+        },
+        "most_crowded_zone": {
+            "zone_id": "C1_1",
+            "peak_people": 1,
+            "peak_density": 0.04,
+            "average_people": 1.0,
+            "warning_records": 0,
+            "critical_records": 0,
+            "records": 35
+        }
+    },
+    "alerts": [],
+    "incidents": [],
+    "log_records": 35
+}

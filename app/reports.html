@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CrowdSense Reports</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #050505;
+            color: white;
+        }
+
+        header {
+            background: #0b0b0b;
+            border-bottom: 2px solid #1b5e20;
+            padding: 20px 30px;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #4caf50;
+        }
+
+        header p {
+            margin: 6px 0 0;
+            color: #aaa;
+        }
+
+        .container {
+            padding: 25px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        button {
+            border: none;
+            padding: 11px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .generate {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .pdf {
+            background: #c62828;
+            color: white;
+        }
+
+        .refresh {
+            background: #333;
+            color: white;
+        }
+
+        .delete {
+            background: #b71c1c;
+            color: white;
+        }
+
+        .download {
+            background: #1565c0;
+            color: white;
+            margin-right: 6px;
+        }
+
+        .close {
+            background: #333;
+            color: white;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
+
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .card-title {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .warning {
+            color: #ffca28;
+        }
+
+        .critical {
+            color: #f44336;
+        }
+
+        .section {
+            background: #0d0d0d;
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: #4caf50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #222;
+        }
+
+        th {
+            color: #aaa;
+        }
+
+        tr:hover {
+            background: #151515;
+        }
+
+        .empty {
+            color: #888;
+            padding: 20px 0;
+        }
+
+        .status {
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 6px;
+            background: #111;
+            color: #aaa;
+        }
+
+        .venue-info {
+            line-height: 1.8;
+            color: #ccc;
+        }
+
+        .zone {
+            background: #151515;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+        }
+
+        .pdf-link {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 6px;
+        }
+
+        .pdf-link a {
+            color: #4caf50;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .pdf-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===================================================
+           REPORT VIEW
+           =================================================== */
+
+        #reportViewer {
+            display: none;
+            margin-bottom: 25px;
+        }
+
+        .viewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .viewer-header h2 {
+            margin: 0;
+            color: #4caf50;
+        }
+
+        .report-meta {
+            color: #999;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+
+            gap: 15px;
+        }
+
+        .detail-card {
+            background: #111;
+            border: 1px solid #252525;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .detail-card h3 {
+            margin-top: 0;
+            color: #4caf50;
+            font-size: 16px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #999;
+        }
+
+        .detail-value {
+            color: white;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .risk-safe {
+            color: #4caf50;
+        }
+
+        .risk-warning {
+            color: #ffca28;
+        }
+
+        .risk-critical {
+            color: #f44336;
+        }
+
+        .json-box {
+            background: #080808;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            max-height: 450px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            color: #bbb;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+        }
+
+        @media (max-width: 700px) {
+
+            .container {
+                padding: 15px;
+            }
+
+            th,
+            td {
+                font-size: 13px;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                gap: 3px;
+            }
+
+            .detail-value {
+                text-align: left;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<header>
+
+    <h1>CrowdSense Reports</h1>
+
+    <p>
+        Venue crowd monitoring and safety analysis
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- =====================================================
+         TOOLBAR
+         ===================================================== -->
+
+    <div class="toolbar">
+
+        <button
+            class="generate"
+            onclick="generateReport()">
+
+            Generate Report
+
+        </button>
+
+
+        <button
+            class="pdf"
+            onclick="generatePDF()">
+
+            Generate PDF
+
+        </button>
+
+
+        <button
+            class="refresh"
+            onclick="refreshReports()">
+
+            Refresh Reports
+
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         STATUS
+         ===================================================== -->
+
+    <div
+        id="status"
+        class="status">
+
+        Ready.
+
+    </div>
+
+
+    <!-- =====================================================
+         PDF RESULT
+         ===================================================== -->
+
+    <div
+        id="pdfLink"
+        class="pdf-link">
+
+        PDF Report:
+
+        <a
+            id="pdfUrl"
+            href="#"
+            target="_blank">
+
+            Open Generated PDF
+
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         REPORT VIEWER
+         ===================================================== -->
+
+    <div
+        id="reportViewer"
+        class="section">
+
+        <div class="viewer-header">
+
+            <div>
+
+                <h2>
+                    Report Details
+                </h2>
+
+                <div
+                    id="reportMeta"
+                    class="report-meta">
+
+                    No report selected.
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="close"
+                onclick="closeReportViewer()">
+
+                Close
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="reportDetails">
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUMMARY
+         ===================================================== -->
+
+    <div class="cards">
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Peak People
+            </div>
+
+            <div
+                id="peakPeople"
+                class="card-value">
+
+                0
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Average People
+            </div>
+
+            <div
+                id="averagePeople"
+                class="card-value">
+
+                0
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Peak Occupancy
+            </div>
+
+            <div
+                id="peakOccupancy"
+                class="card-value">
+
+                0%
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Peak Density
+            </div>
+
+            <div
+                id="peakDensity"
+                class="card-value">
+
+                0
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Warnings
+            </div>
+
+            <div
+                id="warningCount"
+                class="card-value warning">
+
+                0
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Critical
+            </div>
+
+            <div
+                id="criticalCount"
+                class="card-value critical">
+
+                0
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         VENUE
+         ===================================================== -->
+
+    <div class="section">
+
+        <h2>
+            Venue Information
+        </h2>
+
+        <div
+            id="venueInfo"
+            class="venue-info">
+
+            No report generated.
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MOST CROWDED ZONE
+         ===================================================== -->
+
+    <div class="section">
+
+        <h2>
+            Most Crowded Zone
+        </h2>
+
+        <div
+            id="crowdedZone"
+            class="empty">
+
+            No data available.
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SAVED REPORTS
+         ===================================================== -->
+
+    <div class="section">
+
+        <h2>
+            Saved Reports
+        </h2>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Report
+                    </th>
+
+                    <th>
+                        Created
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody
+                id="reportsTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+let currentReport = null;
+
+
+// ========================================================
+// STATUS
+// ========================================================
+
+function setStatus(message) {
+
+    document.getElementById(
+        "status"
+    ).textContent = message;
+
+}
+
+
+// ========================================================
+// GENERATE REPORT
+// ========================================================
+
+async function generateReport() {
+
+    setStatus(
+        "Generating report..."
+    );
+
+    try {
+
+        const response = await fetch(
+            "/api/reports/generate",
+            {
+                method: "POST"
+            }
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Report generation failed"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        currentReport =
+            data.report || data;
+
+
+        displayReport(
+            currentReport
+        );
+
+
+        setStatus(
+            "Report generated successfully."
+        );
+
+
+        loadReports();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        setStatus(
+            "Unable to generate report."
+        );
+
+    }
+
+}
+
+
+// ========================================================
+// GENERATE PDF
+// ========================================================
+
+async function generatePDF() {
+
+    setStatus(
+        "Generating PDF report..."
+    );
+
+
+    const pdfBox =
+        document.getElementById(
+            "pdfLink"
+        );
+
+
+    pdfBox.style.display =
+        "none";
+
+
+    try {
+
+        const response = await fetch(
+            "/api/reports/pdf",
+            {
+                method: "POST"
+            }
+        );
+
+
+        if (!response.ok) {
+
+            let errorMessage =
+                "PDF generation failed.";
+
+
+            try {
+
+                const errorData =
+                    await response.json();
+
+
+                if (errorData.error) {
+
+                    errorMessage =
+                        errorData.error;
+
+                }
+
+            } catch (e) {
+
+                // Ignore JSON parsing errors
+
+            }
+
+
+            throw new Error(
+                errorMessage
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.path) {
+
+            throw new Error(
+                "PDF path was not returned."
+            );
+
+        }
+
+
+        const normalizedPath =
+            String(data.path)
+                .replaceAll("\\", "/");
+
+
+        const filename =
+            normalizedPath
+                .split("/")
+                .pop();
+
+
+        if (!filename) {
+
+            throw new Error(
+                "Invalid PDF filename."
+            );
+
+        }
+
+
+        const pdfUrl =
+            "/reports/files/" +
+            encodeURIComponent(
+                filename
+            );
+
+
+        const link =
+            document.getElementById(
+                "pdfUrl"
+            );
+
+
+        link.href =
+            pdfUrl;
+
+
+        pdfBox.style.display =
+            "block";
+
+
+        setStatus(
+            "PDF report generated successfully."
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        setStatus(
+            "Unable to generate PDF: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+// ========================================================
+// DISPLAY SUMMARY
+// ========================================================
+
+function displayReport(report) {
+
+    if (!report) {
+        return;
+    }
+
+
+    const analytics =
+        report.analytics || {};
+
+
+    const people =
+        analytics.people || {};
+
+
+    const occupancy =
+        analytics.occupancy || {};
+
+
+    const density =
+        analytics.density || {};
+
+
+    const risk =
+        analytics.risk || {};
+
+
+    const venue =
+        report.venue || {};
+
+
+    const crowdedZone =
+        analytics.most_crowded_zone;
+
+
+    document.getElementById(
+        "peakPeople"
+    ).textContent =
+        getValue(
+            people,
+            [
+                "peak_people",
+                "maximum_people",
+                "max_people"
+            ],
+            0
+        );
+
+
+    document.getElementById(
+        "averagePeople"
+    ).textContent =
+        getValue(
+            people,
+            [
+                "average_people",
+                "avg_people"
+            ],
+            0
+        );
+
+
+    document.getElementById(
+        "peakOccupancy"
+    ).textContent =
+        getValue(
+            occupancy,
+            [
+                "peak_occupancy",
+                "maximum_occupancy",
+                "max_occupancy"
+            ],
+            0
+        ) + "%";
+
+
+    document.getElementById(
+        "peakDensity"
+    ).textContent =
+        getValue(
+            density,
+            [
+                "peak_density",
+                "maximum_density",
+                "max_density"
+            ],
+            0
+        );
+
+
+    document.getElementById(
+        "warningCount"
+    ).textContent =
+        getValue(
+            risk,
+            [
+                "warning_records",
+                "warning_count",
+                "warnings",
+                "warning"
+            ],
+            0
+        );
+
+
+    document.getElementById(
+        "criticalCount"
+    ).textContent =
+        getValue(
+            risk,
+            [
+                "critical_records",
+                "critical_count",
+                "critical"
+            ],
+            0
+        );
+
+
+    document.getElementById(
+        "venueInfo"
+    ).innerHTML = `
+
+        <strong>Name:</strong>
+        ${escapeHtml(
+            venue.name || "Unknown"
+        )}
+
+        <br>
+
+        <strong>Capacity:</strong>
+        ${escapeHtml(
+            venue.capacity ?? 0
+        )}
+
+        <br>
+
+        <strong>Shape:</strong>
+        ${escapeHtml(
+            venue.shape || "Unknown"
+        )}
+
+        <br>
+
+        <strong>Length:</strong>
+        ${escapeHtml(
+            venue.length ?? 0
+        )}
+
+        <br>
+
+        <strong>Width:</strong>
+        ${escapeHtml(
+            venue.width ?? 0
+        )}
+
+    `;
+
+
+    const zoneElement =
+        document.getElementById(
+            "crowdedZone"
+        );
+
+
+    if (crowdedZone) {
+
+        const zoneId =
+            crowdedZone.zone_id ??
+            crowdedZone.id ??
+            "Unknown";
+
+
+        const peakPeople =
+            crowdedZone.peak_people ??
+            crowdedZone.people ??
+            0;
+
+
+        const peakDensity =
+            crowdedZone.peak_density ??
+            crowdedZone.density ??
+            0;
+
+
+        const averagePeople =
+            crowdedZone.average_people ??
+            0;
+
+
+        zoneElement.innerHTML = `
+
+            <div class="zone">
+
+                <strong>
+                    Zone:
+                    ${escapeHtml(zoneId)}
+                </strong>
+
+                <br>
+
+                Peak People:
+                ${escapeHtml(peakPeople)}
+
+                <br>
+
+                Peak Density:
+                ${escapeHtml(peakDensity)}
+
+                <br>
+
+                Average People:
+                ${escapeHtml(averagePeople)}
+
+            </div>
+
+        `;
+
+    } else {
+
+        zoneElement.textContent =
+            "No zone data available.";
+
+    }
+
+}
+
+
+// ========================================================
+// REFRESH REPORTS
+// ========================================================
+
+async function refreshReports() {
+
+    setStatus(
+        "Refreshing reports..."
+    );
+
+    await loadReports();
+
+    setStatus(
+        "Reports refreshed successfully."
+    );
+
+}
+
+
+// ========================================================
+// LOAD SAVED REPORTS
+// ========================================================
+
+async function loadReports() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/reports"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load reports"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        let reports =
+            data.reports || data || [];
+
+
+        if (!Array.isArray(reports)) {
+
+            reports = [];
+
+        }
+
+
+        const table =
+            document.getElementById(
+                "reportsTable"
+            );
+
+
+        table.innerHTML = "";
+
+
+        if (
+            reports.length === 0
+        ) {
+
+            table.innerHTML = `
+
+                <tr>
+
+                    <td colspan="3">
+
+                        No saved reports.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        reports.forEach(
+            report => {
+
+                const filename =
+                    typeof report === "string"
+                        ? report
+                        : (
+                            report.filename ||
+                            report.name ||
+                            ""
+                        );
+
+
+                const modified =
+                    typeof report === "object"
+                        ? (
+                            report.modified ||
+                            report.created ||
+                            report.timestamp ||
+                            ""
+                        )
+                        : "";
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${escapeHtml(
+                            filename
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            modified
+                        )}
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="download"
+                            onclick="viewReport(
+                                '${encodeURIComponent(
+                                    filename
+                                )}'
+                            )">
+
+                            View
+
+                        </button>
+
+
+                        <button
+                            class="delete"
+                            onclick="deleteReport(
+                                '${encodeURIComponent(
+                                    filename
+                                )}'
+                            )">
+
+                            Delete
+
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                table.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        setStatus(
+            "Unable to refresh reports."
+        );
+
+    }
+
+}
+
+
+// ========================================================
+// VIEW SAVED REPORT
+// ========================================================
+
+async function viewReport(
+    encodedFilename
+) {
+
+    const filename =
+        decodeURIComponent(
+            encodedFilename
+        );
+
+
+    setStatus(
+        "Loading report..."
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/reports/" +
+                encodeURIComponent(
+                    filename
+                )
+            );
+
+
+        if (!response.ok) {
+
+            let message =
+                "Unable to load report.";
+
+
+            try {
+
+                const errorData =
+                    await response.json();
+
+
+                if (errorData.error) {
+
+                    message =
+                        errorData.error;
+
+                }
+
+            } catch (e) {
+
+                // Ignore JSON parsing errors
+
+            }
+
+
+            throw new Error(
+                message
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        currentReport =
+            data.report || data;
+
+
+        if (!currentReport) {
+
+            throw new Error(
+                "The report contains no data."
+            );
+
+        }
+
+
+        displayReport(
+            currentReport
+        );
+
+
+        displayDetailedReport(
+            currentReport,
+            filename
+        );
+
+
+        setStatus(
+            "Report loaded successfully."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "View report error:",
+            error
+        );
+
+
+        setStatus(
+            "Unable to open report: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+// ========================================================
+// DETAILED REPORT VIEW
+// ========================================================
+
+function displayDetailedReport(
+    report,
+    filename
+) {
+
+    const viewer =
+        document.getElementById(
+            "reportViewer"
+        );
+
+
+    const details =
+        document.getElementById(
+            "reportDetails"
+        );
+
+
+    const meta =
+        document.getElementById(
+            "reportMeta"
+        );
+
+
+    viewer.style.display =
+        "block";
+
+
+    meta.textContent =
+        "Saved report: " +
+        filename;
+
+
+    const venue =
+        report.venue || {};
+
+
+    const analytics =
+        report.analytics || {};
+
+
+    const people =
+        analytics.people || {};
+
+
+    const occupancy =
+        analytics.occupancy || {};
+
+
+    const density =
+        analytics.density || {};
+
+
+    const risk =
+        analytics.risk || {};
+
+
+    const alerts =
+        analytics.alerts || {};
+
+
+    const incidents =
+        analytics.incidents || {};
+
+
+    const timeRange =
+        analytics.time_range ||
+        report.time_range ||
+        {};
+
+
+    const crowdedZone =
+        analytics.most_crowded_zone;
+
+
+    let html = "";
+
+
+    html += `
+
+        <div class="section">
+
+            <h2>
+                Venue Information
+            </h2>
+
+            <div class="detail-grid">
+
+                ${detailCard(
+                    "Venue",
+                    [
+                        ["Name", venue.name || "Unknown"],
+                        ["Shape", venue.shape || "Unknown"],
+                        ["Capacity", venue.capacity ?? 0],
+                        ["Length", venue.length ?? 0],
+                        ["Width", venue.width ?? 0]
+                    ]
+                )}
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    html += `
+
+        <div class="section">
+
+            <h2>
+                Crowd Statistics
+            </h2>
+
+            <div class="detail-grid">
+
+                ${detailCard(
+                    "People",
+                    [
+                        [
+                            "Peak People",
+                            getValue(
+                                people,
+                                [
+                                    "peak_people",
+                                    "maximum_people",
+                                    "max_people"
+                                ],
+                                0
+                            )
+                        ],
+                        [
+                            "Average People",
+                            getValue(
+                                people,
+                                [
+                                    "average_people",
+                                    "avg_people"
+                                ],
+                                0
+                            )
+                        ],
+                        [
+                            "Minimum People",
+                            getValue(
+                                people,
+                                [
+                                    "minimum_people",
+                                    "min_people"
+                                ],
+                                0
+                            )
+                        ],
+                        [
+                            "Records",
+                            getValue(
+                                people,
+                                [
+                                    "total_records",
+                                    "records"
+                                ],
+                                0
+                            )
+                        ]
+                    ]
+                )}
+
+
+                ${detailCard(
+                    "Occupancy",
+                    [
+                        [
+                            "Peak",
+                            getValue(
+                                occupancy,
+                                [
+                                    "peak_occupancy",
+                                    "maximum_occupancy",
+                                    "max_occupancy"
+                                ],
+                                0
+                            ) + "%"
+                        ],
+                        [
+                            "Average",
+                            getValue(
+                                occupancy,
+                                [
+                                    "average_occupancy",
+                                    "avg_occupancy"
+                                ],
+                                0
+                            ) + "%"
+                        ],
+                        [
+                            "Minimum",
+                            getValue(
+                                occupancy,
+                                [
+                                    "minimum_occupancy",
+                                    "min_occupancy"
+                                ],
+                                0
+                            ) + "%"
+                        ]
+                    ]
+                )}
+
+
+                ${detailCard(
+                    "Density",
+                    [
+                        [
+                            "Peak",
+                            getValue(
+                                density,
+                                [
+                                    "peak_density",
+                                    "maximum_density",
+                                    "max_density"
+                                ],
+                                0
+                            )
+                        ],
+                        [
+                            "Average",
+                            getValue(
+                                density,
+                                [
+                                    "average_density",
+                                    "avg_density"
+                                ],
+                                0
+                            )
+                        ],
+                        [
+                            "Minimum",
+                            getValue(
+                                density,
+                                [
+                                    "minimum_density",
+                                    "min_density"
+                                ],
+                                0
+                            )
+                        ]
+                    ]
+                )}
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    html += `
+
+        <div class="section">
+
+            <h2>
+                Risk Statistics
+            </h2>
+
+            <div class="detail-grid">
+
+                ${detailCard(
+                    "Risk",
+                    [
+                        [
+                            "SAFE",
+                            getValue(
+                                risk,
+                                [
+                                    "safe_records",
+                                    "safe_count",
+                                    "safe"
+                                ],
+                                0
+                            )
+                        ],
+                        [
+                            "WARNING",
+                            getValue(
+                                risk,
+                                [
+                                    "warning_records",
+                                    "warning_count",
+                                    "warnings",
+                                    "warning"
+                                ],
+                                0
+                            )
+                        ],
+                        [
+                            "CRITICAL",
+                            getValue(
+                                risk,
+                                [
+                                    "critical_records",
+                                    "critical_count",
+                                    "critical"
+                                ],
+                                0
+                            )
+                        ]
+                    ]
+                )}
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    if (crowdedZone) {
+
+        html += `
+
+            <div class="section">
+
+                <h2>
+                    Most Crowded Zone
+                </h2>
+
+                <div class="detail-grid">
+
+                    ${detailCard(
+                        "Zone",
+                        [
+                            [
+                                "Zone ID",
+                                crowdedZone.zone_id ??
+                                crowdedZone.id ??
+                                "Unknown"
+                            ],
+                            [
+                                "Peak People",
+                                crowdedZone.peak_people ??
+                                crowdedZone.people ??
+                                0
+                            ],
+                            [
+                                "Peak Density",
+                                crowdedZone.peak_density ??
+                                crowdedZone.density ??
+                                0
+                            ],
+                            [
+                                "Average People",
+                                crowdedZone.average_people ??
+                                0
+                            ]
+                        ]
+                    )}
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    html += `
+
+        <div class="section">
+
+            <h2>
+                Alerts
+            </h2>
+
+            <div class="detail-grid">
+
+                ${detailCard(
+                    "Alert Summary",
+                    [
+                        [
+                            "Total Alerts",
+                            getCollectionCount(
+                                alerts
+                            )
+                        ]
+                    ]
+                )}
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    html += `
+
+        <div class="section">
+
+            <h2>
+                Incidents
+            </h2>
+
+            <div class="detail-grid">
+
+                ${detailCard(
+                    "Incident Summary",
+                    [
+                        [
+                            "Total Incidents",
+                            getCollectionCount(
+                                incidents
+                            )
+                        ]
+                    ]
+                )}
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    if (
+        timeRange &&
+        typeof timeRange === "object"
+    ) {
+
+        html += `
+
+            <div class="section">
+
+                <h2>
+                    Report Time Range
+                </h2>
+
+                <div class="detail-grid">
+
+                    ${detailCard(
+                        "Time Range",
+                        [
+                            [
+                                "Start",
+                                timeRange.start ||
+                                timeRange.start_time ||
+                                "N/A"
+                            ],
+                            [
+                                "End",
+                                timeRange.end ||
+                                timeRange.end_time ||
+                                "N/A"
+                            ]
+                        ]
+                    )}
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    html += `
+
+        <div class="section">
+
+            <h2>
+                Report Data
+            </h2>
+
+            <div class="json-box">${escapeHtml(
+                JSON.stringify(
+                    report,
+                    null,
+                    4
+                )
+            )}</div>
+
+        </div>
+
+    `;
+
+
+    details.innerHTML =
+        html;
+
+
+    viewer.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+// ========================================================
+// DETAIL CARD
+// ========================================================
+
+function detailCard(
+    title,
+    rows
+) {
+
+    let html = `
+
+        <div class="detail-card">
+
+            <h3>
+                ${escapeHtml(title)}
+            </h3>
+
+    `;
+
+
+    rows.forEach(
+        row => {
+
+            const label =
+                row[0];
+
+            const value =
+                row[1];
+
+
+            let valueClass =
+                "";
+
+
+            const valueText =
+                String(value)
+                    .toUpperCase();
+
+
+            if (
+                valueText === "SAFE"
+            ) {
+
+                valueClass =
+                    "risk-safe";
+
+            }
+
+
+            if (
+                valueText === "WARNING"
+            ) {
+
+                valueClass =
+                    "risk-warning";
+
+            }
+
+
+            if (
+                valueText === "CRITICAL"
+            ) {
+
+                valueClass =
+                    "risk-critical";
+
+            }
+
+
+            html += `
+
+                <div class="detail-row">
+
+                    <span class="detail-label">
+                        ${escapeHtml(label)}
+                    </span>
+
+                    <span
+                        class="detail-value ${valueClass}">
+
+                        ${escapeHtml(value)}
+
+                    </span>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+        </div>
+
+    `;
+
+
+    return html;
+
+}
+
+
+// ========================================================
+// COLLECTION COUNT
+// ========================================================
+
+function getCollectionCount(
+    value
+) {
+
+    if (
+        Array.isArray(value)
+    ) {
+
+        return value.length;
+
+    }
+
+
+    if (
+        typeof value === "object" &&
+        value !== null
+    ) {
+
+        return (
+            value.total ??
+            value.total_alerts ??
+            value.total_incidents ??
+            value.count ??
+            0
+        );
+
+    }
+
+
+    if (
+        typeof value === "number"
+    ) {
+
+        return value;
+
+    }
+
+
+    return 0;
+
+}
+
+
+// ========================================================
+// GET VALUE
+// ========================================================
+
+function getValue(
+    object,
+    keys,
+    fallback
+) {
+
+    if (
+        !object ||
+        typeof object !== "object"
+    ) {
+
+        return fallback;
+
+    }
+
+
+    for (
+        const key of keys
+    ) {
+
+        if (
+            object[key] !== undefined &&
+            object[key] !== null
+        ) {
+
+            return object[key];
+
+        }
+
+    }
+
+
+    return fallback;
+
+}
+
+
+// ========================================================
+// CLOSE REPORT VIEWER
+// ========================================================
+
+function closeReportViewer() {
+
+    document.getElementById(
+        "reportViewer"
+    ).style.display =
+        "none";
+
+}
+
+
+// ========================================================
+// DELETE REPORT
+// ========================================================
+
+async function deleteReport(
+    encodedFilename
+) {
+
+    const filename =
+        decodeURIComponent(
+            encodedFilename
+        );
+
+
+    if (
+        !confirm(
+            "Delete this report?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/reports/" +
+                encodeURIComponent(
+                    filename
+                ),
+                {
+                    method: "DELETE"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Delete failed"
+            );
+
+        }
+
+
+        setStatus(
+            "Report deleted."
+        );
+
+
+        document.getElementById(
+            "reportViewer"
+        ).style.display =
+            "none";
+
+
+        loadReports();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        setStatus(
+            "Unable to delete report."
+        );
+
+    }
+
+}
+
+
+// ========================================================
+// HTML ESCAPE
+// ========================================================
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+// ========================================================
+// START
+// ========================================================
+
+loadReports();
+
+</script>
+
+</body>
+
+</html>

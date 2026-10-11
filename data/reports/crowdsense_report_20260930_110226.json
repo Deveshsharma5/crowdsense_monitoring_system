@@ -1,0 +1,144 @@
+{
+    "report_id": "20260930_110226",
+    "generated_at": "2026-09-30 11:02:26",
+    "venue": {
+        "name": "pcce hall",
+        "capacity": 10,
+        "shape": "rectangle",
+        "length": 10.0,
+        "width": 10.0,
+        "diameter": 0
+    },
+    "session": {
+        "session_id": "SESSION97",
+        "venue": "pcce hall",
+        "capacity": 10,
+        "cameras": [
+            {
+                "camera_id": "CAMERA1",
+                "source": "0",
+                "enabled": true
+            }
+        ],
+        "start_time": "2026-09-30 09:32:21",
+        "end_time": null,
+        "duration_seconds": 5075,
+        "status": "ACTIVE",
+        "peak_people": 1,
+        "average_people": 1.0,
+        "peak_occupancy": 10.0,
+        "warning_events": 0,
+        "critical_events": 0,
+        "total_updates": 7,
+        "last_people": 1,
+        "last_update": "2026-09-30 10:56:56",
+        "report_log_records": 28,
+        "report_alerts": 0,
+        "report_incidents": 0
+    },
+    "analytics": {
+        "venue": "pcce hall",
+        "capacity": 10,
+        "time_range": {
+            "start_time": "2026-09-30 09:32:25",
+            "end_time": "2026-09-30 10:56:56",
+            "duration_seconds": 5071
+        },
+        "people": {
+            "peak_people": 1,
+            "average_people": 1.0,
+            "minimum_people": 1,
+            "total_records": 7
+        },
+        "occupancy": {
+            "peak_occupancy": 10.0,
+            "average_occupancy": 10.0,
+            "minimum_occupancy": 10.0
+        },
+        "density": {
+            "peak_density": 0.04,
+            "average_density": 0.01,
+            "minimum_density": 0.0
+        },
+        "risk": {
+            "safe_records": 7,
+            "warning_records": 0,
+            "critical_records": 0
+        },
+        "alerts": {
+            "warning": 0,
+            "critical": 0,
+            "total": 0
+        },
+        "incidents": {
+            "warning": 0,
+            "critical": 0,
+            "total": 0
+        },
+        "zones": {
+            "A1": {
+                "zone_id": "A1",
+                "people": 0,
+                "density": 0.0,
+                "risk": "SAFE",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 7
+            },
+            "A2": {
+                "zone_id": "A2",
+                "people": 0,
+                "density": 0.0,
+                "risk": "SAFE",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 7
+            },
+            "B1": {
+                "zone_id": "B1",
+                "people": 1,
+                "density": 0.04,
+                "risk": "SAFE",
+                "peak_people": 1,
+                "peak_density": 0.04,
+                "average_people": 1.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 7
+            },
+            "B2": {
+                "zone_id": "B2",
+                "people": 0,
+                "density": 0.0,
+                "risk": "SAFE",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 7
+            }
+        },
+        "most_crowded_zone": {
+            "zone_id": "B1",
+            "people": 1,
+            "density": 0.04,
+            "risk": "SAFE",
+            "peak_people": 1,
+            "peak_density": 0.04,
+            "average_people": 1.0,
+            "warning_records": 0,
+            "critical_records": 0,
+            "records": 7
+        }
+    },
+    "alerts": [],
+    "incidents": [],
+    "log_records": 28
+}

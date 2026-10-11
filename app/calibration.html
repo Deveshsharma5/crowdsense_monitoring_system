@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CrowdSense - Calibration</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #050505;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background: #0b0b0b;
+            border-bottom: 1px solid #222;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #00d26a;
+            font-size: 24px;
+        }
+
+        header span {
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        nav {
+            background: #0a0a0a;
+            border-bottom: 1px solid #222;
+            padding: 10px 20px;
+        }
+
+        nav a {
+            color: #aaa;
+            text-decoration: none;
+            margin-right: 20px;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            color: #00d26a;
+        }
+
+        nav a.active {
+            color: #00d26a;
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 25px;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: #0c0c0c;
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            font-size: 18px;
+        }
+
+        label {
+            display: block;
+            color: #aaa;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            background: #111;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        select:focus,
+        input:focus {
+            outline: none;
+            border-color: #00d26a;
+        }
+
+        button {
+            border: none;
+            border-radius: 6px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 6px;
+            margin-bottom: 8px;
+        }
+
+        .green {
+            background: #00d26a;
+            color: #000;
+        }
+
+        .red {
+            background: #d60000;
+            color: white;
+        }
+
+        .dark {
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+        }
+
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            background: #111;
+            border: 1px solid #333;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .status.calibrated {
+            border-color: #00d26a;
+            color: #00d26a;
+        }
+
+        .status.not-calibrated {
+            border-color: #d60000;
+            color: #ff5555;
+        }
+
+        /* =====================================================
+           CAMERA VIEW
+           ===================================================== */
+
+        .camera-box {
+            background: #000;
+            border: 2px solid #222;
+            border-radius: 10px;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #cameraStream {
+            position: absolute;
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+
+            background: #000;
+
+            display: none;
+
+            z-index: 1;
+        }
+
+        #calibrationCanvas {
+            position: absolute;
+
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            z-index: 2;
+
+            cursor: crosshair;
+
+            background: transparent;
+        }
+
+        .camera-message {
+            position: absolute;
+
+            inset: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: #777;
+
+            pointer-events: none;
+
+            z-index: 3;
+
+            text-align: center;
+
+            padding: 20px;
+        }
+
+        .camera-status {
+            position: absolute;
+
+            top: 12px;
+            right: 12px;
+
+            z-index: 4;
+
+            background: rgba(0, 0, 0, 0.75);
+
+            border: 1px solid #333;
+
+            border-radius: 6px;
+
+            padding: 7px 10px;
+
+            font-size: 12px;
+
+            color: #aaa;
+
+            display: none;
+        }
+
+        .camera-status.connected {
+            color: #00d26a;
+            border-color: #00d26a;
+        }
+
+        .camera-status.error {
+            color: #ff5555;
+            border-color: #d60000;
+        }
+
+        .points-list {
+            margin-top: 15px;
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .info {
+            background: #101010;
+            border-left: 3px solid #00d26a;
+            padding: 12px;
+            margin-top: 15px;
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .danger-info {
+            border-left-color: #d60000;
+        }
+
+        .message {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .message.success {
+            display: block;
+            background: #062b17;
+            color: #00d26a;
+            border: 1px solid #00d26a;
+        }
+
+        .message.error {
+            display: block;
+            background: #2b0606;
+            color: #ff5555;
+            border: 1px solid #d60000;
+        }
+
+        @media (max-width: 900px) {
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .camera-box {
+                min-height: 350px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>CROWDSENSE</h1>
+
+    <span>
+        Camera Calibration
+    </span>
+
+</header>
+
+
+<nav>
+
+    <a href="/">
+        Dashboard
+    </a>
+
+    <a href="/cameras">
+        Cameras
+    </a>
+
+    <a href="/venue">
+        Venue
+    </a>
+
+    <a href="/zones">
+        Zones
+    </a>
+
+    <a href="/alerts">
+        Alerts
+    </a>
+
+    <a href="/analytics">
+        Analytics
+    </a>
+
+    <a href="/session">
+        Session
+    </a>
+
+    <a href="/reports">
+        Reports
+    </a>
+
+    <a href="/admin">
+        Admin
+    </a>
+
+    <a
+        href="/calibration"
+        class="active"
+    >
+        Calibration
+    </a>
+
+</nav>
+
+
+<div class="container">
+
+    <div class="grid">
+
+        <!-- ================================================= -->
+        <!-- SETTINGS -->
+        <!-- ================================================= -->
+
+        <div class="panel">
+
+            <h2>
+                Camera
+            </h2>
+
+            <label>
+                Select Camera
+            </label>
+
+            <select id="cameraSelect">
+
+                <option value="">
+                    Loading cameras...
+                </option>
+
+            </select>
+
+
+            <div
+                id="calibrationStatus"
+                class="status"
+            >
+                Select a camera.
+            </div>
+
+
+            <h2>
+                Venue Dimensions
+            </h2>
+
+            <label>
+                Venue Length
+            </label>
+
+            <input
+                id="venueLength"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="Length"
+            >
+
+
+            <label>
+                Venue Width
+            </label>
+
+            <input
+                id="venueWidth"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="Width"
+            >
+
+
+            <h2>
+                Calibration Points
+            </h2>
+
+            <div class="points-list">
+
+                <div>
+                    Point 1:
+                    <span id="point1Text">
+                        Not selected
+                    </span>
+                </div>
+
+                <div>
+                    Point 2:
+                    <span id="point2Text">
+                        Not selected
+                    </span>
+                </div>
+
+                <div>
+                    Point 3:
+                    <span id="point3Text">
+                        Not selected
+                    </span>
+                </div>
+
+                <div>
+                    Point 4:
+                    <span id="point4Text">
+                        Not selected
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div style="margin-top:15px">
+
+                <button
+                    class="green"
+                    onclick="saveCalibration()"
+                >
+                    Save Calibration
+                </button>
+
+                <button
+                    class="dark"
+                    onclick="clearPoints()"
+                >
+                    Clear Points
+                </button>
+
+                <button
+                    class="red"
+                    onclick="deleteCalibration()"
+                >
+                    Delete Calibration
+                </button>
+
+            </div>
+
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+
+            <div class="info">
+
+                Click four points on the actual
+                camera view in clockwise order.
+
+                <br><br>
+
+                Recommended order:
+
+                <br>
+
+                1 → Top Left
+
+                <br>
+
+                2 → Top Right
+
+                <br>
+
+                3 → Bottom Right
+
+                <br>
+
+                4 → Bottom Left
+
+            </div>
+
+
+            <div class="info danger-info">
+
+                Calibration connects camera pixels
+                to the physical venue.
+
+                Each camera must be calibrated
+                separately.
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- CAMERA VIEW -->
+        <!-- ================================================= -->
+
+        <div class="panel">
+
+            <h2>
+                Camera Calibration View
+            </h2>
+
+            <div
+                id="cameraBox"
+                class="camera-box"
+            >
+
+                <img
+                    id="cameraStream"
+                    alt="Camera stream"
+                >
+
+                <canvas
+                    id="calibrationCanvas"
+                ></canvas>
+
+
+                <div
+                    id="cameraMessage"
+                    class="camera-message"
+                >
+                    Select a camera
+                </div>
+
+
+                <div
+                    id="cameraStatus"
+                    class="camera-status"
+                >
+                    Camera
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* ========================================================
+       GLOBAL VARIABLES
+    ======================================================== */
+
+    let cameras = [];
+
+    let selectedCamera = null;
+
+    let selectedCameraData = null;
+
+    let points = [];
+
+
+    /*
+     * Camera ID supplied by the Dashboard.
+     *
+     * Example:
+     *
+     * /calibration?camera=CAM1
+     */
+
+    const urlParams =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const requestedCamera =
+        urlParams.get(
+            "camera"
+        );
+
+
+    /* ========================================================
+       ELEMENTS
+    ======================================================== */
+
+    const cameraSelect =
+        document.getElementById(
+            "cameraSelect"
+        );
+
+    const canvas =
+        document.getElementById(
+            "calibrationCanvas"
+        );
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+    const cameraBox =
+        document.getElementById(
+            "cameraBox"
+        );
+
+    const cameraStream =
+        document.getElementById(
+            "cameraStream"
+        );
+
+    const cameraMessage =
+        document.getElementById(
+            "cameraMessage"
+        );
+
+    const cameraStatus =
+        document.getElementById(
+            "cameraStatus"
+        );
+
+    const calibrationStatus =
+        document.getElementById(
+            "calibrationStatus"
+        );
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    /* ========================================================
+       LOAD CAMERAS
+    ======================================================== */
+
+    async function loadCameras() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/cameras",
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP " +
+                    response.status
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            /*
+             * API may return either:
+             *
+             * [
+             *     {...}
+             * ]
+             *
+             * or:
+             *
+             * {
+             *     cameras: [...]
+             * }
+             */
+
+            cameras =
+                Array.isArray(
+                    data
+                )
+                    ? data
+                    : (
+                        data.cameras ||
+                        data.data ||
+                        []
+                    );
+
+
+            cameraSelect.innerHTML =
+                "";
+
+
+            if (
+                cameras.length === 0
+            ) {
+
+                cameraSelect.innerHTML =
+                    `
+                    <option value="">
+                        No cameras configured
+                    </option>
+                    `;
+
+
+                showCameraMessage(
+                    "No cameras configured."
+                );
+
+
+                calibrationStatus.className =
+                    "status not-calibrated";
+
+
+                calibrationStatus.textContent =
+                    "No cameras configured";
+
+
+                return;
+            }
+
+
+            /*
+             * Add cameras to dropdown.
+             */
+
+            cameras.forEach(
+                camera => {
+
+                    const cameraId =
+                        camera.camera_id ||
+                        camera.id ||
+                        "";
+
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        cameraId;
+
+
+                    option.textContent =
+                        (
+                            camera.name ||
+                            "Camera"
+                        )
+                        +
+                        " ("
+                        +
+                        cameraId
+                        +
+                        ")";
+
+
+                    cameraSelect.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            /*
+             * If Dashboard supplied a camera ID,
+             * automatically select it.
+             */
+
+            if (
+                requestedCamera
+                &&
+                cameras.some(
+                    camera =>
+                        (
+                            camera.camera_id ||
+                            camera.id ||
+                            ""
+                        )
+                        ===
+                        requestedCamera
+                )
+            ) {
+
+                cameraSelect.value =
+                    requestedCamera;
+
+            } else {
+
+                cameraSelect.selectedIndex =
+                    0;
+
+            }
+
+
+            /*
+             * Load the selected camera.
+             */
+
+            await cameraChanged();
+
+        }
+        catch (error) {
+
+            console.error(
+                "Camera loading error:",
+                error
+            );
+
+
+            showMessage(
+                error.message,
+                true
+            );
+
+
+            cameraSelect.innerHTML =
+                `
+                <option value="">
+                    Failed to load cameras
+                </option>
+                `;
+
+
+            showCameraMessage(
+                "Failed to load cameras."
+            );
+
+        }
+
+    }
+
+
+    /* ========================================================
+       CAMERA CHANGED
+    ======================================================== */
+
+    cameraSelect.addEventListener(
+        "change",
+        cameraChanged
+    );
+
+
+    async function cameraChanged() {
+
+        selectedCamera =
+            cameraSelect.value;
+
+
+        selectedCameraData =
+            cameras.find(
+                camera =>
+                    (
+                        camera.camera_id ||
+                        camera.id ||
+                        ""
+                    )
+                    ===
+                    selectedCamera
+            )
+            ||
+            null;
+
+
+        points = [];
+
+
+        updatePointText();
+
+        clearCanvas();
+
+        stopCameraStream();
+
+
+        if (
+            !selectedCamera
+        ) {
+
+            calibrationStatus.className =
+                "status";
+
+
+            calibrationStatus.textContent =
+                "Select a camera.";
+
+
+            showCameraMessage(
+                "Select a camera."
+            );
+
+
+            return;
+        }
+
+
+        /*
+         * Start the actual camera stream.
+         */
+
+        startCameraStream(
+            selectedCameraData
+        );
+
+
+        /*
+         * Load existing calibration
+         * for this specific camera.
+         */
+
+        await loadExistingCalibration();
+
+    }
+
+
+    /* ========================================================
+       START CAMERA STREAM
+    ======================================================== */
+
+    function startCameraStream(
+        camera
+    ) {
+
+        if (!camera) {
+
+            showCameraMessage(
+                "Camera not found."
+            );
+
+            return;
+        }
+
+
+        const source =
+            camera.source ||
+            camera.url ||
+            camera.stream_url ||
+            "";
+
+
+        if (!source) {
+
+            showCameraMessage(
+                "This camera has no stream URL."
+            );
+
+            return;
+        }
+
+
+        /*
+         * Numeric sources such as 0 are
+         * local OpenCV devices.
+         *
+         * A browser cannot directly display
+         * source 0 as an image.
+         */
+
+        if (
+            typeof source === "number"
+            ||
+            (
+                typeof source === "string"
+                &&
+                /^\d+$/.test(
+                    source.trim()
+                )
+            )
+        ) {
+
+            showCameraMessage(
+                "Local camera source selected. " +
+                "Use the Admin live camera view for this camera."
+            );
+
+            return;
+        }
+
+
+        cameraMessage.style.display =
+            "none";
+
+
+        cameraStatus.style.display =
+            "block";
+
+
+        cameraStatus.className =
+            "camera-status";
+
+
+        cameraStatus.textContent =
+            "Connecting...";
+
+
+        cameraStream.style.display =
+            "block";
+
+
+        /*
+         * Cache busting.
+         */
+
+        const separator =
+            source.includes("?")
+                ? "&"
+                : "?";
+
+
+        cameraStream.src =
+            source
+            +
+            separator
+            +
+            "crowdsense="
+            +
+            Date.now();
+
+
+        cameraStream.onload =
+            function() {
+
+                cameraStatus.className =
+                    "camera-status connected";
+
+
+                cameraStatus.textContent =
+                    "LIVE";
+
+
+                resizeCanvas();
+
+            };
+
+
+        cameraStream.onerror =
+            function() {
+
+                cameraStatus.className =
+                    "camera-status error";
+
+
+                cameraStatus.textContent =
+                    "STREAM ERROR";
+
+
+                cameraMessage.style.display =
+                    "flex";
+
+
+                cameraMessage.textContent =
+                    "Unable to display camera stream.";
+
+            };
+
+    }
+
+
+    /* ========================================================
+       STOP CAMERA STREAM
+    ======================================================== */
+
+    function stopCameraStream() {
+
+        cameraStream.onload =
+            null;
+
+
+        cameraStream.onerror =
+            null;
+
+
+        cameraStream.removeAttribute(
+            "src"
+        );
+
+
+        cameraStream.style.display =
+            "none";
+
+
+        cameraStatus.style.display =
+            "none";
+
+    }
+
+
+    /* ========================================================
+       CAMERA MESSAGE
+    ======================================================== */
+
+    function showCameraMessage(
+        text
+    ) {
+
+        cameraMessage.textContent =
+            text;
+
+
+        cameraMessage.style.display =
+            "flex";
+
+    }
+
+
+    /* ========================================================
+       LOAD EXISTING CALIBRATION
+    ======================================================== */
+
+    async function loadExistingCalibration() {
+
+        if (
+            !selectedCamera
+        ) {
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/cameras/"
+                    +
+                    encodeURIComponent(
+                        selectedCamera
+                    )
+                    +
+                    "/calibration",
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP " +
+                    response.status
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !data.success
+                ||
+                !data.calibrated
+                ||
+                !data.calibration
+            ) {
+
+                calibrationStatus.className =
+                    "status not-calibrated";
+
+
+                calibrationStatus.textContent =
+                    "Not calibrated";
+
+
+                return;
+            }
+
+
+            const calibration =
+                data.calibration;
+
+
+            const length =
+                calibration.venue_length;
+
+
+            const width =
+                calibration.venue_width;
+
+
+            if (
+                length !== undefined
+            ) {
+
+                document.getElementById(
+                    "venueLength"
+                ).value =
+                    length;
+
+            }
+
+
+            if (
+                width !== undefined
+            ) {
+
+                document.getElementById(
+                    "venueWidth"
+                ).value =
+                    width;
+
+            }
+
+
+            /*
+             * Load saved calibration points
+             * if they exist.
+             */
+
+            if (
+                calibration.matrix
+                &&
+                Array.isArray(
+                    calibration.matrix.points
+                )
+                &&
+                calibration.matrix.points.length === 4
+            ) {
+
+                points =
+                    calibration.matrix.points.map(
+                        point => ({
+                            x: Number(
+                                point.x
+                            ),
+                            y: Number(
+                                point.y
+                            )
+                        })
+                    );
+
+
+                updatePointText();
+
+                drawOverlay();
+
+            }
+
+
+            calibrationStatus.className =
+                "status calibrated";
+
+
+            calibrationStatus.textContent =
+                "Camera calibrated";
+
+
+            showMessage(
+                "Existing calibration loaded.",
+                false
+            );
+
+        }
+        catch (error) {
+
+            console.error(
+                "Calibration loading error:",
+                error
+            );
+
+
+            calibrationStatus.className =
+                "status not-calibrated";
+
+
+            calibrationStatus.textContent =
+                "Unable to load calibration";
+
+
+            showMessage(
+                error.message,
+                true
+            );
+
+        }
+
+    }
+
+
+    /* ========================================================
+       CANVAS SIZE
+    ======================================================== */
+
+    function resizeCanvas() {
+
+        const rect =
+            cameraBox.getBoundingClientRect();
+
+
+        if (
+            rect.width <= 0
+            ||
+            rect.height <= 0
+        ) {
+            return;
+        }
+
+
+        canvas.width =
+            Math.max(
+                640,
+                Math.floor(
+                    rect.width
+                )
+            );
+
+
+        canvas.height =
+            Math.max(
+                360,
+                Math.floor(
+                    rect.height
+                )
+            );
+
+
+        drawOverlay();
+
+    }
+
+
+    window.addEventListener(
+        "resize",
+        resizeCanvas
+    );
+
+
+    function clearCanvas() {
+
+        canvas.width =
+            960;
+
+
+        canvas.height =
+            540;
+
+
+        drawOverlay();
+
+    }
+
+
+    /* ========================================================
+       DRAW OVERLAY
+    ======================================================== */
+
+    function drawOverlay() {
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        drawPoints();
+
+    }
+
+
+    /* ========================================================
+       CLICK CALIBRATION POINT
+    ======================================================== */
+
+    canvas.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                !selectedCamera
+            ) {
+
+                showMessage(
+                    "Select a camera first.",
+                    true
+                );
+
+                return;
+            }
+
+
+            if (
+                points.length >= 4
+            ) {
+
+                showMessage(
+                    "Four points already selected. " +
+                    "Clear them to select again.",
+                    true
+                );
+
+                return;
+            }
+
+
+            const rect =
+                canvas.getBoundingClientRect();
+
+
+            const scaleX =
+                canvas.width /
+                rect.width;
+
+
+            const scaleY =
+                canvas.height /
+                rect.height;
+
+
+            const x =
+                (
+                    event.clientX -
+                    rect.left
+                )
+                *
+                scaleX;
+
+
+            const y =
+                (
+                    event.clientY -
+                    rect.top
+                )
+                *
+                scaleY;
+
+
+            points.push({
+                x: x,
+                y: y
+            });
+
+
+            updatePointText();
+
+            drawOverlay();
+
+        }
+    );
+
+
+    /* ========================================================
+       DRAW POINTS
+    ======================================================== */
+
+    function drawPoints() {
+
+        points.forEach(
+            (
+                point,
+                index
+            ) => {
+
+                ctx.beginPath();
+
+
+                ctx.arc(
+                    point.x,
+                    point.y,
+                    9,
+                    0,
+                    Math.PI * 2
+                );
+
+
+                ctx.fillStyle =
+                    "#ff0000";
+
+
+                ctx.fill();
+
+
+                ctx.strokeStyle =
+                    "#ffffff";
+
+
+                ctx.lineWidth =
+                    2;
+
+
+                ctx.stroke();
+
+
+                ctx.fillStyle =
+                    "#ffffff";
+
+
+                ctx.font =
+                    "bold 14px Arial";
+
+
+                ctx.textAlign =
+                    "left";
+
+
+                ctx.fillText(
+                    String(
+                        index + 1
+                    ),
+                    point.x + 12,
+                    point.y - 12
+                );
+
+            }
+        );
+
+
+        if (
+            points.length >= 2
+        ) {
+
+            ctx.beginPath();
+
+
+            ctx.moveTo(
+                points[0].x,
+                points[0].y
+            );
+
+
+            for (
+                let i = 1;
+                i < points.length;
+                i++
+            ) {
+
+                ctx.lineTo(
+                    points[i].x,
+                    points[i].y
+                );
+
+            }
+
+
+            if (
+                points.length === 4
+            ) {
+
+                ctx.closePath();
+
+            }
+
+
+            ctx.strokeStyle =
+                "#00d26a";
+
+
+            ctx.lineWidth =
+                2;
+
+
+            ctx.stroke();
+
+        }
+
+    }
+
+
+    /* ========================================================
+       POINT TEXT
+    ======================================================== */
+
+    function updatePointText() {
+
+        for (
+            let i = 1;
+            i <= 4;
+            i++
+        ) {
+
+            const element =
+                document.getElementById(
+                    "point"
+                    +
+                    i
+                    +
+                    "Text"
+                );
+
+
+            if (
+                !points[i - 1]
+            ) {
+
+                element.textContent =
+                    "Not selected";
+
+                continue;
+
+            }
+
+
+            element.textContent =
+                "("
+                +
+                Math.round(
+                    points[
+                        i - 1
+                    ].x
+                )
+                +
+                ", "
+                +
+                Math.round(
+                    points[
+                        i - 1
+                    ].y
+                )
+                +
+                ")";
+
+        }
+
+    }
+
+
+    /* ========================================================
+       CLEAR POINTS
+    ======================================================== */
+
+    function clearPoints() {
+
+        points = [];
+
+
+        updatePointText();
+
+
+        drawOverlay();
+
+
+        showMessage(
+            "Calibration points cleared.",
+            false
+        );
+
+    }
+
+
+    /* ========================================================
+       SAVE CALIBRATION
+    ======================================================== */
+
+    async function saveCalibration() {
+
+        if (
+            !selectedCamera
+        ) {
+
+            showMessage(
+                "Select a camera first.",
+                true
+            );
+
+            return;
+        }
+
+
+        if (
+            points.length !== 4
+        ) {
+
+            showMessage(
+                "Select exactly four calibration points.",
+                true
+            );
+
+            return;
+        }
+
+
+        const venueLength =
+            parseFloat(
+                document.getElementById(
+                    "venueLength"
+                ).value
+            );
+
+
+        const venueWidth =
+            parseFloat(
+                document.getElementById(
+                    "venueWidth"
+                ).value
+            );
+
+
+        if (
+            !Number.isFinite(
+                venueLength
+            )
+            ||
+            venueLength <= 0
+        ) {
+
+            showMessage(
+                "Enter a valid venue length.",
+                true
+            );
+
+            return;
+        }
+
+
+        if (
+            !Number.isFinite(
+                venueWidth
+            )
+            ||
+            venueWidth <= 0
+        ) {
+
+            showMessage(
+                "Enter a valid venue width.",
+                true
+            );
+
+            return;
+        }
+
+
+        const calibrationPayload = {
+
+            matrix: {
+
+                points:
+                    points.map(
+                        point => ({
+                            x: point.x,
+                            y: point.y
+                        })
+                    )
+
+            },
+
+            venue_length:
+                venueLength,
+
+            venue_width:
+                venueWidth
+
+        };
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/cameras/"
+                    +
+                    encodeURIComponent(
+                        selectedCamera
+                    )
+                    +
+                    "/calibration",
+                    {
+
+                        method:
+                            "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                calibrationPayload
+                            )
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    data.error ||
+                    "Failed to save calibration."
+                );
+
+            }
+
+
+            calibrationStatus.className =
+                "status calibrated";
+
+
+            calibrationStatus.textContent =
+                "Camera calibrated";
+
+
+            showMessage(
+                "Calibration saved successfully.",
+                false
+            );
+
+        }
+        catch (error) {
+
+            console.error(
+                "Calibration save error:",
+                error
+            );
+
+
+            showMessage(
+                error.message,
+                true
+            );
+
+        }
+
+    }
+
+
+    /* ========================================================
+       DELETE CALIBRATION
+    ======================================================== */
+
+    async function deleteCalibration() {
+
+        if (
+            !selectedCamera
+        ) {
+
+            showMessage(
+                "Select a camera first.",
+                true
+            );
+
+            return;
+        }
+
+
+        const confirmed =
+            confirm(
+                "Delete calibration for "
+                +
+                selectedCamera
+                +
+                "?"
+            );
+
+
+        if (
+            !confirmed
+        ) {
+
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/cameras/"
+                    +
+                    encodeURIComponent(
+                        selectedCamera
+                    )
+                    +
+                    "/calibration",
+                    {
+                        method:
+                            "DELETE"
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    data.error ||
+                    "Failed to delete calibration."
+                );
+
+            }
+
+
+            points = [];
+
+
+            updatePointText();
+
+
+            drawOverlay();
+
+
+            calibrationStatus.className =
+                "status not-calibrated";
+
+
+            calibrationStatus.textContent =
+                "Not calibrated";
+
+
+            showMessage(
+                "Calibration deleted.",
+                false
+            );
+
+        }
+        catch (error) {
+
+            console.error(
+                "Calibration delete error:",
+                error
+            );
+
+
+            showMessage(
+                error.message,
+                true
+            );
+
+        }
+
+    }
+
+
+    /* ========================================================
+       MESSAGE
+    ======================================================== */
+
+    function showMessage(
+        text,
+        error
+    ) {
+
+        message.textContent =
+            text;
+
+
+        message.className =
+            error
+                ? "message error"
+                : "message success";
+
+    }
+
+
+    /* ========================================================
+       INITIALIZE
+    ======================================================== */
+
+    clearCanvas();
+
+    loadCameras();
+
+</script>
+
+</body>
+
+</html>

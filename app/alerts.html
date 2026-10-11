@@ -1,0 +1,2314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CrowdSense - Alerts & Incidents</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #050505;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+        }
+
+        header {
+            height: 72px;
+            background: #080808;
+            border-bottom: 1px solid #202020;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: #00ff66;
+            color: #000;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #00ff66;
+        }
+
+        .back-button {
+            background: #111;
+            color: #aaa;
+            border: 1px solid #333;
+            padding: 9px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .back-button:hover {
+            color: white;
+            border-color: #00ff66;
+        }
+
+        main {
+            max-width: 1550px;
+            margin: auto;
+            padding: 28px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .page-title h1 {
+            font-size: 27px;
+            margin-bottom: 5px;
+        }
+
+        .page-title p {
+            color: #777;
+            font-size: 13px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: #0b0b0b;
+            border: 1px solid #202020;
+            border-radius: 9px;
+            padding: 18px;
+        }
+
+        .summary-label {
+            color: #777;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary-value {
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .green {
+            color: #00ff66;
+        }
+
+        .yellow {
+            color: #ffd400;
+        }
+
+        .red {
+            color: #ff3333;
+        }
+
+        .filter-panel {
+            background: #0b0b0b;
+            border: 1px solid #202020;
+            border-radius: 9px;
+            padding: 17px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            color: #777;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-right: 4px;
+        }
+
+        select,
+        input {
+            background: #050505;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 9px 11px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: #00ff66;
+        }
+
+        .refresh-button {
+            background: #151515;
+            color: #aaa;
+            border: 1px solid #333;
+            padding: 9px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .refresh-button:hover {
+            color: white;
+            border-color: #00ff66;
+        }
+
+        .panel {
+            background: #0b0b0b;
+            border: 1px solid #202020;
+            border-radius: 9px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .panel-header {
+            min-height: 56px;
+            padding: 12px 18px;
+            border-bottom: 1px solid #202020;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-header h2 {
+            font-size: 15px;
+        }
+
+        .panel-header span {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .alert-list {
+            padding: 15px;
+        }
+
+        .alert-item {
+            background: #111;
+            border: 1px solid #252525;
+            border-left: 4px solid #ffd400;
+            border-radius: 7px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .alert-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert-item.critical {
+            border-left-color: #ff3333;
+        }
+
+        .alert-item.warning {
+            border-left-color: #ffd400;
+        }
+
+        .alert-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .alert-id {
+            color: #555;
+            font-size: 9px;
+            margin-top: 5px;
+            font-weight: normal;
+        }
+
+        .alert-meta {
+            color: #777;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .risk-badge.critical {
+            background: #3a0d0d;
+            color: #ff3333;
+        }
+
+        .risk-badge.warning {
+            background: #332b0c;
+            color: #ffd400;
+        }
+
+        .action-button {
+            background: #181818;
+            color: #aaa;
+            border: 1px solid #333;
+            padding: 8px 11px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .action-button:hover {
+            color: white;
+            border-color: #00ff66;
+        }
+
+        .action-button.acknowledged {
+            color: #ffd400;
+            border-color: #665800;
+            cursor: default;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            color: #666;
+            font-size: 10px;
+            text-transform: uppercase;
+            text-align: left;
+            padding: 13px 12px;
+            border-bottom: 1px solid #222;
+        }
+
+        td {
+            color: #aaa;
+            font-size: 11px;
+            padding: 13px 12px;
+            border-bottom: 1px solid #1b1b1b;
+        }
+
+        tr:hover td {
+            background: #111;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .status-open {
+            background: #3a0d0d;
+            color: #ff3333;
+        }
+
+        .status-acknowledged {
+            background: #332b0c;
+            color: #ffd400;
+        }
+
+        .status-closed {
+            background: #10351e;
+            color: #00ff66;
+        }
+
+        .snapshot {
+            color: #00ff66;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .snapshot:hover {
+            color: white;
+        }
+
+        .no-snapshot {
+            color: #555;
+        }
+
+        .empty {
+            padding: 45px 20px;
+            text-align: center;
+            color: #555;
+            font-size: 13px;
+        }
+
+        #message {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #111;
+            border: 1px solid #333;
+            padding: 13px 17px;
+            border-radius: 6px;
+            font-size: 12px;
+            display: none;
+            z-index: 1000;
+        }
+
+        #message.success {
+            border-color: #00ff66;
+            color: #00ff66;
+        }
+
+        #message.error {
+            border-color: #ff3333;
+            color: #ff3333;
+        }
+
+        @media(max-width: 1000px) {
+
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .alert-item {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+        @media(max-width: 650px) {
+
+            header {
+                padding: 0 15px;
+            }
+
+            main {
+                padding: 18px 14px;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .alert-item {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            C
+        </div>
+
+        <div class="logo-text">
+            CROWD<span>SENSE</span>
+        </div>
+
+    </div>
+
+
+    <button
+        class="back-button"
+        onclick="goDashboard()"
+    >
+        ← Dashboard
+    </button>
+
+</header>
+
+
+<main>
+
+
+    <div class="page-header">
+
+        <div class="page-title">
+
+            <h1>Alerts & Incidents</h1>
+
+            <p>
+                Crowd safety alerts, incidents and snapshots
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         SUMMARY
+    ===================================================== -->
+
+    <section class="summary">
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Total Alerts
+            </div>
+
+            <div
+                class="summary-value"
+                id="totalAlerts"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Warnings
+            </div>
+
+            <div
+                class="summary-value yellow"
+                id="warningAlerts"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Critical
+            </div>
+
+            <div
+                class="summary-value red"
+                id="criticalAlerts"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Incidents
+            </div>
+
+            <div
+                class="summary-value"
+                id="totalIncidents"
+            >
+                0
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         FILTERS
+    ===================================================== -->
+
+    <section class="filter-panel">
+
+        <span class="filter-label">
+            Risk
+        </span>
+
+
+        <select id="riskFilter">
+
+            <option value="ALL">
+                All
+            </option>
+
+            <option value="WARNING">
+                Warning
+            </option>
+
+            <option value="CRITICAL">
+                Critical
+            </option>
+
+        </select>
+
+
+        <span class="filter-label">
+            Zone
+        </span>
+
+
+        <input
+            id="zoneFilter"
+            type="text"
+            placeholder="Zone ID"
+        >
+
+
+        <button
+            class="refresh-button"
+            onclick="refreshAll()"
+        >
+            Refresh
+        </button>
+
+    </section>
+
+
+    <!-- ====================================================
+         ALERTS
+    ===================================================== -->
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <h2>
+                Recent Alerts
+            </h2>
+
+            <span id="alertCount">
+                0 alerts
+            </span>
+
+        </div>
+
+
+        <div
+            class="alert-list"
+            id="alertList"
+        >
+
+            <div class="empty">
+                Loading alerts...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         INCIDENTS
+    ===================================================== -->
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <h2>
+                Incident History
+            </h2>
+
+            <span id="incidentCount">
+                0 incidents
+            </span>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Incident</th>
+                        <th>Alert</th>
+                        <th>Time</th>
+                        <th>Risk</th>
+                        <th>Zone</th>
+                        <th>Camera</th>
+                        <th>Status</th>
+                        <th>Snapshot</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="incidentTable">
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="empty"
+                        >
+                            Loading incidents...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<div id="message"></div>
+
+
+<script>
+
+
+/* ==========================================================
+   STATE
+========================================================== */
+
+let alerts = [];
+
+let incidents = [];
+
+let snapshots = [];
+
+
+/* ==========================================================
+   API FETCH
+========================================================== */
+
+async function apiFetch(
+    url,
+    options = {}
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    cache: "no-store",
+                    ...options
+                }
+            );
+
+
+        if (!response.ok) {
+
+            let errorText = "";
+
+            try {
+
+                errorText =
+                    await response.text();
+
+            } catch(error) {
+
+                errorText = "";
+
+            }
+
+            throw new Error(
+                "HTTP " +
+                response.status +
+                (
+                    errorText
+                        ? " - " + errorText
+                        : ""
+                )
+            );
+
+        }
+
+
+        return await response.json();
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "API error:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+/* ==========================================================
+   DATE PARSER
+========================================================== */
+
+function getTimestamp(
+    value
+) {
+
+    if (!value) {
+        return 0;
+    }
+
+
+    const text =
+        String(value)
+            .trim()
+            .replace(
+                " ",
+                "T"
+            );
+
+
+    const timestamp =
+        new Date(text).getTime();
+
+
+    if (
+        Number.isNaN(
+            timestamp
+        )
+    ) {
+
+        return 0;
+
+    }
+
+
+    return timestamp;
+
+}
+
+
+/* ==========================================================
+   LOAD ALERTS
+========================================================== */
+
+async function loadAlerts() {
+
+    const data =
+        await apiFetch(
+            "/api/alerts"
+        );
+
+
+    if (!data) {
+
+        document.getElementById(
+            "alertList"
+        ).innerHTML = `
+
+            <div class="empty">
+                Alert API unavailable
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    alerts =
+        Array.isArray(data)
+            ? data
+            : (
+                data.alerts ||
+                data.data ||
+                []
+            );
+
+
+    alerts.sort(
+        (a, b) =>
+            getTimestamp(
+                b.timestamp
+            )
+            -
+            getTimestamp(
+                a.timestamp
+            )
+    );
+
+
+    updateAlertSummary();
+
+    renderAlerts();
+
+}
+
+
+/* ==========================================================
+   LOAD SNAPSHOTS
+========================================================== */
+
+async function loadSnapshots() {
+
+    /*
+     * Snapshot listing is only a fallback for old incidents.
+     *
+     * New incidents use the exact snapshot path stored
+     * inside the incident itself.
+     */
+
+    const data =
+        await apiFetch(
+            "/api/snapshots"
+        );
+
+
+    if (!data) {
+
+        snapshots = [];
+
+        return;
+
+    }
+
+
+    snapshots =
+        Array.isArray(data)
+            ? data
+            : (
+                data.snapshots ||
+                data.data ||
+                []
+            );
+
+
+    snapshots.sort(
+        (a, b) =>
+            getTimestamp(
+                b.timestamp
+            )
+            -
+            getTimestamp(
+                a.timestamp
+            )
+    );
+
+}
+
+
+/* ==========================================================
+   ALERT SUMMARY
+========================================================== */
+
+function updateAlertSummary() {
+
+    const warnings =
+        alerts.filter(
+            alert =>
+                String(
+                    alert.risk || ""
+                ).toUpperCase()
+                === "WARNING"
+        ).length;
+
+
+    const critical =
+        alerts.filter(
+            alert =>
+                String(
+                    alert.risk || ""
+                ).toUpperCase()
+                === "CRITICAL"
+        ).length;
+
+
+    document.getElementById(
+        "totalAlerts"
+    ).textContent =
+        alerts.length;
+
+
+    document.getElementById(
+        "warningAlerts"
+    ).textContent =
+        warnings;
+
+
+    document.getElementById(
+        "criticalAlerts"
+    ).textContent =
+        critical;
+
+
+    document.getElementById(
+        "alertCount"
+    ).textContent =
+        alerts.length +
+        (
+            alerts.length === 1
+                ? " alert"
+                : " alerts"
+        );
+
+}
+
+
+/* ==========================================================
+   FILTER
+========================================================== */
+
+function getFilteredAlerts() {
+
+    const risk =
+        document.getElementById(
+            "riskFilter"
+        ).value;
+
+
+    const zone =
+        document.getElementById(
+            "zoneFilter"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    return alerts.filter(
+        alert => {
+
+            const alertRisk =
+                String(
+                    alert.risk || ""
+                ).toUpperCase();
+
+
+            if (
+                risk !== "ALL" &&
+                alertRisk !== risk
+            ) {
+
+                return false;
+
+            }
+
+
+            if (
+                zone &&
+                String(
+                    alert.zone_id || ""
+                )
+                .toLowerCase()
+                .indexOf(zone) === -1
+            ) {
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   RENDER ALERTS
+========================================================== */
+
+function renderAlerts() {
+
+    const container =
+        document.getElementById(
+            "alertList"
+        );
+
+
+    const filtered =
+        getFilteredAlerts();
+
+
+    if (!filtered.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+                No alerts match the selected filters.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    filtered
+        .slice(0, 50)
+        .forEach(
+            alert => {
+
+                const risk =
+                    String(
+                        alert.risk ||
+                        "WARNING"
+                    ).toUpperCase();
+
+
+                const alertId =
+                    alert.alert_id ||
+                    alert.id ||
+                    "";
+
+
+                const status =
+                    String(
+                        alert.status ||
+                        "OPEN"
+                    ).toUpperCase();
+
+
+                const element =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                element.className =
+                    "alert-item " +
+                    risk.toLowerCase();
+
+
+                element.innerHTML = `
+
+                    <div>
+
+                        <div class="alert-title">
+
+                            Zone
+                            ${escapeHtml(
+                                alert.zone_id ||
+                                "UNKNOWN"
+                            )}
+
+                            <div class="alert-id">
+
+                                Alert ID:
+                                ${escapeHtml(
+                                    alertId ||
+                                    "-"
+                                )}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="alert-meta">
+
+                            Time:
+                            ${escapeHtml(
+                                alert.timestamp ||
+                                "-"
+                            )}
+
+                            <br>
+
+                            Camera:
+                            ${escapeHtml(
+                                alert.camera_id ||
+                                "-"
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <span
+                            class="
+                                risk-badge
+                                ${risk.toLowerCase()}
+                            "
+                        >
+                            ${escapeHtml(
+                                risk
+                            )}
+                        </span>
+
+
+                        <div
+                            class="alert-meta"
+                            style="margin-top:7px;"
+                        >
+
+                            People:
+                            ${alert.people ?? 0}
+
+                            <br>
+
+                            Density:
+                            ${Number(
+                                alert.density || 0
+                            ).toFixed(2)}
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="alert-meta">
+
+                            ${
+                                alert.special_type
+                                    ? `
+                                        Special area:
+                                        ${escapeHtml(
+                                            alert.special_type
+                                        )}
+                                      `
+                                    : "Normal zone"
+                            }
+
+                        </div>
+
+
+                        <div
+                            class="alert-meta"
+                            style="margin-top:5px;"
+                        >
+
+                            ${
+                                alert.message
+                                    ? escapeHtml(
+                                        alert.message
+                                    )
+                                    : "Crowd density threshold exceeded."
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        ${
+                            status === "ACKNOWLEDGED"
+                                ? `
+                                    <button
+                                        class="
+                                            action-button
+                                            acknowledged
+                                        "
+                                        disabled
+                                    >
+                                        Acknowledged
+                                    </button>
+                                  `
+                                : `
+                                    <button
+                                        class="action-button"
+                                        onclick="
+                                            acknowledgeAlert(
+                                                '${escapeJs(
+                                                    alertId
+                                                )}'
+                                            )
+                                        "
+                                    >
+                                        Acknowledge
+                                    </button>
+                                  `
+                        }
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    element
+                );
+
+            }
+        );
+
+}
+
+
+/* ==========================================================
+   LOAD INCIDENTS
+========================================================== */
+
+async function loadIncidents() {
+
+    const data =
+        await apiFetch(
+            "/api/incidents"
+        );
+
+
+    if (!data) {
+
+        document.getElementById(
+            "incidentTable"
+        ).innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="8"
+                    class="empty"
+                >
+                    Incident API unavailable
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    incidents =
+        Array.isArray(data)
+            ? data
+            : (
+                data.incidents ||
+                data.data ||
+                []
+            );
+
+
+    incidents.sort(
+        (a, b) => {
+
+            const timeDifference =
+                getTimestamp(
+                    b.timestamp
+                )
+                -
+                getTimestamp(
+                    a.timestamp
+                );
+
+
+            if (
+                timeDifference !== 0
+            ) {
+
+                return timeDifference;
+
+            }
+
+
+            const aId =
+                parseInt(
+                    String(
+                        a.incident_id ||
+                        a.id ||
+                        ""
+                    ).replace(
+                        /\D/g,
+                        ""
+                    ),
+                    10
+                ) || 0;
+
+
+            const bId =
+                parseInt(
+                    String(
+                        b.incident_id ||
+                        b.id ||
+                        ""
+                    ).replace(
+                        /\D/g,
+                        ""
+                    ),
+                    10
+                ) || 0;
+
+
+            return bId - aId;
+
+        }
+    );
+
+
+    document.getElementById(
+        "totalIncidents"
+    ).textContent =
+        incidents.length;
+
+
+    document.getElementById(
+        "incidentCount"
+    ).textContent =
+        incidents.length +
+        (
+            incidents.length === 1
+                ? " incident"
+                : " incidents"
+        );
+
+
+    renderIncidents();
+
+}
+
+
+/* ==========================================================
+   EXTRACT SNAPSHOT FILENAME
+========================================================== */
+
+function extractSnapshotFilename(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return null;
+
+    }
+
+
+    const text =
+        String(value)
+            .replace(
+                /\\/g,
+                "/"
+            )
+            .trim();
+
+
+    if (!text) {
+
+        return null;
+
+    }
+
+
+    const filename =
+        text
+            .split("/")
+            .pop()
+            .trim();
+
+
+    if (!filename) {
+
+        return null;
+
+    }
+
+
+    const lower =
+        filename.toLowerCase();
+
+
+    if (
+        lower.endsWith(".jpg") ||
+        lower.endsWith(".jpeg") ||
+        lower.endsWith(".png")
+    ) {
+
+        return filename;
+
+    }
+
+
+    return null;
+
+}
+
+
+/* ==========================================================
+   FIND SNAPSHOT FOR INCIDENT
+========================================================== */
+
+function findSnapshotForIncident(
+    incident
+) {
+
+    /*
+     * ======================================================
+     * DIRECT METHOD
+     *
+     * Use the exact snapshot filename already stored
+     * with the incident.
+     * ======================================================
+     */
+
+    const directFields = [
+
+        incident.snapshot_path,
+
+        incident.snapshot,
+
+        incident.snapshot_file,
+
+        incident.snapshot_filename,
+
+        incident.file_path,
+
+        incident.filename
+
+    ];
+
+
+    for (
+        const field of directFields
+    ) {
+
+        const filename =
+            extractSnapshotFilename(
+                field
+            );
+
+
+        if (filename) {
+
+            return {
+
+                filename:
+                    filename,
+
+                timestamp:
+                    incident.timestamp || ""
+
+            };
+
+        }
+
+    }
+
+
+    /*
+     * ======================================================
+     * FALLBACK
+     *
+     * Some current incident records are showing the
+     * snapshot path in the status field.
+     *
+     * If status contains a JPG/JPEG/PNG path, use it as
+     * the snapshot but do NOT treat it as the status.
+     * ======================================================
+     */
+
+    const statusSnapshot =
+        extractSnapshotFilename(
+            incident.status
+        );
+
+
+    if (statusSnapshot) {
+
+        return {
+
+            filename:
+                statusSnapshot,
+
+            timestamp:
+                incident.timestamp || ""
+
+        };
+
+    }
+
+
+    /*
+     * ======================================================
+     * OLD INCIDENT FALLBACK
+     * ======================================================
+     */
+
+    if (!snapshots.length) {
+
+        return null;
+
+    }
+
+
+    const zone =
+        String(
+            incident.zone_id ||
+            ""
+        )
+        .trim()
+        .toUpperCase();
+
+
+    const risk =
+        String(
+            incident.risk ||
+            ""
+        )
+        .trim()
+        .toUpperCase();
+
+
+    if (!zone || !risk) {
+
+        return null;
+
+    }
+
+
+    const candidates =
+        snapshots.filter(
+            snapshot => {
+
+                const filename =
+                    String(
+                        snapshot.filename ||
+                        ""
+                    )
+                    .toUpperCase();
+
+
+                const zoneMatch =
+                    filename.includes(
+                        "ZONE_" +
+                        zone +
+                        "_"
+                    );
+
+
+                const riskMatch =
+                    filename.endsWith(
+                        "_" +
+                        risk +
+                        ".JPG"
+                    )
+                    ||
+                    filename.endsWith(
+                        "_" +
+                        risk +
+                        ".JPEG"
+                    )
+                    ||
+                    filename.endsWith(
+                        "_" +
+                        risk +
+                        ".PNG"
+                    );
+
+
+                return (
+                    zoneMatch &&
+                    riskMatch
+                );
+
+            }
+        );
+
+
+    if (!candidates.length) {
+
+        return null;
+
+    }
+
+
+    const incidentTime =
+        getTimestamp(
+            incident.timestamp
+        );
+
+
+    if (!incidentTime) {
+
+        return candidates[0];
+
+    }
+
+
+    let bestSnapshot = null;
+
+    let bestDifference = Infinity;
+
+
+    candidates.forEach(
+        candidate => {
+
+            const snapshotTime =
+                getTimestamp(
+                    candidate.timestamp
+                );
+
+
+            if (!snapshotTime) {
+
+                return;
+
+            }
+
+
+            const difference =
+                Math.abs(
+                    snapshotTime -
+                    incidentTime
+                );
+
+
+            if (
+                difference <
+                bestDifference
+            ) {
+
+                bestDifference =
+                    difference;
+
+                bestSnapshot =
+                    candidate;
+
+            }
+
+        }
+    );
+
+
+    if (!bestSnapshot) {
+
+        return candidates[0];
+
+    }
+
+
+    if (
+        bestDifference >
+        10 * 60 * 1000
+    ) {
+
+        return null;
+
+    }
+
+
+    return bestSnapshot;
+
+}
+
+
+/* ==========================================================
+   GET REAL INCIDENT STATUS
+========================================================== */
+
+function getIncidentStatus(
+    incident
+) {
+
+    const rawStatus =
+        String(
+            incident.status ||
+            ""
+        )
+        .trim();
+
+
+    /*
+     * If the status field contains the snapshot filename,
+     * then that value is NOT the real incident status.
+     *
+     * Use OPEN as the display status.
+     */
+
+    const statusSnapshot =
+        extractSnapshotFilename(
+            rawStatus
+        );
+
+
+    if (statusSnapshot) {
+
+        return "OPEN";
+
+    }
+
+
+    const normalized =
+        rawStatus.toUpperCase();
+
+
+    if (
+        normalized === "OPEN" ||
+        normalized === "ACKNOWLEDGED" ||
+        normalized === "CLOSED"
+    ) {
+
+        return normalized;
+
+    }
+
+
+    return "OPEN";
+
+}
+
+
+/* ==========================================================
+   RENDER INCIDENTS
+========================================================== */
+
+function renderIncidents() {
+
+    const table =
+        document.getElementById(
+            "incidentTable"
+        );
+
+
+    if (!incidents.length) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="8"
+                    class="empty"
+                >
+                    No incidents recorded.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    table.innerHTML = "";
+
+
+    incidents
+        .slice(0, 100)
+        .forEach(
+            incident => {
+
+                const risk =
+                    String(
+                        incident.risk ||
+                        "WARNING"
+                    ).toUpperCase();
+
+
+                const status =
+                    getIncidentStatus(
+                        incident
+                    );
+
+
+                const realSnapshot =
+                    findSnapshotForIncident(
+                        incident
+                    );
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+
+                        ${escapeHtml(
+                            incident.incident_id ||
+                            incident.id ||
+                            "-"
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${escapeHtml(
+                            incident.alert_id ||
+                            "-"
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${escapeHtml(
+                            incident.timestamp ||
+                            "-"
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="
+                                risk-badge
+                                ${risk.toLowerCase()}
+                            "
+                        >
+
+                            ${escapeHtml(
+                                risk
+                            )}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        ${escapeHtml(
+                            incident.zone_id ||
+                            "-"
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${escapeHtml(
+                            incident.camera_id ||
+                            "-"
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="
+                                status-badge
+                                status-${status.toLowerCase()}
+                            "
+                        >
+
+                            ${escapeHtml(
+                                status
+                            )}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        ${
+                            realSnapshot
+                                ? `
+                                    <span
+                                        class="snapshot"
+                                        onclick="
+                                            showSnapshot(
+                                                '${escapeJs(
+                                                    realSnapshot.filename
+                                                )}'
+                                            )
+                                        "
+                                    >
+                                        View
+                                    </span>
+                                  `
+                                : `
+                                    <span class="no-snapshot">
+                                        No snapshot
+                                    </span>
+                                  `
+                        }
+
+                    </td>
+
+                `;
+
+
+                table.appendChild(
+                    row
+                );
+
+            }
+        );
+
+}
+
+
+/* ==========================================================
+   ACKNOWLEDGE ALERT
+========================================================== */
+
+async function acknowledgeAlert(
+    alertId
+) {
+
+    if (!alertId) {
+
+        showMessage(
+            "Alert ID not available",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const result =
+        await apiFetch(
+            "/api/alerts/" +
+            encodeURIComponent(
+                alertId
+            ) +
+            "/acknowledge",
+            {
+                method: "POST"
+            }
+        );
+
+
+    if (!result) {
+
+        showMessage(
+            "Alert acknowledgement failed",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        result.success === false
+    ) {
+
+        showMessage(
+            result.error ||
+            "Alert acknowledgement failed",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    showMessage(
+        "Alert " +
+        alertId +
+        " acknowledged",
+        "success"
+    );
+
+
+    await refreshAll();
+
+}
+
+
+/* ==========================================================
+   SHOW SNAPSHOT
+========================================================== */
+
+function showSnapshot(
+    filename
+) {
+
+    if (!filename) {
+
+        showMessage(
+            "Snapshot not available",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const cleanFilename =
+        extractSnapshotFilename(
+            filename
+        );
+
+
+    if (!cleanFilename) {
+
+        showMessage(
+            "Invalid snapshot filename",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const url =
+        "/snapshots/" +
+        encodeURIComponent(
+            cleanFilename
+        );
+
+
+    const imageWindow =
+        window.open(
+            url,
+            "_blank"
+        );
+
+
+    if (!imageWindow) {
+
+        showMessage(
+            "Browser blocked the snapshot window. Allow pop-ups for CrowdSense.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   REFRESH ALL
+========================================================== */
+
+async function refreshAll() {
+
+    await Promise.all(
+        [
+            loadAlerts(),
+            loadSnapshots(),
+            loadIncidents()
+        ]
+    );
+
+
+    renderIncidents();
+
+}
+
+
+/* ==========================================================
+   DASHBOARD
+========================================================== */
+
+function goDashboard() {
+
+    window.location.href = "/";
+
+}
+
+
+/* ==========================================================
+   FILTER EVENTS
+========================================================== */
+
+document.getElementById(
+    "riskFilter"
+).addEventListener(
+    "change",
+    renderAlerts
+);
+
+
+document.getElementById(
+    "zoneFilter"
+).addEventListener(
+    "input",
+    renderAlerts
+);
+
+
+/* ==========================================================
+   MESSAGE
+========================================================== */
+
+function showMessage(
+    text,
+    type
+) {
+
+    const element =
+        document.getElementById(
+            "message"
+        );
+
+
+    element.textContent =
+        text;
+
+
+    element.className =
+        type;
+
+
+    element.style.display =
+        "block";
+
+
+    setTimeout(
+        function() {
+
+            element.style.display =
+                "none";
+
+        },
+        2500
+    );
+
+}
+
+
+/* ==========================================================
+   SECURITY HELPERS
+========================================================== */
+
+function escapeHtml(
+    value
+) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function escapeJs(
+    value
+) {
+
+    return String(value)
+
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+
+        .replace(
+            /'/g,
+            "\\'"
+        );
+
+}
+
+
+/* ==========================================================
+   START
+========================================================== */
+
+refreshAll();
+
+
+/*
+ * Automatically refresh alerts and incidents.
+ */
+
+setInterval(
+    refreshAll,
+    3000
+);
+
+
+</script>
+
+
+</body>
+
+</html>

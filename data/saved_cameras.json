@@ -1,0 +1,10 @@
+[
+    {
+        "name": "iphone3",
+        "source": "http://172.16.9.185:8080/stream.mjpg"
+    },
+    {
+        "name": "iphone4",
+        "source": "http://172.16.9.32:8080/stream.mjpg"
+    }
+]

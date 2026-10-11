@@ -1,0 +1,144 @@
+{
+    "report_id": "20260929_183007",
+    "generated_at": "2026-09-29 18:30:07",
+    "venue": {
+        "name": "Room",
+        "capacity": 2,
+        "shape": "rectangle",
+        "length": 10.0,
+        "width": 10.0,
+        "diameter": 0
+    },
+    "session": {
+        "session_id": "SESSION86",
+        "venue": "Room",
+        "capacity": 2,
+        "cameras": [
+            {
+                "camera_id": "CAMERA1",
+                "source": "0",
+                "enabled": true
+            }
+        ],
+        "start_time": "2026-09-29 18:29:41",
+        "end_time": null,
+        "duration_seconds": 21,
+        "status": "ACTIVE",
+        "peak_people": 1,
+        "average_people": 1.0,
+        "peak_occupancy": 50.0,
+        "warning_events": 0,
+        "critical_events": 0,
+        "total_updates": 4,
+        "last_people": 1,
+        "last_update": "2026-09-29 18:30:02",
+        "report_log_records": 16,
+        "report_alerts": 0,
+        "report_incidents": 0
+    },
+    "analytics": {
+        "venue": "Room",
+        "capacity": 2,
+        "time_range": {
+            "start_time": "2026-09-29 18:29:46",
+            "end_time": "2026-09-29 18:30:02",
+            "duration_seconds": 16
+        },
+        "people": {
+            "peak_people": 1,
+            "average_people": 1.0,
+            "minimum_people": 1,
+            "total_records": 4
+        },
+        "occupancy": {
+            "peak_occupancy": 50.0,
+            "average_occupancy": 50.0,
+            "minimum_occupancy": 50.0
+        },
+        "density": {
+            "peak_density": 0.04,
+            "average_density": 0.01,
+            "minimum_density": 0.0
+        },
+        "risk": {
+            "safe_records": 4,
+            "warning_records": 0,
+            "critical_records": 0
+        },
+        "alerts": {
+            "warning": 0,
+            "critical": 0,
+            "total": 0
+        },
+        "incidents": {
+            "warning": 0,
+            "critical": 0,
+            "total": 0
+        },
+        "zones": {
+            "A1": {
+                "zone_id": "A1",
+                "people": 0,
+                "density": 0.0,
+                "risk": "SAFE",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 4
+            },
+            "A2": {
+                "zone_id": "A2",
+                "people": 0,
+                "density": 0.0,
+                "risk": "SAFE",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 4
+            },
+            "B1": {
+                "zone_id": "B1",
+                "people": 1,
+                "density": 0.04,
+                "risk": "SAFE",
+                "peak_people": 1,
+                "peak_density": 0.04,
+                "average_people": 1.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 4
+            },
+            "B2": {
+                "zone_id": "B2",
+                "people": 0,
+                "density": 0.0,
+                "risk": "SAFE",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 4
+            }
+        },
+        "most_crowded_zone": {
+            "zone_id": "B1",
+            "people": 1,
+            "density": 0.04,
+            "risk": "SAFE",
+            "peak_people": 1,
+            "peak_density": 0.04,
+            "average_people": 1.0,
+            "warning_records": 0,
+            "critical_records": 0,
+            "records": 4
+        }
+    },
+    "alerts": [],
+    "incidents": [],
+    "log_records": 16
+}

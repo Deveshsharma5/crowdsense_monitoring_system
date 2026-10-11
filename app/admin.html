@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CrowdSense - Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #050805;
+            color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        header {
+            background: #0b120d;
+            border-bottom: 1px solid #1f3b26;
+            padding: 18px 25px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .title {
+            color: #32ff6a;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #9ca89f;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #d9e0da;
+            background: #111a13;
+            border: 1px solid #243d29;
+            padding: 9px 13px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        nav a:hover {
+            border-color: #32ff6a;
+            color: #32ff6a;
+        }
+
+        nav a.active {
+            background: #12351c;
+            border-color: #32ff6a;
+            color: #32ff6a;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .section {
+            background: #0b120d;
+            border: 1px solid #1d3623;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: #32ff6a;
+        }
+
+        .section h3 {
+            color: #ffffff;
+            margin-top: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        label {
+            color: #aab4ac;
+            font-size: 13px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            background: #050805;
+            color: #ffffff;
+            border: 1px solid #29432e;
+            border-radius: 6px;
+            padding: 11px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #32ff6a;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        button {
+            border: none;
+            border-radius: 6px;
+            padding: 10px 17px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .green {
+            background: #32ff6a;
+            color: #031007;
+        }
+
+        .green:hover {
+            background: #20d653;
+        }
+
+        .yellow {
+            background: #ffd43b;
+            color: #111111;
+        }
+
+        .red {
+            background: #ff3b3b;
+            color: #ffffff;
+        }
+
+        .dark {
+            background: #17221a;
+            color: #ffffff;
+            border: 1px solid #29432e;
+        }
+
+        .danger-box {
+            border: 1px solid #7b2525;
+            background: #180b0b;
+        }
+
+        .danger-box h2 {
+            color: #ff3b3b;
+        }
+
+        .status-box {
+            padding: 15px;
+            border-radius: 7px;
+            background: #070b08;
+            border: 1px solid #1c3021;
+            margin-top: 15px;
+        }
+
+        .status-ready {
+            color: #32ff6a;
+        }
+
+        .status-warning {
+            color: #ffd43b;
+        }
+
+        .status-danger {
+            color: #ff3b3b;
+        }
+
+        .info {
+            color: #8e9c91;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .message {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+            font-size: 13px;
+        }
+
+        .success-message {
+            display: block;
+            color: #32ff6a;
+            background: #0c2413;
+            border: 1px solid #245d32;
+        }
+
+        .error-message {
+            display: block;
+            color: #ff3b3b;
+            background: #250c0c;
+            border: 1px solid #6b2222;
+        }
+
+        .mode-card {
+            border: 1px solid #263c2b;
+            background: #070b08;
+            padding: 18px;
+            border-radius: 8px;
+        }
+
+        .mode-card h3 {
+            color: #32ff6a;
+        }
+
+        .mode-card p {
+            color: #929d95;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 800px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 15px;
+            }
+
+            header {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div>
+        <div class="title">CROWDSENSE</div>
+        <div class="subtitle">Administrator Control Panel</div>
+    </div>
+
+    <nav>
+        <a href="/">Dashboard</a>
+        <a href="/cameras">Cameras</a>
+        <a href="/venue">Venue</a>
+        <a href="/zones">Zones</a>
+        <a href="/alerts">Alerts</a>
+        <a href="/analytics">Analytics</a>
+        <a href="/session">Session</a>
+        <a href="/admin" class="active">Admin</a>
+    </nav>
+
+</header>
+
+
+<main>
+
+
+    <!-- SYSTEM STATUS -->
+
+    <div class="section">
+
+        <h2>System Status</h2>
+
+        <div class="grid">
+
+            <div class="field">
+
+                <label>
+                    Current System Status
+                </label>
+
+                <div
+                    id="systemStatus"
+                    class="status-box status-ready"
+                >
+                    Loading...
+                </div>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Current Risk
+                </label>
+
+                <div
+                    id="riskStatus"
+                    class="status-box"
+                >
+                    Loading...
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MONITORING SETTINGS -->
+
+    <div class="section">
+
+        <h2>Monitoring Settings</h2>
+
+        <div class="grid">
+
+            <div class="field">
+
+                <label for="cameraSource">
+                    Default Camera Source
+                </label>
+
+                <input
+                    id="cameraSource"
+                    type="text"
+                    placeholder="0 or camera URL"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="testMultiplier">
+                    Test Multiplier
+                </label>
+
+                <input
+                    id="testMultiplier"
+                    type="number"
+                    min="1"
+                    value="1"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="warningThreshold">
+                    Warning Threshold (%)
+                </label>
+
+                <input
+                    id="warningThreshold"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value="70"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="criticalThreshold">
+                    Critical Threshold (%)
+                </label>
+
+                <input
+                    id="criticalThreshold"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value="90"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="button-row">
+
+            <button
+                class="green"
+                onclick="saveSettings()"
+            >
+                Save Settings
+            </button>
+
+            <button
+                class="dark"
+                onclick="loadStatus()"
+            >
+                Reload
+            </button>
+
+        </div>
+
+        <div
+            id="settingsMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <!-- ADMIN MODES -->
+
+    <div class="section">
+
+        <h2>System Modes</h2>
+
+        <div class="grid">
+
+            <div class="mode-card">
+
+                <h3>Monitoring Mode</h3>
+
+                <p>
+                    Main CrowdSense operating mode.
+                    The system processes camera feeds,
+                    detects people, calculates occupancy,
+                    evaluates zones and generates safety alerts.
+                </p>
+
+                <button
+                    class="green"
+                    onclick="startMonitoring()"
+                >
+                    Start Monitoring
+                </button>
+
+            </div>
+
+
+            <div class="mode-card">
+
+                <h3>Calibration Mode</h3>
+
+                <p>
+                    Configure the camera perspective and
+                    map camera coordinates to the venue
+                    floor area.
+                </p>
+
+                <button
+                    class="yellow"
+                    onclick="openCalibration()"
+                >
+                    Open Calibration
+                </button>
+
+            </div>
+
+
+            <div class="mode-card">
+
+                <h3>Grid / Zone Mode</h3>
+
+                <p>
+                    Display the physical venue zones and
+                    monitor people distribution across
+                    each zone.
+                </p>
+
+                <button
+                    class="dark"
+                    onclick="openZones()"
+                >
+                    Open Zones
+                </button>
+
+            </div>
+
+
+            <div class="mode-card">
+
+                <h3>Alert Management</h3>
+
+                <p>
+                    Review warnings, critical events,
+                    incidents and generated snapshots.
+                </p>
+
+                <button
+                    class="red"
+                    onclick="openAlerts()"
+                >
+                    Open Alerts
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- LOCAL SYSTEM INFORMATION -->
+
+    <div class="section">
+
+        <h2>Local System</h2>
+
+        <div class="info">
+
+            CrowdSense is designed to operate locally.
+            Camera feeds, monitoring information and
+            generated records remain on the local system
+            unless an external network feature is
+            intentionally configured.
+
+            <br><br>
+
+            Current dashboard server:
+
+            <strong id="serverAddress">
+                http://localhost:5000
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- DANGER AREA -->
+
+    <div class="section danger-box">
+
+        <h2>Danger Zone</h2>
+
+        <p class="info">
+            These controls affect the local monitoring
+            system. Use them only when required.
+        </p>
+
+        <div class="button-row">
+
+            <button
+                class="red"
+                onclick="stopMonitoring()"
+            >
+                Stop Monitoring
+            </button>
+
+            <button
+                class="dark"
+                onclick="resetLocalView()"
+            >
+                Reset Page
+            </button>
+
+        </div>
+
+        <div
+            id="dangerMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+
+</main>
+
+
+<script>
+
+/* --------------------------------
+   MESSAGE
+-------------------------------- */
+
+function showMessage(
+    elementId,
+    message,
+    success = true
+) {
+
+    const element =
+        document.getElementById(elementId);
+
+    element.textContent = message;
+
+    element.className =
+        success
+            ? "message success-message"
+            : "message error-message";
+
+}
+
+
+/* --------------------------------
+   LOAD STATUS
+-------------------------------- */
+
+async function loadStatus() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/status",
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+            throw new Error(
+                "Status API returned " +
+                response.status
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const system =
+            data.system ||
+            "UNKNOWN";
+
+
+        const risk =
+            data.risk ||
+            "SAFE";
+
+
+        document.getElementById(
+            "systemStatus"
+        ).textContent =
+            String(system).toUpperCase();
+
+
+        document.getElementById(
+            "systemStatus"
+        ).className =
+            "status-box " +
+            systemClass(system);
+
+
+        document.getElementById(
+            "riskStatus"
+        ).textContent =
+            String(risk).toUpperCase();
+
+
+        document.getElementById(
+            "riskStatus"
+        ).className =
+            "status-box " +
+            riskClass(risk);
+
+
+        if (data.camera_source !== undefined) {
+
+            document.getElementById(
+                "cameraSource"
+            ).value =
+                data.camera_source;
+
+        }
+
+
+        if (data.test_multiplier !== undefined) {
+
+            document.getElementById(
+                "testMultiplier"
+            ).value =
+                data.test_multiplier;
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "systemStatus"
+        ).textContent =
+            "OFFLINE";
+
+        document.getElementById(
+            "systemStatus"
+        ).className =
+            "status-box status-danger";
+
+    }
+
+}
+
+
+/* --------------------------------
+   STATUS CLASSES
+-------------------------------- */
+
+function systemClass(status) {
+
+    status =
+        String(status)
+        .toUpperCase();
+
+    if (
+        status === "READY" ||
+        status === "RUNNING" ||
+        status === "MONITORING"
+    ) {
+        return "status-ready";
+    }
+
+    if (
+        status === "WARNING" ||
+        status === "CALIBRATION"
+    ) {
+        return "status-warning";
+    }
+
+    return "status-danger";
+}
+
+
+function riskClass(risk) {
+
+    risk =
+        String(risk)
+        .toUpperCase();
+
+    if (risk === "CRITICAL") {
+        return "status-danger";
+    }
+
+    if (
+        risk === "WARNING" ||
+        risk === "MODERATE"
+    ) {
+        return "status-warning";
+    }
+
+    return "status-ready";
+}
+
+
+/* --------------------------------
+   SAVE SETTINGS
+-------------------------------- */
+
+function saveSettings() {
+
+    /*
+        The final backend integration will
+        persist these values into the
+        CrowdSense configuration.
+
+        For now we keep them locally so
+        the admin interface is functional.
+    */
+
+    const settings = {
+
+        camera_source:
+            document.getElementById(
+                "cameraSource"
+            ).value.trim(),
+
+        test_multiplier:
+            Number(
+                document.getElementById(
+                    "testMultiplier"
+                ).value
+            ),
+
+        warning_threshold:
+            Number(
+                document.getElementById(
+                    "warningThreshold"
+                ).value
+            ),
+
+        critical_threshold:
+            Number(
+                document.getElementById(
+                    "criticalThreshold"
+                ).value
+            )
+
+    };
+
+
+    localStorage.setItem(
+        "crowdsense_admin_settings",
+        JSON.stringify(settings)
+    );
+
+
+    showMessage(
+        "settingsMessage",
+        "Settings saved locally.",
+        true
+    );
+
+}
+
+
+/* --------------------------------
+   LOAD LOCAL SETTINGS
+-------------------------------- */
+
+function loadLocalSettings() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "crowdsense_admin_settings"
+            );
+
+
+        if (!saved) {
+            return;
+        }
+
+
+        const settings =
+            JSON.parse(saved);
+
+
+        if (
+            settings.camera_source !== undefined
+        ) {
+
+            document.getElementById(
+                "cameraSource"
+            ).value =
+                settings.camera_source;
+
+        }
+
+
+        if (
+            settings.test_multiplier !== undefined
+        ) {
+
+            document.getElementById(
+                "testMultiplier"
+            ).value =
+                settings.test_multiplier;
+
+        }
+
+
+        if (
+            settings.warning_threshold !== undefined
+        ) {
+
+            document.getElementById(
+                "warningThreshold"
+            ).value =
+                settings.warning_threshold;
+
+        }
+
+
+        if (
+            settings.critical_threshold !== undefined
+        ) {
+
+            document.getElementById(
+                "criticalThreshold"
+            ).value =
+                settings.critical_threshold;
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* --------------------------------
+   NAVIGATION
+-------------------------------- */
+
+function startMonitoring() {
+
+    showMessage(
+        "dangerMessage",
+        "Monitoring controls will be connected during final backend integration.",
+        true
+    );
+
+}
+
+
+function stopMonitoring() {
+
+    showMessage(
+        "dangerMessage",
+        "Stop control will be connected during final backend integration.",
+        true
+    );
+
+}
+
+
+function openCalibration() {
+
+    window.location.href =
+        "/calibration";
+
+}
+
+
+function openZones() {
+
+    window.location.href =
+        "/zones";
+
+}
+
+
+function openAlerts() {
+
+    window.location.href =
+        "/alerts";
+
+}
+
+
+function resetLocalView() {
+
+    if (
+        !confirm(
+            "Reset the saved admin page settings?"
+        )
+    ) {
+        return;
+    }
+
+
+    localStorage.removeItem(
+        "crowdsense_admin_settings"
+    );
+
+
+    location.reload();
+
+}
+
+
+/* --------------------------------
+   START
+-------------------------------- */
+
+loadLocalSettings();
+
+loadStatus();
+
+
+/*
+    Keep status updated.
+*/
+
+setInterval(
+    loadStatus,
+    5000
+);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CrowdSense - Venue Configuration</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            background: #050505;
+
+            color: white;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            min-height: 100vh;
+        }
+
+
+        header {
+
+            height: 72px;
+
+            background: #080808;
+
+            border-bottom:
+                1px solid #202020;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 28px;
+        }
+
+
+        .logo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .logo-icon {
+
+            width: 38px;
+
+            height: 38px;
+
+            background: #00ff66;
+
+            color: #000;
+
+            border-radius: 8px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 20px;
+
+            font-weight: bold;
+        }
+
+
+        .logo-text {
+
+            font-size: 22px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+        }
+
+
+        .logo-text span {
+
+            color: #00ff66;
+        }
+
+
+        .back-button {
+
+            background: #111;
+
+            color: #aaa;
+
+            border: 1px solid #333;
+
+            padding: 9px 15px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+        }
+
+
+        .back-button:hover {
+
+            color: white;
+
+            border-color: #00ff66;
+        }
+
+
+        main {
+
+            max-width: 1200px;
+
+            margin: auto;
+
+            padding: 28px;
+        }
+
+
+        .page-header {
+
+            margin-bottom: 22px;
+        }
+
+
+        .page-header h1 {
+
+            font-size: 27px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .page-header p {
+
+            color: #777;
+
+            font-size: 13px;
+        }
+
+
+        .panel {
+
+            background: #0b0b0b;
+
+            border: 1px solid #202020;
+
+            border-radius: 9px;
+
+            padding: 22px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .panel-title {
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            margin-bottom: 18px;
+
+            color: #00ff66;
+        }
+
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 16px;
+        }
+
+
+        .form-group {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+
+        .full {
+
+            grid-column: 1 / -1;
+        }
+
+
+        label {
+
+            color: #888;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .5px;
+        }
+
+
+        input,
+        select {
+
+            width: 100%;
+
+            background: #050505;
+
+            color: white;
+
+            border: 1px solid #333;
+
+            border-radius: 5px;
+
+            padding: 11px;
+
+            outline: none;
+        }
+
+
+        input:focus,
+        select:focus {
+
+            border-color: #00ff66;
+        }
+
+
+        .shape-options {
+
+            display: flex;
+
+            gap: 10px;
+        }
+
+
+        .shape-button {
+
+            flex: 1;
+
+            padding: 12px;
+
+            background: #111;
+
+            color: #888;
+
+            border: 1px solid #333;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+
+        .shape-button.active {
+
+            color: #00ff66;
+
+            border-color: #00ff66;
+
+            background: #102518;
+        }
+
+
+        .circle-fields {
+
+            display: none;
+        }
+
+
+        .circle-fields.active {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+
+        .rectangle-fields {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 16px;
+        }
+
+
+        .threshold-info {
+
+            color: #666;
+
+            font-size: 11px;
+
+            line-height: 1.6;
+
+            margin-top: 5px;
+        }
+
+
+        /* ====================================================
+           SPECIAL AREA
+        ===================================================== */
+
+        .special-area {
+
+            display: grid;
+
+            grid-template-columns:
+                1.2fr
+                1fr
+                1fr
+                1fr
+                1fr
+                auto;
+
+            gap: 8px;
+
+            margin-bottom: 9px;
+
+            align-items: stretch;
+        }
+
+
+        .special-area input {
+
+            min-width: 0;
+        }
+
+
+        .remove-area {
+
+            background: #250909;
+
+            color: #ff3333;
+
+            border: 1px solid #551515;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+            padding: 0 12px;
+        }
+
+
+        .remove-area:hover {
+
+            background: #3a0d0d;
+
+            border-color: #ff3333;
+        }
+
+
+        .add-area {
+
+            background: #151515;
+
+            color: #aaa;
+
+            border: 1px solid #333;
+
+            padding: 9px 14px;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+        }
+
+
+        .add-area:hover {
+
+            border-color: #00ff66;
+
+            color: white;
+        }
+
+
+        .floorplan-box {
+
+            border: 1px dashed #444;
+
+            padding: 20px;
+
+            border-radius: 7px;
+
+            text-align: center;
+
+            color: #777;
+        }
+
+
+        .floorplan-box input {
+
+            margin-top: 12px;
+
+            border: none;
+
+            padding: 0;
+        }
+
+
+        .buttons {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 20px;
+        }
+
+
+        .primary {
+
+            background: #00ff66;
+
+            color: #000;
+
+            border: none;
+
+            padding: 11px 20px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+
+        .secondary {
+
+            background: #151515;
+
+            color: white;
+
+            border: 1px solid #333;
+
+            padding: 11px 20px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+        }
+
+
+        .danger {
+
+            background: #250909;
+
+            color: #ff3333;
+
+            border: 1px solid #551515;
+
+            padding: 9px 14px;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+        }
+
+
+        #message {
+
+            position: fixed;
+
+            right: 25px;
+
+            bottom: 25px;
+
+            background: #111;
+
+            border: 1px solid #333;
+
+            padding: 13px 17px;
+
+            border-radius: 6px;
+
+            display: none;
+
+            font-size: 12px;
+        }
+
+
+        #message.success {
+
+            border-color: #00ff66;
+
+            color: #00ff66;
+        }
+
+
+        #message.error {
+
+            border-color: #ff3333;
+
+            color: #ff3333;
+        }
+
+
+        @media(max-width: 900px) {
+
+            .special-area {
+
+                grid-template-columns:
+                    1fr 1fr 1fr;
+
+            }
+
+            .remove-area {
+
+                padding: 10px;
+
+            }
+
+        }
+
+
+        @media(max-width: 700px) {
+
+            main {
+
+                padding: 18px 14px;
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .full {
+
+                grid-column: auto;
+            }
+
+
+            .rectangle-fields {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .special-area {
+
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            C
+        </div>
+
+        <div class="logo-text">
+            CROWD<span>SENSE</span>
+        </div>
+
+    </div>
+
+
+    <button
+        class="back-button"
+        onclick="goDashboard()"
+    >
+        ← Dashboard
+    </button>
+
+</header>
+
+
+<main>
+
+
+    <div class="page-header">
+
+        <h1>Venue Configuration</h1>
+
+        <p>
+            Configure the physical venue and crowd safety limits.
+        </p>
+
+    </div>
+
+
+    <!-- ====================================================
+         BASIC VENUE
+    ===================================================== -->
+
+    <section class="panel">
+
+        <div class="panel-title">
+            Venue Details
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group full">
+
+                <label>
+                    Venue Name
+                </label>
+
+                <input
+                    id="venueName"
+                    type="text"
+                    placeholder="Main Stadium"
+                >
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label>
+                    Venue Shape
+                </label>
+
+
+                <div class="shape-options">
+
+                    <button
+                        id="rectangleButton"
+                        class="shape-button active"
+                        onclick="selectShape('rectangle')"
+                    >
+                        Rectangle
+                    </button>
+
+
+                    <button
+                        id="circleButton"
+                        class="shape-button"
+                        onclick="selectShape('circle')"
+                    >
+                        Circle
+                    </button>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         DIMENSIONS
+    ===================================================== -->
+
+    <section class="panel">
+
+        <div class="panel-title">
+            Venue Dimensions
+        </div>
+
+
+        <div
+            id="rectangleFields"
+            class="rectangle-fields"
+        >
+
+            <div class="form-group">
+
+                <label>
+                    Length (meters)
+                </label>
+
+                <input
+                    id="length"
+                    type="number"
+                    min="0.1"
+                    step="0.1"
+                    value="20"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Width (meters)
+                </label>
+
+                <input
+                    id="width"
+                    type="number"
+                    min="0.1"
+                    step="0.1"
+                    value="10"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="circleFields"
+            class="circle-fields"
+        >
+
+            <div class="form-group">
+
+                <label>
+                    Diameter (meters)
+                </label>
+
+                <input
+                    id="diameter"
+                    type="number"
+                    min="0.1"
+                    step="0.1"
+                    value="20"
+                >
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         CAPACITY
+    ===================================================== -->
+
+    <section class="panel">
+
+        <div class="panel-title">
+            Crowd Safety Limits
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    Maximum Venue Capacity
+                </label>
+
+                <input
+                    id="capacity"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value="100"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Grid Size (meters)
+                </label>
+
+                <input
+                    id="gridSize"
+                    type="number"
+                    min="0.1"
+                    step="0.1"
+                    value="5"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Warning Threshold (%)
+                </label>
+
+                <input
+                    id="warningThreshold"
+                    type="number"
+                    min="1"
+                    max="100"
+                    step="1"
+                    value="70"
+                >
+
+                <div class="threshold-info">
+                    Zone becomes WARNING when its calculated
+                    occupancy reaches this percentage.
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Critical Threshold (%)
+                </label>
+
+                <input
+                    id="criticalThreshold"
+                    type="number"
+                    min="1"
+                    max="100"
+                    step="1"
+                    value="90"
+                >
+
+                <div class="threshold-info">
+                    Zone becomes CRITICAL when its calculated
+                    occupancy reaches this percentage.
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         SPECIAL AREAS
+    ===================================================== -->
+
+    <section class="panel">
+
+        <div class="panel-title">
+            Special Areas
+        </div>
+
+
+        <div
+            id="specialAreas"
+        ></div>
+
+
+        <button
+            class="add-area"
+            onclick="addSpecialArea()"
+        >
+            + Add Special Area
+        </button>
+
+
+        <div
+            class="threshold-info"
+            style="margin-top:12px;"
+        >
+            Define areas such as entrances, exits, stages,
+            restricted areas or other important locations.
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         FLOOR PLAN
+    ===================================================== -->
+
+    <section class="panel">
+
+        <div class="panel-title">
+            Floor Plan
+        </div>
+
+
+        <div class="floorplan-box">
+
+            <div>
+                Select a local floor-plan image.
+            </div>
+
+            <div
+                style="
+                    font-size:11px;
+                    margin-top:6px;
+                "
+            >
+                PNG, JPG or JPEG
+            </div>
+
+
+            <input
+                id="floorplan"
+                type="file"
+                accept=".png,.jpg,.jpeg"
+            >
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         BUTTONS
+    ===================================================== -->
+
+    <div class="buttons">
+
+        <button
+            class="primary"
+            onclick="saveVenue()"
+        >
+            Save Venue
+        </button>
+
+
+        <button
+            class="secondary"
+            onclick="loadVenue()"
+        >
+            Reload Saved Configuration
+        </button>
+
+    </div>
+
+
+</main>
+
+
+<div id="message"></div>
+
+
+<script>
+
+
+let selectedShape = "rectangle";
+
+
+/* ==========================================================
+   SHAPE
+========================================================== */
+
+function selectShape(
+    shape
+) {
+
+    selectedShape = shape;
+
+
+    const rectangleButton =
+        document.getElementById(
+            "rectangleButton"
+        );
+
+
+    const circleButton =
+        document.getElementById(
+            "circleButton"
+        );
+
+
+    const rectangleFields =
+        document.getElementById(
+            "rectangleFields"
+        );
+
+
+    const circleFields =
+        document.getElementById(
+            "circleFields"
+        );
+
+
+    rectangleButton.classList.remove(
+        "active"
+    );
+
+
+    circleButton.classList.remove(
+        "active"
+    );
+
+
+    if (shape === "rectangle") {
+
+        rectangleButton.classList.add(
+            "active"
+        );
+
+
+        rectangleFields.style.display =
+            "grid";
+
+
+        circleFields.classList.remove(
+            "active"
+        );
+
+    }
+
+    else {
+
+        circleButton.classList.add(
+            "active"
+        );
+
+
+        rectangleFields.style.display =
+            "none";
+
+
+        circleFields.classList.add(
+            "active"
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   SPECIAL AREA
+========================================================== */
+
+function addSpecialArea(
+    area = {}
+) {
+
+    const container =
+        document.getElementById(
+            "specialAreas"
+        );
+
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+
+    row.className =
+        "special-area";
+
+
+    row.innerHTML = `
+
+        <input
+            class="area-type"
+            type="text"
+            placeholder="Type"
+            value="${escapeHtml(
+                area.type || ""
+            )}"
+        >
+
+
+        <input
+            class="area-x"
+            type="number"
+            step="0.1"
+            placeholder="X"
+            value="${area.x ?? 0}"
+        >
+
+
+        <input
+            class="area-y"
+            type="number"
+            step="0.1"
+            placeholder="Y"
+            value="${area.y ?? 0}"
+        >
+
+
+        <input
+            class="area-width"
+            type="number"
+            min="0.1"
+            step="0.1"
+            placeholder="Width"
+            value="${area.width ?? 1}"
+        >
+
+
+        <input
+            class="area-height"
+            type="number"
+            min="0.1"
+            step="0.1"
+            placeholder="Height"
+            value="${area.height ?? 1}"
+        >
+
+
+        <button
+            class="remove-area"
+            onclick="this.parentElement.remove()"
+        >
+            Remove
+        </button>
+
+    `;
+
+
+    container.appendChild(
+        row
+    );
+
+}
+
+
+/* ==========================================================
+   GET SPECIAL AREAS
+========================================================== */
+
+function getSpecialAreas() {
+
+    const rows =
+        document.querySelectorAll(
+            ".special-area"
+        );
+
+
+    const areas = [];
+
+
+    rows.forEach(
+        row => {
+
+            const type =
+                row.querySelector(
+                    ".area-type"
+                ).value.trim();
+
+
+            const x =
+                Number(
+                    row.querySelector(
+                        ".area-x"
+                    ).value || 0
+                );
+
+
+            const y =
+                Number(
+                    row.querySelector(
+                        ".area-y"
+                    ).value || 0
+                );
+
+
+            const width =
+                Number(
+                    row.querySelector(
+                        ".area-width"
+                    ).value || 0
+                );
+
+
+            const height =
+                Number(
+                    row.querySelector(
+                        ".area-height"
+                    ).value || 0
+                );
+
+
+            if (type) {
+
+                areas.push({
+
+                    type: type,
+
+                    x: x,
+
+                    y: y,
+
+                    width: width,
+
+                    height: height
+
+                });
+
+            }
+
+        }
+    );
+
+
+    return areas;
+
+}
+
+
+/* ==========================================================
+   SAVE
+========================================================== */
+
+async function saveVenue() {
+
+    const name =
+        document.getElementById(
+            "venueName"
+        ).value.trim();
+
+
+    const length =
+        Number(
+            document.getElementById(
+                "length"
+            ).value
+        );
+
+
+    const width =
+        Number(
+            document.getElementById(
+                "width"
+            ).value
+        );
+
+
+    const diameter =
+        Number(
+            document.getElementById(
+                "diameter"
+            ).value
+        );
+
+
+    const capacity =
+        Number(
+            document.getElementById(
+                "capacity"
+            ).value
+        );
+
+
+    const warning =
+        Number(
+            document.getElementById(
+                "warningThreshold"
+            ).value
+        );
+
+
+    const critical =
+        Number(
+            document.getElementById(
+                "criticalThreshold"
+            ).value
+        );
+
+
+    const gridSize =
+        Number(
+            document.getElementById(
+                "gridSize"
+            ).value
+        );
+
+
+    if (!name) {
+
+        showMessage(
+            "Enter a venue name",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (capacity <= 0) {
+
+        showMessage(
+            "Capacity must be greater than zero",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        warning <= 0 ||
+        warning > 100 ||
+        critical <= 0 ||
+        critical > 100
+    ) {
+
+        showMessage(
+            "Thresholds must be between 1 and 100",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (warning >= critical) {
+
+        showMessage(
+            "Warning threshold must be lower than critical threshold",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (gridSize <= 0) {
+
+        showMessage(
+            "Grid size must be greater than zero",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        selectedShape === "rectangle" &&
+        (
+            length <= 0 ||
+            width <= 0
+        )
+    ) {
+
+        showMessage(
+            "Enter valid venue dimensions",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        selectedShape === "circle" &&
+        diameter <= 0
+    ) {
+
+        showMessage(
+            "Enter a valid diameter",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Validate special areas.
+     */
+
+    const specialAreas =
+        getSpecialAreas();
+
+
+    for (
+        const area of specialAreas
+    ) {
+
+        if (
+            area.width <= 0 ||
+            area.height <= 0
+        ) {
+
+            showMessage(
+                "Special area width and height must be greater than zero",
+                "error"
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    /*
+     * Store venue configuration.
+     */
+
+    const venue = {
+
+        name: name,
+
+        shape: selectedShape,
+
+        length: length,
+
+        width: width,
+
+        diameter: diameter,
+
+        capacity: capacity,
+
+        warning_threshold: warning,
+
+        critical_threshold: critical,
+
+        grid_size: gridSize,
+
+        zones: [],
+
+        special_areas:
+            specialAreas,
+
+        floorplan: null
+
+    };
+
+
+    const floorplan =
+        document.getElementById(
+            "floorplan"
+        ).files[0];
+
+
+    if (floorplan) {
+
+        venue.floorplan =
+            floorplan.name;
+
+    }
+
+
+    /*
+     * Save through the local API.
+     */
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/venue",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            venue
+                        )
+                }
+            );
+
+
+        if (response.ok) {
+
+            showMessage(
+                "Venue configuration saved",
+                "success"
+            );
+
+            return;
+
+        }
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Venue API not connected:",
+            error
+        );
+
+    }
+
+
+    /*
+     * Temporary local browser copy.
+     */
+
+    localStorage.setItem(
+        "crowdsense_venue",
+        JSON.stringify(
+            venue
+        )
+    );
+
+
+    showMessage(
+        "Venue saved locally",
+        "success"
+    );
+
+}
+
+
+/* ==========================================================
+   LOAD
+========================================================== */
+
+async function loadVenue() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/venue",
+                {
+                    cache:
+                        "no-store"
+                }
+            );
+
+
+        if (response.ok) {
+
+            const data =
+                await response.json();
+
+
+            applyVenue(
+                data.venue ||
+                data.data ||
+                data
+            );
+
+
+            showMessage(
+                "Venue configuration loaded",
+                "success"
+            );
+
+
+            return;
+
+        }
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Venue API unavailable"
+        );
+
+    }
+
+
+    const stored =
+        localStorage.getItem(
+            "crowdsense_venue"
+        );
+
+
+    if (!stored) {
+
+        showMessage(
+            "No saved venue configuration",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        applyVenue(
+            JSON.parse(
+                stored
+            )
+        );
+
+
+        showMessage(
+            "Local venue configuration loaded",
+            "success"
+        );
+
+    }
+
+    catch(error) {
+
+        showMessage(
+            "Could not load venue configuration",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   APPLY VENUE
+========================================================== */
+
+function applyVenue(
+    venue
+) {
+
+    if (!venue) {
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "venueName"
+    ).value =
+        venue.name ||
+        "";
+
+
+    document.getElementById(
+        "length"
+    ).value =
+        venue.length ??
+        20;
+
+
+    document.getElementById(
+        "width"
+    ).value =
+        venue.width ??
+        10;
+
+
+    document.getElementById(
+        "diameter"
+    ).value =
+        venue.diameter ??
+        20;
+
+
+    document.getElementById(
+        "capacity"
+    ).value =
+        venue.capacity ??
+        100;
+
+
+    document.getElementById(
+        "warningThreshold"
+    ).value =
+        venue.warning_threshold ??
+        70;
+
+
+    document.getElementById(
+        "criticalThreshold"
+    ).value =
+        venue.critical_threshold ??
+        90;
+
+
+    document.getElementById(
+        "gridSize"
+    ).value =
+        venue.grid_size ??
+        5;
+
+
+    selectShape(
+        venue.shape ||
+        "rectangle"
+    );
+
+
+    document.getElementById(
+        "specialAreas"
+    ).innerHTML =
+        "";
+
+
+    (
+        venue.special_areas ||
+        []
+    ).forEach(
+        area =>
+            addSpecialArea(area)
+    );
+
+}
+
+
+/* ==========================================================
+   DASHBOARD
+========================================================== */
+
+function goDashboard() {
+
+    window.location.href = "/";
+
+}
+
+
+/* ==========================================================
+   MESSAGE
+========================================================== */
+
+function showMessage(
+    text,
+    type
+) {
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.textContent =
+        text;
+
+
+    message.className =
+        type;
+
+
+    message.style.display =
+        "block";
+
+
+    setTimeout(
+        () => {
+
+            message.style.display =
+                "none";
+
+        },
+        2500
+    );
+
+}
+
+
+/* ==========================================================
+   SECURITY
+========================================================== */
+
+function escapeHtml(
+    value
+) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* ==========================================================
+   START
+========================================================== */
+
+loadVenue();
+
+</script>
+
+
+</body>
+
+</html>

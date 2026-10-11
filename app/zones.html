@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CrowdSense - Zone Map</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            background: #050505;
+
+            color: white;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            min-height: 100vh;
+        }
+
+
+        header {
+
+            height: 72px;
+
+            background: #080808;
+
+            border-bottom:
+                1px solid #202020;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 28px;
+        }
+
+
+        .logo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .logo-icon {
+
+            width: 38px;
+
+            height: 38px;
+
+            background: #00ff66;
+
+            color: #000;
+
+            border-radius: 8px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 20px;
+
+            font-weight: bold;
+        }
+
+
+        .logo-text {
+
+            font-size: 22px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+        }
+
+
+        .logo-text span {
+
+            color: #00ff66;
+        }
+
+
+        .back-button {
+
+            background: #111;
+
+            color: #aaa;
+
+            border: 1px solid #333;
+
+            padding: 9px 15px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+        }
+
+
+        .back-button:hover {
+
+            color: white;
+
+            border-color: #00ff66;
+        }
+
+
+        main {
+
+            max-width: 1500px;
+
+            margin: auto;
+
+            padding: 28px;
+        }
+
+
+        .page-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+
+        .page-header h1 {
+
+            font-size: 27px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .page-header p {
+
+            color: #777;
+
+            font-size: 13px;
+        }
+
+
+        .live {
+
+            color: #00ff66;
+
+            font-size: 11px;
+
+            font-weight: bold;
+        }
+
+
+        /* =====================================================
+           SUMMARY
+        ===================================================== */
+
+        .summary {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 14px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .card {
+
+            background: #0b0b0b;
+
+            border: 1px solid #202020;
+
+            border-radius: 9px;
+
+            padding: 17px;
+        }
+
+
+        .card-label {
+
+            color: #777;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+        }
+
+
+        .card-value {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            margin-top: 8px;
+        }
+
+
+        .green {
+            color: #00ff66;
+        }
+
+
+        .yellow {
+            color: #ffd400;
+        }
+
+
+        .red {
+            color: #ff3333;
+        }
+
+
+        /* =====================================================
+           MAP
+        ===================================================== */
+
+        .map-panel {
+
+            background: #0b0b0b;
+
+            border: 1px solid #202020;
+
+            border-radius: 9px;
+
+            overflow: hidden;
+
+            margin-bottom: 18px;
+        }
+
+
+        .map-header {
+
+            height: 56px;
+
+            padding: 0 18px;
+
+            border-bottom: 1px solid #202020;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+        }
+
+
+        .map-header h2 {
+
+            font-size: 15px;
+        }
+
+
+        .map-container {
+
+            min-height: 560px;
+
+            padding: 25px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    #111 0%,
+                    #050505 75%
+                );
+
+            overflow: auto;
+        }
+
+
+        .venue-map {
+
+            position: relative;
+
+            background: #101010;
+
+            border: 2px solid #333;
+
+            box-shadow:
+                0 0 25px
+                rgba(0, 255, 102, .08);
+
+            min-width: 500px;
+
+            min-height: 300px;
+        }
+
+
+        .venue-map.circle {
+
+            border-radius: 50%;
+        }
+
+
+        .zone {
+
+            position: absolute;
+
+            border: 1px solid #333;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            transition:
+                transform .15s,
+                border-color .15s;
+
+            overflow: hidden;
+
+            padding: 5px;
+        }
+
+
+        .zone:hover {
+
+            transform: scale(1.02);
+
+            border-color: white;
+
+            z-index: 10;
+        }
+
+
+        .zone.safe {
+
+            background:
+                rgba(0, 255, 102, .12);
+
+            border-color:
+                rgba(0, 255, 102, .45);
+        }
+
+
+        .zone.warning {
+
+            background:
+                rgba(255, 212, 0, .18);
+
+            border-color:
+                #ffd400;
+        }
+
+
+        .zone.critical {
+
+            background:
+                rgba(255, 51, 51, .22);
+
+            border-color:
+                #ff3333;
+        }
+
+
+        .zone-id {
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+
+        .zone-people {
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            margin-top: 4px;
+        }
+
+
+        .zone-occupancy {
+
+            font-size: 9px;
+
+            color: #aaa;
+
+            margin-top: 3px;
+        }
+
+
+        .zone-risk {
+
+            font-size: 8px;
+
+            font-weight: bold;
+
+            margin-top: 4px;
+        }
+
+
+        /* =====================================================
+           SPECIAL AREA DISPLAY
+        ===================================================== */
+
+        .zone-special {
+
+            margin-top: 6px;
+
+            padding: 3px 7px;
+
+            border-radius: 4px;
+
+            background: rgba(255, 212, 0, .18);
+
+            border: 1px solid #ffd400;
+
+            color: #ffd400;
+
+            font-size: 8px;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            letter-spacing: .5px;
+
+            max-width: 90%;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            white-space: nowrap;
+        }
+
+
+        .zone.has-special {
+
+            box-shadow:
+                inset 0 0 0 2px
+                rgba(255, 212, 0, .25);
+        }
+
+
+        /* =====================================================
+           LEGEND
+        ===================================================== */
+
+        .legend {
+
+            display: flex;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+
+            padding: 15px 18px;
+
+            border-top: 1px solid #202020;
+        }
+
+
+        .legend-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: #888;
+
+            font-size: 11px;
+        }
+
+
+        .legend-dot {
+
+            width: 11px;
+
+            height: 11px;
+
+            border-radius: 2px;
+        }
+
+
+        .dot-safe {
+
+            background: #00ff66;
+        }
+
+
+        .dot-warning {
+
+            background: #ffd400;
+        }
+
+
+        .dot-critical {
+
+            background: #ff3333;
+        }
+
+
+        .dot-special {
+
+            background: #ffd400;
+
+            border: 1px solid #ffd400;
+        }
+
+
+        /* =====================================================
+           ZONE TABLE
+        ===================================================== */
+
+        .panel {
+
+            background: #0b0b0b;
+
+            border: 1px solid #202020;
+
+            border-radius: 9px;
+
+            overflow: hidden;
+        }
+
+
+        .panel-header {
+
+            height: 56px;
+
+            padding: 0 18px;
+
+            border-bottom: 1px solid #202020;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+        }
+
+
+        .panel-header h2 {
+
+            font-size: 15px;
+        }
+
+
+        .panel-header span {
+
+            color: #666;
+
+            font-size: 11px;
+        }
+
+
+        .table-container {
+
+            overflow-x: auto;
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+
+        th {
+
+            color: #666;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            text-align: left;
+
+            padding: 13px;
+
+            border-bottom: 1px solid #222;
+        }
+
+
+        td {
+
+            color: #aaa;
+
+            font-size: 11px;
+
+            padding: 13px;
+
+            border-bottom: 1px solid #1b1b1b;
+        }
+
+
+        tr:hover td {
+
+            background: #111;
+        }
+
+
+        .risk {
+
+            font-weight: bold;
+        }
+
+
+        .special-table {
+
+            color: #ffd400;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+        }
+
+
+        .empty {
+
+            color: #555;
+
+            text-align: center;
+
+            padding: 45px;
+        }
+
+
+        @media(max-width: 900px) {
+
+            .summary {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media(max-width: 600px) {
+
+            main {
+
+                padding: 18px 14px;
+            }
+
+
+            .summary {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .map-container {
+
+                min-height: 450px;
+
+                padding: 10px;
+            }
+
+
+            .venue-map {
+
+                min-width: 420px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            C
+        </div>
+
+        <div class="logo-text">
+            CROWD<span>SENSE</span>
+        </div>
+
+    </div>
+
+
+    <button
+        class="back-button"
+        onclick="goDashboard()"
+    >
+        ← Dashboard
+    </button>
+
+</header>
+
+
+<main>
+
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>Live Zone Map</h1>
+
+            <p>
+                Real-time crowd distribution across the venue
+            </p>
+
+        </div>
+
+
+        <div class="live">
+            ● LIVE
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         SUMMARY
+    ===================================================== -->
+
+    <section class="summary">
+
+
+        <div class="card">
+
+            <div class="card-label">
+                Total People
+            </div>
+
+            <div
+                id="totalPeople"
+                class="card-value green"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-label">
+                Safe Zones
+            </div>
+
+            <div
+                id="safeZones"
+                class="card-value green"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-label">
+                Warning Zones
+            </div>
+
+            <div
+                id="warningZones"
+                class="card-value yellow"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-label">
+                Critical Zones
+            </div>
+
+            <div
+                id="criticalZones"
+                class="card-value red"
+            >
+                0
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ====================================================
+         MAP
+    ===================================================== -->
+
+    <section class="map-panel">
+
+
+        <div class="map-header">
+
+            <h2>
+                Venue Zone Map
+            </h2>
+
+            <span id="venueInfo">
+                Waiting for venue...
+            </span>
+
+        </div>
+
+
+        <div
+            class="map-container"
+            id="mapContainer"
+        >
+
+            <div class="empty">
+                Waiting for zone data...
+            </div>
+
+        </div>
+
+
+        <div class="legend">
+
+            <div class="legend-item">
+
+                <div
+                    class="legend-dot dot-safe"
+                ></div>
+
+                Safe
+
+            </div>
+
+
+            <div class="legend-item">
+
+                <div
+                    class="legend-dot dot-warning"
+                ></div>
+
+                Warning
+
+            </div>
+
+
+            <div class="legend-item">
+
+                <div
+                    class="legend-dot dot-critical"
+                ></div>
+
+                Critical
+
+            </div>
+
+
+            <div class="legend-item">
+
+                <div
+                    class="legend-dot dot-special"
+                ></div>
+
+                Special Area
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================
+         TABLE
+    ===================================================== -->
+
+    <section class="panel">
+
+
+        <div class="panel-header">
+
+            <h2>
+                Zone Details
+            </h2>
+
+            <span id="zoneCount">
+                0 zones
+            </span>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Zone
+                        </th>
+
+                        <th>
+                            People
+                        </th>
+
+                        <th>
+                            Capacity
+                        </th>
+
+                        <th>
+                            Occupancy
+                        </th>
+
+                        <th>
+                            Density
+                        </th>
+
+                        <th>
+                            Risk
+                        </th>
+
+                        <th>
+                            Special Area
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody
+                    id="zoneTable"
+                >
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="empty"
+                        >
+                            Waiting for zone data...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<script>
+
+
+let currentZones = [];
+
+
+/* ==========================================================
+   API
+========================================================== */
+
+async function getStatus() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/status",
+                {
+                    cache:
+                        "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+
+        }
+
+
+        return await response.json();
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Status error:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+/* ==========================================================
+   RISK
+========================================================== */
+
+function riskClass(
+    risk
+) {
+
+    risk =
+        String(
+            risk ||
+            "SAFE"
+        ).toUpperCase();
+
+
+    if (
+        risk === "CRITICAL"
+    ) {
+
+        return "critical";
+
+    }
+
+
+    if (
+        risk === "WARNING"
+    ) {
+
+        return "warning";
+
+    }
+
+
+    return "safe";
+
+}
+
+
+/* ==========================================================
+   UPDATE
+========================================================== */
+
+async function refresh() {
+
+    const data =
+        await getStatus();
+
+
+    if (!data) {
+
+        return;
+
+    }
+
+
+    currentZones =
+        Array.isArray(
+            data.zones
+        )
+            ? data.zones
+            : [];
+
+
+    document.getElementById(
+        "totalPeople"
+    ).textContent =
+        data.total_people || 0;
+
+
+    document.getElementById(
+        "venueInfo"
+    ).textContent =
+        (
+            data.venue ||
+            "Not configured"
+        )
+        +
+        " | Capacity: "
+        +
+        (
+            data.capacity ||
+            0
+        );
+
+
+    renderSummary();
+
+    renderMap();
+
+    renderTable();
+
+}
+
+
+/* ==========================================================
+   SUMMARY
+========================================================== */
+
+function renderSummary() {
+
+    const safe =
+        currentZones.filter(
+            zone =>
+                String(
+                    zone.risk ||
+                    "SAFE"
+                ).toUpperCase() ===
+                "SAFE"
+        ).length;
+
+
+    const warning =
+        currentZones.filter(
+            zone =>
+                String(
+                    zone.risk ||
+                    ""
+                ).toUpperCase() ===
+                "WARNING"
+        ).length;
+
+
+    const critical =
+        currentZones.filter(
+            zone =>
+                String(
+                    zone.risk ||
+                    ""
+                ).toUpperCase() ===
+                "CRITICAL"
+        ).length;
+
+
+    document.getElementById(
+        "safeZones"
+    ).textContent =
+        safe;
+
+
+    document.getElementById(
+        "warningZones"
+    ).textContent =
+        warning;
+
+
+    document.getElementById(
+        "criticalZones"
+    ).textContent =
+        critical;
+
+
+    document.getElementById(
+        "zoneCount"
+    ).textContent =
+        currentZones.length +
+        (
+            currentZones.length === 1
+                ? " zone"
+                : " zones"
+        );
+
+}
+
+
+/* ==========================================================
+   MAP
+========================================================== */
+
+function renderMap() {
+
+    const container =
+        document.getElementById(
+            "mapContainer"
+        );
+
+
+    if (!currentZones.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+                No zone data available.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    /*
+     * Find physical extents
+     * from generated zones.
+     */
+
+    let maxX = 0;
+
+    let maxY = 0;
+
+
+    currentZones.forEach(
+        zone => {
+
+            maxX =
+                Math.max(
+                    maxX,
+                    Number(
+                        zone.x ||
+                        0
+                    )
+                    +
+                    Number(
+                        zone.width ||
+                        0
+                    )
+                );
+
+
+            maxY =
+                Math.max(
+                    maxY,
+                    Number(
+                        zone.y ||
+                        0
+                    )
+                    +
+                    Number(
+                        zone.height ||
+                        0
+                    )
+                );
+
+        }
+    );
+
+
+    if (
+        maxX <= 0 ||
+        maxY <= 0
+    ) {
+
+        maxX = 20;
+
+        maxY = 10;
+
+    }
+
+
+    /*
+     * Keep map at reasonable
+     * visual size.
+     */
+
+    const mapWidth =
+        Math.max(
+            500,
+            Math.min(
+                1000,
+                maxX * 35
+            )
+        );
+
+
+    const mapHeight =
+        Math.max(
+            300,
+            Math.min(
+                600,
+                maxY * 35
+            )
+        );
+
+
+    const scaleX =
+        mapWidth / maxX;
+
+
+    const scaleY =
+        mapHeight / maxY;
+
+
+    container.innerHTML = "";
+
+
+    const map =
+        document.createElement(
+            "div"
+        );
+
+
+    map.className =
+        "venue-map";
+
+
+    map.style.width =
+        mapWidth + "px";
+
+
+    map.style.height =
+        mapHeight + "px";
+
+
+    /*
+     * Determine circular venue.
+     */
+
+    const isCircle =
+        currentZones.some(
+            zone =>
+                String(
+                    zone.id ||
+                    ""
+                ).startsWith("C")
+        );
+
+
+    if (isCircle) {
+
+        map.classList.add(
+            "circle"
+        );
+
+    }
+
+
+    currentZones.forEach(
+        zone => {
+
+            const element =
+                document.createElement(
+                    "div"
+                );
+
+
+            const risk =
+                String(
+                    zone.risk ||
+                    "SAFE"
+                ).toUpperCase();
+
+
+            const specialType =
+                String(
+                    zone.special_type ||
+                    ""
+                ).trim();
+
+
+            element.className =
+                "zone " +
+                riskClass(
+                    risk
+                );
+
+
+            if (
+                specialType
+            ) {
+
+                element.classList.add(
+                    "has-special"
+                );
+
+            }
+
+
+            const x =
+                Number(
+                    zone.x ||
+                    0
+                )
+                *
+                scaleX;
+
+
+            const y =
+                Number(
+                    zone.y ||
+                    0
+                )
+                *
+                scaleY;
+
+
+            const width =
+                Number(
+                    zone.width ||
+                    1
+                )
+                *
+                scaleX;
+
+
+            const height =
+                Number(
+                    zone.height ||
+                    1
+                )
+                *
+                scaleY;
+
+
+            element.style.left =
+                x + "px";
+
+
+            element.style.top =
+                y + "px";
+
+
+            element.style.width =
+                width + "px";
+
+
+            element.style.height =
+                height + "px";
+
+
+            /*
+             * Special area label.
+             */
+
+            const specialHTML =
+                specialType
+                    ? `
+                        <div
+                            class="zone-special"
+                        >
+                            ${escapeHtml(
+                                specialType
+                            )}
+                        </div>
+                    `
+                    : "";
+
+
+            element.innerHTML = `
+
+                <div class="zone-id">
+                    ${escapeHtml(
+                        zone.id ||
+                        "-"
+                    )}
+                </div>
+
+
+                <div class="zone-people">
+                    ${zone.people || 0}
+                </div>
+
+
+                <div class="zone-occupancy">
+
+                    ${Number(
+                        zone.occupancy ||
+                        0
+                    ).toFixed(1)}%
+
+                </div>
+
+
+                <div class="zone-risk">
+
+                    ${escapeHtml(
+                        risk
+                    )}
+
+                </div>
+
+
+                ${specialHTML}
+
+            `;
+
+
+            /*
+             * Tooltip also shows
+             * special area information.
+             */
+
+            element.title =
+                "Zone " +
+                (
+                    zone.id ||
+                    "-"
+                )
+                +
+                "\nPeople: "
+                +
+                (
+                    zone.people ||
+                    0
+                )
+                +
+                "\nCapacity: "
+                +
+                (
+                    zone.zone_capacity ||
+                    0
+                )
+                +
+                "\nOccupancy: "
+                +
+                Number(
+                    zone.occupancy ||
+                    0
+                ).toFixed(1)
+                +
+                "%"
+                +
+                (
+                    specialType
+                        ? "\nSpecial Area: " +
+                          specialType
+                        : ""
+                );
+
+
+            map.appendChild(
+                element
+            );
+
+        }
+    );
+
+
+    container.appendChild(
+        map
+    );
+
+}
+
+
+/* ==========================================================
+   TABLE
+========================================================== */
+
+function renderTable() {
+
+    const table =
+        document.getElementById(
+            "zoneTable"
+        );
+
+
+    if (!currentZones.length) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="empty"
+                >
+                    No zone data available.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    table.innerHTML = "";
+
+
+    currentZones.forEach(
+        zone => {
+
+            const risk =
+                String(
+                    zone.risk ||
+                    "SAFE"
+                ).toUpperCase();
+
+
+            const specialType =
+                String(
+                    zone.special_type ||
+                    ""
+                ).trim();
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    <b>
+                        ${escapeHtml(
+                            zone.id ||
+                            "-"
+                        )}
+                    </b>
+                </td>
+
+
+                <td>
+                    ${zone.people || 0}
+                </td>
+
+
+                <td>
+                    ${Number(
+                        zone.zone_capacity ||
+                        0
+                    ).toFixed(1)}
+                </td>
+
+
+                <td>
+                    ${Number(
+                        zone.occupancy ||
+                        0
+                    ).toFixed(1)}%
+                </td>
+
+
+                <td>
+                    ${Number(
+                        zone.density ||
+                        0
+                    ).toFixed(2)}
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="risk
+                        ${riskClass(
+                            risk
+                        )}"
+                    >
+                        ${escapeHtml(
+                            risk
+                        )}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    ${
+                        specialType
+                            ? `
+                                <span
+                                    class="special-table"
+                                >
+                                    ${escapeHtml(
+                                        specialType
+                                    )}
+                                </span>
+                            `
+                            : "-"
+                    }
+
+                </td>
+
+            `;
+
+
+            table.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   DASHBOARD
+========================================================== */
+
+function goDashboard() {
+
+    window.location.href = "/";
+
+}
+
+
+/* ==========================================================
+   SECURITY
+========================================================== */
+
+function escapeHtml(
+    value
+) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* ==========================================================
+   START
+========================================================== */
+
+refresh();
+
+
+setInterval(
+    refresh,
+    1000
+);
+
+</script>
+
+
+</body>
+
+</html>

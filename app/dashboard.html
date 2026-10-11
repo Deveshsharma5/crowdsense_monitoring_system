@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CrowdSense Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #050505;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            height: 72px;
+            background: #080808;
+            border-bottom: 1px solid #1f1f1f;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 28px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+
+            background: #00ff66;
+            color: #000000;
+
+            border-radius: 8px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .logo-text span {
+            color: #00ff66;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .venue-name {
+            color: #aaaaaa;
+            font-size: 14px;
+        }
+
+        /* =========================
+           ADD CAMERA BUTTON
+        ========================= */
+
+        .add-camera-button {
+            background: #00ff66;
+            color: #000000;
+
+            border: none;
+
+            padding: 9px 14px;
+
+            border-radius: 6px;
+
+            font-size: 12px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .add-camera-button:hover {
+            background: #00dd55;
+        }
+
+        .system-badge {
+            padding: 8px 14px;
+            border-radius: 20px;
+
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+
+            background: #10351e;
+            color: #00ff66;
+            border: 1px solid #00ff66;
+        }
+
+        .system-badge.warning {
+            background: #332b0c;
+            color: #ffd400;
+            border-color: #ffd400;
+        }
+
+        .system-badge.critical {
+            background: #3a0d0d;
+            color: #ff3333;
+            border-color: #ff3333;
+        }
+
+        /* =========================
+           NAVIGATION
+        ========================= */
+
+        .main-nav {
+            height: 58px;
+            background: #080808;
+            border-bottom: 1px solid #1f1f1f;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 28px;
+
+            gap: 30px;
+
+            position: sticky;
+            top: 72px;
+            z-index: 99;
+        }
+
+        .main-nav a {
+            color: #ffffff;
+            text-decoration: none;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            transition: 0.2s;
+        }
+
+        .main-nav a:hover {
+            color: #00ff66;
+        }
+
+        .main-nav a.active {
+            color: #00ff66;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        main {
+            padding: 25px 28px 40px;
+            max-width: 1700px;
+            margin: auto;
+        }
+
+        .page-title {
+            margin-bottom: 22px;
+        }
+
+        .page-title h1 {
+            font-size: 27px;
+            margin-bottom: 5px;
+        }
+
+        .page-title p {
+            color: #777777;
+            font-size: 13px;
+        }
+
+        /* =========================
+           TOP CARDS
+        ========================= */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .card {
+            background: #0b0b0b;
+            border: 1px solid #202020;
+            border-radius: 10px;
+            padding: 20px;
+
+            min-height: 125px;
+        }
+
+        .card-title {
+            color: #888888;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+
+        .card-value {
+            font-size: 34px;
+            font-weight: 800;
+        }
+
+        .card-sub {
+            color: #666666;
+            font-size: 12px;
+            margin-top: 7px;
+        }
+
+        .green {
+            color: #00ff66;
+        }
+
+        .yellow {
+            color: #ffd400;
+        }
+
+        .red {
+            color: #ff3333;
+        }
+
+        /* =========================
+           GRID
+        ========================= */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 18px;
+        }
+
+        .panel {
+            background: #0b0b0b;
+            border: 1px solid #202020;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            height: 55px;
+            padding: 0 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom: 1px solid #202020;
+        }
+
+        .panel-header h2 {
+            font-size: 15px;
+        }
+
+        .panel-header span {
+            color: #666666;
+            font-size: 11px;
+        }
+
+        .panel-body {
+            padding: 18px;
+        }
+
+        /* =========================
+           ZONES
+        ========================= */
+
+        .zones {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+            gap: 10px;
+        }
+
+        .zone {
+            background: #111111;
+            border: 1px solid #252525;
+            border-radius: 8px;
+            padding: 14px;
+            min-height: 110px;
+        }
+
+        .zone.warning {
+            border-color: #ffd400;
+        }
+
+        .zone.critical {
+            border-color: #ff3333;
+        }
+
+        .zone-name {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 9px;
+        }
+
+        .zone-people {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .zone-info {
+            color: #777777;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .risk {
+            display: inline-block;
+            margin-top: 9px;
+
+            padding: 4px 7px;
+            border-radius: 4px;
+
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .risk.safe {
+            background: #10351e;
+            color: #00ff66;
+        }
+
+        .risk.warning {
+            background: #332b0c;
+            color: #ffd400;
+        }
+
+        .risk.critical {
+            background: #3a0d0d;
+            color: #ff3333;
+        }
+
+        /* =========================
+           ALERTS
+        ========================= */
+
+        .alerts {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            max-height: 330px;
+            overflow-y: auto;
+        }
+
+        .alert {
+            background: #111111;
+            border-left: 4px solid #ffd400;
+            border-radius: 5px;
+            padding: 12px;
+        }
+
+        .alert.critical {
+            border-left-color: #ff3333;
+        }
+
+        .alert-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .alert-title {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .alert-time {
+            color: #666666;
+            font-size: 10px;
+        }
+
+        .alert-details {
+            color: #888888;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .no-data {
+            color: #555555;
+            text-align: center;
+            padding: 35px 10px;
+            font-size: 12px;
+        }
+
+        /* =========================
+           TREND
+        ========================= */
+
+        .trend-panel {
+            margin-top: 18px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 240px;
+            display: block;
+        }
+
+        /* =========================
+           CAMERA TABLE
+        ========================= */
+
+        .camera-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .camera-table th,
+        .camera-table td {
+            text-align: left;
+            padding: 11px 8px;
+            border-bottom: 1px solid #1b1b1b;
+            font-size: 12px;
+        }
+
+        .camera-table th {
+            color: #666666;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .camera-status {
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .camera-status.connected {
+            color: #00ff66;
+        }
+
+        .camera-status.disconnected {
+            color: #ff3333;
+        }
+
+        .camera-status.error {
+            color: #ff3333;
+        }
+
+        /* =========================
+           SESSION
+        ========================= */
+
+        .session-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .session-item {
+            background: #111111;
+            padding: 13px;
+            border-radius: 7px;
+        }
+
+        .session-label {
+            color: #666666;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .session-value {
+            margin-top: 6px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            margin-top: 25px;
+            border-top: 1px solid #1b1b1b;
+            padding-top: 15px;
+
+            display: flex;
+            justify-content: space-between;
+
+            color: #555555;
+            font-size: 10px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1100px) {
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 900px) {
+
+            .main-nav {
+                gap: 18px;
+                overflow-x: auto;
+                white-space: nowrap;
+                padding: 0 18px;
+            }
+
+            .main-nav a {
+                font-size: 13px;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            header {
+                padding: 0 15px;
+            }
+
+            .venue-name {
+                display: none;
+            }
+
+            .add-camera-button {
+                padding: 8px 10px;
+            }
+
+            main {
+                padding: 18px 14px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .session-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            C
+        </div>
+
+        <div class="logo-text">
+            CROWD<span>SENSE</span>
+        </div>
+
+    </div>
+
+    <div class="header-right">
+
+        <div
+            class="venue-name"
+            id="venueName"
+        >
+            Not configured
+        </div>
+
+        <!-- =========================
+             ADD CAMERA
+        ========================= -->
+
+        <button
+            class="add-camera-button"
+            onclick="window.location.href='/cameras'"
+        >
+            + Add Camera
+        </button>
+
+        <div
+            class="system-badge"
+            id="systemBadge"
+        >
+            READY
+        </div>
+
+    </div>
+
+</header>
+
+<!-- =========================
+     MAIN NAVIGATION
+========================= -->
+
+<nav class="main-nav">
+
+    <a href="/" class="active">
+        Dashboard
+    </a>
+
+    <a href="/cameras">
+        Cameras
+    </a>
+
+    <a href="/venue">
+        Venue
+    </a>
+
+    <a href="/zones">
+        Zones
+    </a>
+
+    <a href="/alerts">
+        Alerts
+    </a>
+
+    <a href="/analytics">
+        Analytics
+    </a>
+
+    <a href="/session">
+        Session
+    </a>
+
+    <a href="/reports">
+        Reports
+    </a>
+
+    <a href="/admin">
+        Admin
+    </a>
+
+    <a href="/calibration">
+        Calibration
+    </a>
+
+</nav>
+
+<main>
+
+    <div class="page-title">
+
+        <h1>
+            Crowd Monitoring Dashboard
+        </h1>
+
+        <p>
+            Real-time crowd density and safety monitoring
+        </p>
+
+    </div>
+
+    <!-- =========================
+         TOP CARDS
+    ========================= -->
+
+    <section class="cards">
+
+        <div class="card">
+
+            <div class="card-title">
+                Current People
+            </div>
+
+            <div
+                class="card-value green"
+                id="totalPeople"
+            >
+                0
+            </div>
+
+            <div
+                class="card-sub"
+                id="capacityText"
+            >
+                Capacity: 0
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-title">
+                Occupancy
+            </div>
+
+            <div
+                class="card-value"
+                id="occupancy"
+            >
+                0%
+            </div>
+
+            <div class="card-sub">
+                Venue utilization
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-title">
+                Risk Level
+            </div>
+
+            <div
+                class="card-value green"
+                id="riskLevel"
+            >
+                SAFE
+            </div>
+
+            <div
+                class="card-sub"
+                id="lastAlert"
+            >
+                No active alerts
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-title">
+                Cameras
+            </div>
+
+            <div
+                class="card-value"
+                id="cameraCount"
+            >
+                0
+            </div>
+
+            <div
+                class="card-sub"
+                id="cameraStatusText"
+            >
+                No cameras configured
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         MAIN GRID
+    ========================= -->
+
+    <section class="dashboard-grid">
+
+        <!-- ZONES -->
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h2>
+                    Live Zone Status
+                </h2>
+
+                <span id="zoneCount">
+                    0 zones
+                </span>
+
+            </div>
+
+            <div class="panel-body">
+
+                <div
+                    class="zones"
+                    id="zonesContainer"
+                >
+
+                    <div class="no-data">
+                        Waiting for zone data...
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ALERTS -->
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h2>
+                    Recent Alerts
+                </h2>
+
+                <span>
+                    Live
+                </span>
+
+            </div>
+
+            <div class="panel-body">
+
+                <div
+                    class="alerts"
+                    id="alertsContainer"
+                >
+
+                    <div class="no-data">
+                        No alerts
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         LIVE CROWDSENSE CAMERA
+    ========================= -->
+
+    <section
+        class="panel"
+        style="margin-top:18px;"
+    >
+
+        <div class="panel-header">
+
+            <h2>
+                Live CrowdSense Camera
+            </h2>
+
+            <span id="liveCameraStatus">
+                Waiting for camera...
+            </span>
+
+        </div>
+
+        <div
+            class="panel-body"
+            style="
+                padding:0;
+                background:#000000;
+            "
+        >
+
+            <div
+                style="
+                    position:relative;
+                    width:100%;
+                    background:#000000;
+                    min-height:300px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                "
+            >
+
+                <img
+                    id="liveCamera"
+                    src="/api/dashboard/stream"
+                    alt="CrowdSense Live Camera"
+                    style="
+                        width:100%;
+                        max-height:650px;
+                        object-fit:contain;
+                        display:block;
+                        background:#000000;
+                    "
+                >
+
+                <div
+                    id="cameraOverlay"
+                    style="
+                        position:absolute;
+                        top:15px;
+                        left:15px;
+                        padding:7px 11px;
+                        background:rgba(0,0,0,0.75);
+                        border:1px solid #00ff66;
+                        border-radius:5px;
+                        color:#00ff66;
+                        font-size:11px;
+                        font-weight:bold;
+                    "
+                >
+                    ● LIVE
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         CROWD TREND
+    ========================= -->
+
+    <section
+        class="panel trend-panel"
+    >
+
+        <div class="panel-header">
+
+            <h2>
+                Live Crowd Trend
+            </h2>
+
+            <span>
+                Last 60 readings
+            </span>
+
+        </div>
+
+        <div class="panel-body">
+
+            <canvas
+                id="trendCanvas"
+            ></canvas>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         CAMERAS
+    ========================= -->
+
+    <section
+        class="panel"
+        style="margin-top:18px;"
+    >
+
+        <div class="panel-header">
+
+            <h2>
+                Camera Status
+            </h2>
+
+            <span id="cameraUpdated">
+                Waiting...
+            </span>
+
+        </div>
+
+        <div class="panel-body">
+
+            <table class="camera-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Source</th>
+                        <th>Status</th>
+                        <th>Last Checked</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="cameraTable">
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            class="no-data"
+                        >
+                            No camera data
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+         SESSION
+    ========================= -->
+
+    <section
+        class="panel"
+        style="margin-top:18px;"
+    >
+
+        <div class="panel-header">
+
+            <h2>
+                Current Session
+            </h2>
+
+            <span id="sessionStatus">
+                INACTIVE
+            </span>
+
+        </div>
+
+        <div class="panel-body">
+
+            <div class="session-grid">
+
+                <div class="session-item">
+
+                    <div class="session-label">
+                        Peak People
+                    </div>
+
+                    <div
+                        class="session-value"
+                        id="sessionPeak"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+                <div class="session-item">
+
+                    <div class="session-label">
+                        Average People
+                    </div>
+
+                    <div
+                        class="session-value"
+                        id="sessionAverage"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+                <div class="session-item">
+
+                    <div class="session-label">
+                        Peak Occupancy
+                    </div>
+
+                    <div
+                        class="session-value"
+                        id="sessionOccupancy"
+                    >
+                        0%
+                    </div>
+
+                </div>
+
+                <div class="session-item">
+
+                    <div class="session-label">
+                        Duration
+                    </div>
+
+                    <div
+                        class="session-value"
+                        id="sessionDuration"
+                    >
+                        00:00:00
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <footer>
+
+        <div>
+            CrowdSense Local Safety System
+        </div>
+
+        <div id="lastUpdate">
+            Last update: --
+        </div>
+
+    </footer>
+
+</main>
+
+<script>
+
+    /*
+     * ==========================================
+     * CROWD SENSE DASHBOARD
+     * ==========================================
+     *
+     * Everything communicates with the local
+     * Flask API.
+     *
+     * No external libraries.
+     * No cloud services.
+     * No internet required.
+     */
+
+    const API = "";
+
+    let trendData = [];
+
+    /* ==========================================
+       API HELPER
+    ========================================== */
+
+    async function apiFetch(url, options = {}) {
+
+        try {
+
+            const response =
+                await fetch(
+                    API + url,
+                    {
+                        cache: "no-store",
+                        ...options
+                    }
+                );
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP " + response.status
+                );
+
+            }
+
+            return await response.json();
+
+        } catch (error) {
+
+            console.warn(
+                "API request failed:",
+                url,
+                error
+            );
+
+            return null;
+        }
+
+    }
+
+    /* ==========================================
+       STATUS
+    ========================================== */
+
+    async function updateStatus() {
+
+        const data =
+            await apiFetch("/api/status");
+
+        if (!data) {
+
+            setSystemStatus(
+                "OFFLINE",
+                "critical"
+            );
+
+            return;
+        }
+
+        const status =
+            data.data || data;
+
+        const liveCameraStatus =
+            document.getElementById(
+                "liveCameraStatus"
+            );
+
+        if (liveCameraStatus) {
+
+            if (status.camera_source) {
+
+                liveCameraStatus.textContent =
+                    "Camera: " +
+                    status.camera_source;
+
+            } else {
+
+                liveCameraStatus.textContent =
+                    "Waiting for camera...";
+
+            }
+
+        }
+
+        document.getElementById(
+            "venueName"
+        ).textContent =
+            status.venue || "Not configured";
+
+        document.getElementById(
+            "totalPeople"
+        ).textContent =
+            status.total_people ?? 0;
+
+        document.getElementById(
+            "capacityText"
+        ).textContent =
+            "Capacity: " +
+            (status.capacity ?? 0);
+
+        const occupancy =
+            Number(
+                status.occupancy || 0
+            );
+
+        const occupancyElement =
+            document.getElementById(
+                "occupancy"
+            );
+
+        occupancyElement.textContent =
+            occupancy.toFixed(1) + "%";
+
+        setOccupancyColor(
+            occupancyElement,
+            occupancy
+        );
+
+        const risk =
+            status.risk || "SAFE";
+
+        setSystemStatus(
+            status.system || "READY",
+            risk.toLowerCase()
+        );
+
+        setRisk(
+            document.getElementById(
+                "riskLevel"
+            ),
+            risk
+        );
+
+        document.getElementById(
+            "lastAlert"
+        ).textContent =
+            status.last_alert ||
+            "No active alerts";
+
+        const zones =
+            Array.isArray(status.zones)
+                ? status.zones
+                : [];
+
+        renderZones(zones);
+
+        trendData.push(
+            Number(
+                status.total_people || 0
+            )
+        );
+
+        if (trendData.length > 60) {
+            trendData.shift();
+        }
+
+        drawTrend();
+
+        document.getElementById(
+            "lastUpdate"
+        ).textContent =
+            "Last update: " +
+            (
+                status.last_update ||
+                new Date().toLocaleTimeString()
+            );
+
+    }
+
+    /* ==========================================
+       SYSTEM STATUS
+    ========================================== */
+
+    function setSystemStatus(
+        text,
+        state
+    ) {
+
+        const badge =
+            document.getElementById(
+                "systemBadge"
+            );
+
+        badge.textContent =
+            String(text).toUpperCase();
+
+        badge.className =
+            "system-badge";
+
+        if (state === "warning") {
+
+            badge.classList.add(
+                "warning"
+            );
+
+        }
+
+        if (
+            state === "critical" ||
+            state === "offline"
+        ) {
+
+            badge.classList.add(
+                "critical"
+            );
+
+        }
+
+    }
+
+    /* ==========================================
+       RISK
+    ========================================== */
+
+    function setRisk(
+        element,
+        risk
+    ) {
+
+        element.textContent =
+            risk;
+
+        element.className =
+            "card-value";
+
+        if (risk === "CRITICAL") {
+
+            element.classList.add(
+                "red"
+            );
+
+        } else if (
+            risk === "WARNING"
+        ) {
+
+            element.classList.add(
+                "yellow"
+            );
+
+        } else {
+
+            element.classList.add(
+                "green"
+            );
+
+        }
+
+    }
+
+    function setOccupancyColor(
+        element,
+        occupancy
+    ) {
+
+        element.className =
+            "card-value";
+
+        if (occupancy >= 90) {
+
+            element.classList.add(
+                "red"
+            );
+
+        } else if (
+            occupancy >= 70
+        ) {
+
+            element.classList.add(
+                "yellow"
+            );
+
+        } else {
+
+            element.classList.add(
+                "green"
+            );
+
+        }
+
+    }
+
+    /* ==========================================
+       ZONES
+    ========================================== */
+
+    function renderZones(
+        zones
+    ) {
+
+        const container =
+            document.getElementById(
+                "zonesContainer"
+            );
+
+        document.getElementById(
+            "zoneCount"
+        ).textContent =
+            zones.length + " zones";
+
+        if (!zones.length) {
+
+            container.innerHTML = `
+                <div class="no-data">
+                    No zone data available
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        zones.forEach(
+            zone => {
+
+                const risk =
+                    zone.risk || "SAFE";
+
+                const zoneElement =
+                    document.createElement(
+                        "div"
+                    );
+
+                zoneElement.className =
+                    "zone " +
+                    risk.toLowerCase();
+
+                const people =
+                    Number(
+                        zone.people || 0
+                    );
+
+                const capacity =
+                    Number(
+                        zone.zone_capacity ||
+                        zone.capacity ||
+                        0
+                    );
+
+                const occupancy =
+                    Number(
+                        zone.occupancy || 0
+                    );
+
+                const density =
+                    Number(
+                        zone.density || 0
+                    );
+
+                zoneElement.innerHTML = `
+
+                    <div class="zone-name">
+                        ${escapeHtml(
+                            zone.id || "Zone"
+                        )}
+                    </div>
+
+                    <div class="zone-people">
+                        ${people}
+                    </div>
+
+                    <div class="zone-info">
+                        Capacity:
+                        ${capacity.toFixed(1)}
+                    </div>
+
+                    <div class="zone-info">
+                        Occupancy:
+                        ${occupancy.toFixed(1)}%
+                    </div>
+
+                    <div class="zone-info">
+                        Density:
+                        ${density.toFixed(2)}
+                    </div>
+
+                    <span
+                        class="risk ${risk.toLowerCase()}"
+                    >
+                        ${risk}
+                    </span>
+
+                `;
+
+                container.appendChild(
+                    zoneElement
+                );
+
+            }
+        );
+
+    }
+
+    /* ==========================================
+       ALERTS
+    ========================================== */
+
+    async function updateAlerts() {
+
+        const data =
+            await apiFetch("/api/alerts");
+
+        if (!data) {
+            return;
+        }
+
+        const alerts =
+            Array.isArray(data)
+                ? data
+                : (
+                    data.alerts ||
+                    data.data ||
+                    []
+                );
+
+        const container =
+            document.getElementById(
+                "alertsContainer"
+            );
+
+        if (!alerts.length) {
+
+            container.innerHTML = `
+                <div class="no-data">
+                    No recent alerts
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        alerts
+            .slice(0, 15)
+            .forEach(
+                alert => {
+
+                    const risk =
+                        alert.risk ||
+                        "WARNING";
+
+                    const element =
+                        document.createElement(
+                            "div"
+                        );
+
+                    element.className =
+                        "alert " +
+                        (
+                            risk === "CRITICAL"
+                                ? "critical"
+                                : ""
+                        );
+
+                    element.innerHTML = `
+
+                        <div class="alert-top">
+
+                            <div class="alert-title">
+
+                                ${risk}
+                                -
+                                Zone
+                                ${escapeHtml(
+                                    alert.zone_id ||
+                                    "UNKNOWN"
+                                )}
+
+                            </div>
+
+                            <div class="alert-time">
+
+                                ${escapeHtml(
+                                    alert.timestamp ||
+                                    ""
+                                )}
+
+                            </div>
+
+                        </div>
+
+                        <div class="alert-details">
+
+                            People:
+                            ${alert.people ?? 0}
+
+                            &nbsp; | &nbsp;
+
+                            Density:
+                            ${Number(
+                                alert.density || 0
+                            ).toFixed(2)}
+
+                            ${
+                                alert.camera_id
+                                    ? `
+                                        &nbsp; | &nbsp;
+                                        Camera:
+                                        ${escapeHtml(
+                                            alert.camera_id
+                                        )}
+                                      `
+                                    : ""
+                            }
+
+                        </div>
+
+                    `;
+
+                    container.appendChild(
+                        element
+                    );
+
+                }
+            );
+
+    }
+
+    /* ==========================================
+       CAMERAS
+    ========================================== */
+
+    async function updateCameras() {
+
+        const data =
+            await apiFetch(
+                "/api/cameras"
+            );
+
+        if (!data) {
+
+            document.getElementById(
+                "cameraStatusText"
+            ).textContent =
+                "Camera API unavailable";
+
+            return;
+        }
+
+        const cameras =
+            Array.isArray(data)
+                ? data
+                : (
+                    data.cameras ||
+                    data.data ||
+                    []
+                );
+
+        document.getElementById(
+            "cameraCount"
+        ).textContent =
+            cameras.length;
+
+        const connected =
+            cameras.filter(
+                camera =>
+                    String(
+                        camera.status ||
+                        ""
+                    ).toUpperCase() ===
+                    "CONNECTED"
+            ).length;
+
+        document.getElementById(
+            "cameraStatusText"
+        ).textContent =
+            connected +
+            " connected / " +
+            cameras.length +
+            " configured";
+
+        document.getElementById(
+            "cameraUpdated"
+        ).textContent =
+            "Updated " +
+            new Date().toLocaleTimeString();
+
+        const table =
+            document.getElementById(
+                "cameraTable"
+            );
+
+        if (!cameras.length) {
+
+            table.innerHTML = `
+                <tr>
+
+                    <td
+                        colspan="4"
+                        class="no-data"
+                    >
+                        No cameras configured
+                    </td>
+
+                </tr>
+            `;
+
+            return;
+        }
+
+        table.innerHTML = "";
+
+        cameras.forEach(
+            camera => {
+
+                const status =
+                    camera.status ||
+                    "DISCONNECTED";
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+                row.innerHTML = `
+
+                    <td>
+                        ${escapeHtml(
+                            camera.name ||
+                            camera.camera_id ||
+                            camera.id ||
+                            "Camera"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            camera.source ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="camera-status
+                            ${String(
+                                status
+                            ).toLowerCase()}"
+                        >
+
+                            ${escapeHtml(
+                                status
+                            )}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            camera.last_check ||
+                            camera.last_checked ||
+                            "-"
+                        )}
+                    </td>
+
+                `;
+
+                table.appendChild(
+                    row
+                );
+
+            }
+        );
+
+    }
+
+    /* ==========================================
+       SESSION
+    ========================================== */
+
+    async function updateSession() {
+
+        const data =
+            await apiFetch(
+                "/api/session"
+            );
+
+        if (!data) {
+            return;
+        }
+
+        const session =
+            data.session ||
+            data.data ||
+            data;
+
+        if (
+            !session ||
+            session.active === false
+        ) {
+
+            document.getElementById(
+                "sessionStatus"
+            ).textContent =
+                "INACTIVE";
+
+            return;
+        }
+
+        document.getElementById(
+            "sessionStatus"
+        ).textContent =
+            "ACTIVE";
+
+        document.getElementById(
+            "sessionPeak"
+        ).textContent =
+            session.peak_people || 0;
+
+        document.getElementById(
+            "sessionAverage"
+        ).textContent =
+            Number(
+                session.average_people || 0
+            ).toFixed(1);
+
+        document.getElementById(
+            "sessionOccupancy"
+        ).textContent =
+            Number(
+                session.peak_occupancy || 0
+            ).toFixed(1) +
+            "%";
+
+        document.getElementById(
+            "sessionDuration"
+        ).textContent =
+            formatDuration(
+                session.duration_seconds || 0
+            );
+
+    }
+
+    /* ==========================================
+       TREND GRAPH
+    ========================================== */
+
+    function drawTrend() {
+
+        const canvas =
+            document.getElementById(
+                "trendCanvas"
+            );
+
+        const context =
+            canvas.getContext(
+                "2d"
+            );
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+        const dpr =
+            window.devicePixelRatio || 1;
+
+        canvas.width =
+            rect.width * dpr;
+
+        canvas.height =
+            rect.height * dpr;
+
+        context.scale(
+            dpr,
+            dpr
+        );
+
+        const width =
+            rect.width;
+
+        const height =
+            rect.height;
+
+        context.clearRect(
+            0,
+            0,
+            width,
+            height
+        );
+
+        context.strokeStyle =
+            "#202020";
+
+        context.lineWidth = 1;
+
+        for (
+            let i = 0;
+            i < 5;
+            i++
+        ) {
+
+            const y =
+                20 +
+                (
+                    (
+                        height - 40
+                    ) /
+                    4
+                ) *
+                i;
+
+            context.beginPath();
+
+            context.moveTo(
+                0,
+                y
+            );
+
+            context.lineTo(
+                width,
+                y
+            );
+
+            context.stroke();
+
+        }
+
+        if (
+            trendData.length < 2
+        ) {
+
+            context.fillStyle =
+                "#555555";
+
+            context.font =
+                "12px Arial";
+
+            context.fillText(
+                "Waiting for crowd data...",
+                15,
+                height / 2
+            );
+
+            return;
+        }
+
+        const maxValue =
+            Math.max(
+                1,
+                ...trendData
+            );
+
+        context.strokeStyle =
+            "#00ff66";
+
+        context.lineWidth = 2;
+
+        context.beginPath();
+
+        trendData.forEach(
+            (value, index) => {
+
+                const x =
+                    (
+                        index /
+                        (
+                            trendData.length - 1
+                        )
+                    ) *
+                    width;
+
+                const y =
+                    height -
+                    20 -
+                    (
+                        value /
+                        maxValue
+                    ) *
+                    (
+                        height - 40
+                    );
+
+                if (
+                    index === 0
+                ) {
+
+                    context.moveTo(
+                        x,
+                        y
+                    );
+
+                } else {
+
+                    context.lineTo(
+                        x,
+                        y
+                    );
+
+                }
+
+            }
+        );
+
+        context.stroke();
+
+        const last =
+            trendData[
+                trendData.length - 1
+            ];
+
+        context.fillStyle =
+            "#00ff66";
+
+        context.font =
+            "12px Arial";
+
+        context.fillText(
+            String(last),
+            width - 35,
+            20
+        );
+
+    }
+
+    /* ==========================================
+       HELPERS
+    ========================================== */
+
+    function escapeHtml(
+        value
+    ) {
+
+        return String(value)
+
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+
+            .replace(
+                /</g,
+                "&lt;"
+            )
+
+            .replace(
+                />/g,
+                "&gt;"
+            )
+
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+    function formatDuration(
+        seconds
+    ) {
+
+        seconds =
+            Math.max(
+                0,
+                Number(seconds) || 0
+            );
+
+        const hours =
+            Math.floor(
+                seconds / 3600
+            );
+
+        const minutes =
+            Math.floor(
+                (
+                    seconds % 3600
+                ) / 60
+            );
+
+        const secs =
+            Math.floor(
+                seconds % 60
+            );
+
+        return (
+            String(hours).padStart(2, "0")
+            + ":" +
+            String(minutes).padStart(2, "0")
+            + ":" +
+            String(secs).padStart(2, "0")
+        );
+
+    }
+
+    /* ==========================================
+       LIVE CAMERA
+    ========================================== */
+
+    function updateLiveCameraStatus() {
+
+        const image =
+            document.getElementById(
+                "liveCamera"
+            );
+
+        const status =
+            document.getElementById(
+                "liveCameraStatus"
+            );
+
+        const overlay =
+            document.getElementById(
+                "cameraOverlay"
+            );
+
+        if (!image || !status) {
+            return;
+        }
+
+        image.onload = function() {
+
+            status.textContent =
+                "LIVE";
+
+            status.style.color =
+                "#00ff66";
+
+            if (overlay) {
+
+                overlay.textContent =
+                    "● LIVE";
+
+                overlay.style.color =
+                    "#00ff66";
+
+                overlay.style.borderColor =
+                    "#00ff66";
+
+            }
+
+        };
+
+        image.onerror = function() {
+
+            status.textContent =
+                "CAMERA UNAVAILABLE";
+
+            status.style.color =
+                "#ff3333";
+
+            if (overlay) {
+
+                overlay.textContent =
+                    "● CAMERA UNAVAILABLE";
+
+                overlay.style.color =
+                    "#ff3333";
+
+                overlay.style.borderColor =
+                    "#ff3333";
+
+            }
+
+        };
+
+    }
+
+    /* ==========================================
+       REFRESH
+    ========================================== */
+
+    async function refreshDashboard() {
+
+        await updateStatus();
+
+        await updateAlerts();
+
+        await updateCameras();
+
+        await updateSession();
+
+        updateLiveCameraStatus();
+
+    }
+
+    refreshDashboard();
+
+    setInterval(
+        refreshDashboard,
+        1000
+    );
+
+    window.addEventListener(
+        "resize",
+        drawTrend
+    );
+
+</script>
+
+</body>
+</html>

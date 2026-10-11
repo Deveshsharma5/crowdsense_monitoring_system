@@ -1,0 +1,2063 @@
+{
+    "report_id": "20260927_115958",
+    "generated_at": "2026-09-27 11:59:58",
+    "venue": {
+        "name": "Room",
+        "capacity": 10,
+        "shape": "circle",
+        "length": 10.0,
+        "width": 10.0,
+        "diameter": 10.0
+    },
+    "session": {
+        "session_id": "SESSION4",
+        "venue": "Room",
+        "capacity": 10,
+        "cameras": [
+            {
+                "camera_id": "CAMERA1",
+                "source": "0",
+                "enabled": true
+            }
+        ],
+        "start_time": "2026-09-27 11:59:42",
+        "end_time": null,
+        "duration_seconds": 13,
+        "status": "ACTIVE",
+        "peak_people": 1,
+        "average_people": 1.0,
+        "peak_occupancy": 10.0,
+        "warning_events": 0,
+        "critical_events": 0,
+        "total_updates": 3,
+        "last_people": 1,
+        "last_update": "2026-09-27 11:59:55"
+    },
+    "analytics": {
+        "venue": "Room",
+        "capacity": 10,
+        "time_range": {
+            "start_time": "2026-09-26 11:30:04",
+            "end_time": "2026-09-27 11:59:55",
+            "duration_seconds": 88191
+        },
+        "people": {
+            "peak_people": 12,
+            "average_people": 1.64,
+            "minimum_people": 0,
+            "total_records": 454
+        },
+        "occupancy": {
+            "peak_occupancy": 120.0,
+            "average_occupancy": 16.4,
+            "minimum_occupancy": 0.0
+        },
+        "density": {
+            "peak_density": 1.92,
+            "average_density": 0.0087,
+            "minimum_density": 0.0
+        },
+        "risk": {
+            "safe_records": 5259,
+            "warning_records": 1,
+            "critical_records": 30
+        },
+        "alerts": {
+            "warning": 2,
+            "critical": 51,
+            "total": 53
+        },
+        "incidents": {
+            "warning": 0,
+            "critical": 0,
+            "total": 0
+        },
+        "zones": {
+            "A1": {
+                "zone_id": "A1",
+                "peak_people": 1,
+                "peak_density": 0.0003,
+                "average_people": 0.01,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 352
+            },
+            "A2": {
+                "zone_id": "A2",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 352
+            },
+            "A3": {
+                "zone_id": "A3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 309
+            },
+            "A4": {
+                "zone_id": "A4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 309
+            },
+            "B1": {
+                "zone_id": "B1",
+                "peak_people": 5,
+                "peak_density": 0.2,
+                "average_people": 0.12,
+                "warning_records": 0,
+                "critical_records": 3,
+                "records": 352
+            },
+            "B2": {
+                "zone_id": "B2",
+                "peak_people": 5,
+                "peak_density": 0.2,
+                "average_people": 0.14,
+                "warning_records": 0,
+                "critical_records": 9,
+                "records": 352
+            },
+            "B3": {
+                "zone_id": "B3",
+                "peak_people": 12,
+                "peak_density": 1.92,
+                "average_people": 0.56,
+                "warning_records": 0,
+                "critical_records": 14,
+                "records": 309
+            },
+            "B4": {
+                "zone_id": "B4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 309
+            },
+            "C1_5": {
+                "zone_id": "C1_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C1_6": {
+                "zone_id": "C1_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C1_7": {
+                "zone_id": "C1_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C1_8": {
+                "zone_id": "C1_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C1_9": {
+                "zone_id": "C1_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C1_10": {
+                "zone_id": "C1_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C2_4": {
+                "zone_id": "C2_4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 68
+            },
+            "C2_5": {
+                "zone_id": "C2_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C2_6": {
+                "zone_id": "C2_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C2_7": {
+                "zone_id": "C2_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C2_8": {
+                "zone_id": "C2_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C2_9": {
+                "zone_id": "C2_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C2_10": {
+                "zone_id": "C2_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C2_11": {
+                "zone_id": "C2_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C3_3": {
+                "zone_id": "C3_3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 68
+            },
+            "C3_4": {
+                "zone_id": "C3_4",
+                "peak_people": 1,
+                "peak_density": 0.16,
+                "average_people": 0.03,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 68
+            },
+            "C3_5": {
+                "zone_id": "C3_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C3_6": {
+                "zone_id": "C3_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C3_7": {
+                "zone_id": "C3_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C3_8": {
+                "zone_id": "C3_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C3_9": {
+                "zone_id": "C3_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C3_10": {
+                "zone_id": "C3_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C3_11": {
+                "zone_id": "C3_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C3_12": {
+                "zone_id": "C3_12",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C4_2": {
+                "zone_id": "C4_2",
+                "peak_people": 1,
+                "peak_density": 0.16,
+                "average_people": 0.65,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 68
+            },
+            "C4_3": {
+                "zone_id": "C4_3",
+                "peak_people": 12,
+                "peak_density": 1.92,
+                "average_people": 0.78,
+                "warning_records": 0,
+                "critical_records": 4,
+                "records": 68
+            },
+            "C4_4": {
+                "zone_id": "C4_4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C4_5": {
+                "zone_id": "C4_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C4_6": {
+                "zone_id": "C4_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C4_7": {
+                "zone_id": "C4_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C4_8": {
+                "zone_id": "C4_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C4_9": {
+                "zone_id": "C4_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C4_10": {
+                "zone_id": "C4_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C4_11": {
+                "zone_id": "C4_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C4_12": {
+                "zone_id": "C4_12",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C4_13": {
+                "zone_id": "C4_13",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_1": {
+                "zone_id": "C5_1",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_2": {
+                "zone_id": "C5_2",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_3": {
+                "zone_id": "C5_3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_4": {
+                "zone_id": "C5_4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_5": {
+                "zone_id": "C5_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_6": {
+                "zone_id": "C5_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_7": {
+                "zone_id": "C5_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_8": {
+                "zone_id": "C5_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_9": {
+                "zone_id": "C5_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_10": {
+                "zone_id": "C5_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_11": {
+                "zone_id": "C5_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_12": {
+                "zone_id": "C5_12",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_13": {
+                "zone_id": "C5_13",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C5_14": {
+                "zone_id": "C5_14",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_1": {
+                "zone_id": "C6_1",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_2": {
+                "zone_id": "C6_2",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_3": {
+                "zone_id": "C6_3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_4": {
+                "zone_id": "C6_4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_5": {
+                "zone_id": "C6_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_6": {
+                "zone_id": "C6_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_7": {
+                "zone_id": "C6_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_8": {
+                "zone_id": "C6_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_9": {
+                "zone_id": "C6_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_10": {
+                "zone_id": "C6_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_11": {
+                "zone_id": "C6_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_12": {
+                "zone_id": "C6_12",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_13": {
+                "zone_id": "C6_13",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C6_14": {
+                "zone_id": "C6_14",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_1": {
+                "zone_id": "C7_1",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_2": {
+                "zone_id": "C7_2",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_3": {
+                "zone_id": "C7_3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_4": {
+                "zone_id": "C7_4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_5": {
+                "zone_id": "C7_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_6": {
+                "zone_id": "C7_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_7": {
+                "zone_id": "C7_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_8": {
+                "zone_id": "C7_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_9": {
+                "zone_id": "C7_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_10": {
+                "zone_id": "C7_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_11": {
+                "zone_id": "C7_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_12": {
+                "zone_id": "C7_12",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_13": {
+                "zone_id": "C7_13",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C7_14": {
+                "zone_id": "C7_14",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_1": {
+                "zone_id": "C8_1",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_2": {
+                "zone_id": "C8_2",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_3": {
+                "zone_id": "C8_3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_4": {
+                "zone_id": "C8_4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_5": {
+                "zone_id": "C8_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_6": {
+                "zone_id": "C8_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_7": {
+                "zone_id": "C8_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_8": {
+                "zone_id": "C8_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_9": {
+                "zone_id": "C8_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_10": {
+                "zone_id": "C8_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_11": {
+                "zone_id": "C8_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_12": {
+                "zone_id": "C8_12",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_13": {
+                "zone_id": "C8_13",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C8_14": {
+                "zone_id": "C8_14",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_1": {
+                "zone_id": "C9_1",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_2": {
+                "zone_id": "C9_2",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_3": {
+                "zone_id": "C9_3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_4": {
+                "zone_id": "C9_4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_5": {
+                "zone_id": "C9_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_6": {
+                "zone_id": "C9_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_7": {
+                "zone_id": "C9_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_8": {
+                "zone_id": "C9_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_9": {
+                "zone_id": "C9_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_10": {
+                "zone_id": "C9_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_11": {
+                "zone_id": "C9_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_12": {
+                "zone_id": "C9_12",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_13": {
+                "zone_id": "C9_13",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C9_14": {
+                "zone_id": "C9_14",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_1": {
+                "zone_id": "C10_1",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_2": {
+                "zone_id": "C10_2",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_3": {
+                "zone_id": "C10_3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_4": {
+                "zone_id": "C10_4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_5": {
+                "zone_id": "C10_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_6": {
+                "zone_id": "C10_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_7": {
+                "zone_id": "C10_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_8": {
+                "zone_id": "C10_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_9": {
+                "zone_id": "C10_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_10": {
+                "zone_id": "C10_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_11": {
+                "zone_id": "C10_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_12": {
+                "zone_id": "C10_12",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_13": {
+                "zone_id": "C10_13",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C10_14": {
+                "zone_id": "C10_14",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_2": {
+                "zone_id": "C11_2",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_3": {
+                "zone_id": "C11_3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_4": {
+                "zone_id": "C11_4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_5": {
+                "zone_id": "C11_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_6": {
+                "zone_id": "C11_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_7": {
+                "zone_id": "C11_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_8": {
+                "zone_id": "C11_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_9": {
+                "zone_id": "C11_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_10": {
+                "zone_id": "C11_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_11": {
+                "zone_id": "C11_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_12": {
+                "zone_id": "C11_12",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C11_13": {
+                "zone_id": "C11_13",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C12_3": {
+                "zone_id": "C12_3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C12_4": {
+                "zone_id": "C12_4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C12_5": {
+                "zone_id": "C12_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C12_6": {
+                "zone_id": "C12_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C12_7": {
+                "zone_id": "C12_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C12_8": {
+                "zone_id": "C12_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C12_9": {
+                "zone_id": "C12_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C12_10": {
+                "zone_id": "C12_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C12_11": {
+                "zone_id": "C12_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C12_12": {
+                "zone_id": "C12_12",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C13_4": {
+                "zone_id": "C13_4",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C13_5": {
+                "zone_id": "C13_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C13_6": {
+                "zone_id": "C13_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C13_7": {
+                "zone_id": "C13_7",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C13_8": {
+                "zone_id": "C13_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C13_9": {
+                "zone_id": "C13_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C13_10": {
+                "zone_id": "C13_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C13_11": {
+                "zone_id": "C13_11",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C14_5": {
+                "zone_id": "C14_5",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C14_6": {
+                "zone_id": "C14_6",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C14_7": {
+                "zone_id": "C14_7",
+                "peak_people": 1,
+                "peak_density": 0.04,
+                "average_people": 0.58,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C14_8": {
+                "zone_id": "C14_8",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C14_9": {
+                "zone_id": "C14_9",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C14_10": {
+                "zone_id": "C14_10",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 12
+            },
+            "C1_1": {
+                "zone_id": "C1_1",
+                "peak_people": 3,
+                "peak_density": 0.0008,
+                "average_people": 0.41,
+                "warning_records": 1,
+                "critical_records": 0,
+                "records": 34
+            },
+            "C1_2": {
+                "zone_id": "C1_2",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 90
+            },
+            "C2_1": {
+                "zone_id": "C2_1",
+                "peak_people": 1,
+                "peak_density": 0.0017,
+                "average_people": 0.27,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 90
+            },
+            "C1_3": {
+                "zone_id": "C1_3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 56
+            },
+            "C2_2": {
+                "zone_id": "C2_2",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 56
+            },
+            "C2_3": {
+                "zone_id": "C2_3",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 56
+            },
+            "C3_1": {
+                "zone_id": "C3_1",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 56
+            },
+            "C3_2": {
+                "zone_id": "C3_2",
+                "peak_people": 0,
+                "peak_density": 0.0,
+                "average_people": 0.0,
+                "warning_records": 0,
+                "critical_records": 0,
+                "records": 56
+            }
+        },
+        "most_crowded_zone": {
+            "zone_id": "B3",
+            "peak_people": 12,
+            "peak_density": 1.92,
+            "average_people": 0.56,
+            "warning_records": 0,
+            "critical_records": 14,
+            "records": 309
+        }
+    },
+    "alerts": [
+        {
+            "timestamp": "2026-09-26 11:34:54",
+            "zone_id": "B4",
+            "risk": "CRITICAL",
+            "people": 1,
+            "density": 0.04,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 11:38:58",
+            "zone_id": "TEST",
+            "risk": "CRITICAL",
+            "people": 6,
+            "density": 1.0,
+            "special_type": "TEST"
+        },
+        {
+            "timestamp": "2026-09-26 11:40:55",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 6,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 11:41:03",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 6,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 11:41:11",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 6,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 11:47:02",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 1,
+            "density": 0.04,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 11:47:18",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 1,
+            "density": 0.04,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 11:47:19",
+            "zone_id": "A1",
+            "risk": "CRITICAL",
+            "people": 1,
+            "density": 0.04,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 11:47:26",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 1,
+            "density": 0.04,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 16:41:16",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 5,
+            "density": 0.2,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 16:41:24",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 5,
+            "density": 0.2,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 16:41:26",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 5,
+            "density": 0.2,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 16:41:27",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 15,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 16:41:32",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 5,
+            "density": 0.2,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 16:41:40",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 5,
+            "density": 0.2,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 16:41:48",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 5,
+            "density": 0.2,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 16:41:56",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 5,
+            "density": 0.2,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 16:42:05",
+            "zone_id": "B2",
+            "risk": "CRITICAL",
+            "people": 5,
+            "density": 0.2,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:35:07",
+            "zone_id": "C2_1",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.0033,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:35:16",
+            "zone_id": "C2_1",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.0033,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:35:19",
+            "zone_id": "C1_1",
+            "risk": "WARNING",
+            "people": 3,
+            "density": 0.0008,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:35:20",
+            "zone_id": "C1_1",
+            "risk": "CRITICAL",
+            "people": 5,
+            "density": 0.0014,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:36:08",
+            "zone_id": "C1_1",
+            "risk": "WARNING",
+            "people": 3,
+            "density": 0.0008,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:36:09",
+            "zone_id": "C1_1",
+            "risk": "CRITICAL",
+            "people": 4,
+            "density": 0.0011,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:36:11",
+            "zone_id": "C2_1",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.0033,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:36:19",
+            "zone_id": "C2_1",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.005,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:36:27",
+            "zone_id": "C2_1",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.005,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:57:52",
+            "zone_id": "A2",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.0033,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:57:54",
+            "zone_id": "A1",
+            "risk": "CRITICAL",
+            "people": 3,
+            "density": 0.0008,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:58:13",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.0033,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 18:58:21",
+            "zone_id": "B1",
+            "risk": "CRITICAL",
+            "people": 2,
+            "density": 0.0033,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:09:28",
+            "zone_id": "B3",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 1.92,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:09:28",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 19:09:36",
+            "zone_id": "B3",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 1.92,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:09:36",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 19:09:44",
+            "zone_id": "B3",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 1.92,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:09:44",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 19:09:52",
+            "zone_id": "B3",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 1.92,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:09:52",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 19:10:00",
+            "zone_id": "B3",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 1.92,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:10:00",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 19:10:08",
+            "zone_id": "B3",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 1.92,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:10:08",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 19:10:16",
+            "zone_id": "B3",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 1.92,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:10:16",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 19:10:24",
+            "zone_id": "B3",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 1.92,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:10:24",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 19:10:32",
+            "zone_id": "B3",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 1.92,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:10:32",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 19:19:20",
+            "zone_id": "C4_3",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 1.92,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:19:20",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        },
+        {
+            "timestamp": "2026-09-26 19:19:28",
+            "zone_id": "C4_3",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 1.92,
+            "special_type": ""
+        },
+        {
+            "timestamp": "2026-09-26 19:19:28",
+            "zone_id": "VENUE",
+            "risk": "CRITICAL",
+            "people": 12,
+            "density": 0.0,
+            "special_type": "CAPACITY"
+        }
+    ],
+    "incidents": [],
+    "log_records": 5290
+}

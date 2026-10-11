@@ -1,0 +1,14 @@
+{
+    "cameras": [
+        {
+            "camera_id": "CAM1",
+            "name": "laptop",
+            "source": "0",
+            "enabled": true,
+            "status": "CONNECTING",
+            "people": 0,
+            "last_check": "2026-09-27 22:29:21",
+            "error": null
+        }
+    ]
+}
