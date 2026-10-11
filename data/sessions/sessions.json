@@ -2639,6 +2639,30 @@
             "total_updates": 33,
             "last_people": 0,
             "last_update": "2026-10-01 19:08:35"
+        },
+        {
+            "session_id": "SESSION111",
+            "venue": "pcce hall",
+            "capacity": 3,
+            "cameras": [
+                {
+                    "camera_id": "CAMERA1",
+                    "source": "0",
+                    "enabled": true
+                }
+            ],
+            "start_time": "2026-10-11 21:24:13",
+            "end_time": "2026-10-11 21:24:35",
+            "duration_seconds": 22,
+            "status": "COMPLETED",
+            "peak_people": 1,
+            "average_people": 1.0,
+            "peak_occupancy": 33.3,
+            "warning_events": 0,
+            "critical_events": 0,
+            "total_updates": 4,
+            "last_people": 1,
+            "last_update": "2026-10-11 21:24:33"
         }
     ],
     "current_session": null
