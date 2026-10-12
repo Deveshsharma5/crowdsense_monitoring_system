@@ -1,0 +1,58 @@
+# ===================================================
+# CrowdSense .gitignore
+# ===================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# PyInstaller
+build/
+dist/
+dist_final/
+dist_fixed/
+*.spec
+
+# Runtime Data
+data/logs/
+data/alerts/
+data/graphs/
+data/incidents/
+data/sessions/
+data/snapshots/
+data/reports/
+data/venue_config.json
+data/camera_config.json
+data/camera_calibration.json
+data/camera_calibrations.json
+data/camera_caliberation.json
+data/floorplan.json
+data/saved_cameras.json
+
+# YOLO Model (large binary)
+*.pt
+
+# Models directory
+models/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Misc
+*.log
+*.bak
