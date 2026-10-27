@@ -14,18 +14,20 @@ CrowdSense is an end-to-end, edge-deployable computer vision platform engineered
 
 - [Problem Statement](#problem-statement)
 - [System Architecture](#system-architecture)
+- [Technical Design Documentation](#technical-design-documentation)
 - [Core Features](#core-features)
 - [Technology Stack](#technology-stack)
 - [Project Directory Structure](#project-directory-structure)
 - [Prerequisites](#prerequisites)
 - [Installation & Setup](#installation--setup)
 - [Configuration (.env)](#configuration-env)
+- [Sample Data & Benchmarks](#sample-data--benchmarks)
 - [Usage Instructions](#usage-instructions)
   - [1. Launching the OpenCV Desktop Interface](#1-launching-the-opencv-desktop-interface)
   - [2. Launching the Web Management Dashboard](#2-launching-the-web-management-dashboard)
 - [REST API Endpoints](#rest-api-endpoints)
 - [Verification & Automated Testing](#verification--automated-testing)
-- [Publishing to GitHub](#publishing-to-github)
+- [Publishing & Repository Information](#publishing--repository-information)
 - [License](#license)
 
 ---
@@ -75,6 +77,14 @@ flowchart TD
         R --> S[Web Dashboard\n10-Page HTML5/CSS3/Vanilla JS UI]
     end
 ```
+
+---
+
+## Technical Design Documentation
+
+A comprehensive engineering specification detailing system mathematics, homography projection formulas, state-transition deduplication algorithms, and deployment topology is available in:
+
+👉 **[docs/TECHNICAL_DESIGN.md](docs/TECHNICAL_DESIGN.md)**
 
 ---
 
@@ -134,14 +144,23 @@ crowdsense/
 │   ├── venue.py                    # Physical venue dimension & geometry model
 │   ├── static/                     # Web dashboard assets & stylesheets
 │   └── *.html                      # 10 Web dashboard views (admin, analytics, etc.)
+├── docs/
+│   └── TECHNICAL_DESIGN.md         # In-depth system design & mathematical specs
+├── sample_data/
+│   ├── README.md                   # Safe data guide & benchmark acquisition info
+│   ├── sample_venue_config.json    # Example venue configuration with custom thresholds
+│   ├── sample_camera_calibration.json # Example 4-point perspective matrix
+│   └── sample_crowd_log.csv        # Synthetic time-series crowd telemetry
 ├── tests/
 │   ├── __init__.py                 # Test package runner
-│   ├── run_all_tests.py            # Master automated test runner
+│   ├── run_all_tests.py            # Master automated test runner (61 tests)
+│   ├── test_crowd_density.py       # 10 Unit tests for crowd counting & density
 │   ├── test_zone_thresholds.py     # 12 Integration tests for zoning, API & PDF
 │   └── test_telegram_service.py    # 39 Unit/Security tests for Telegram alerting
 ├── data/                           # Runtime logs, reports, snapshots (gitignored)
 ├── .env.example                    # Template environment variables
 ├── .gitignore                      # Git exclusion rules
+├── LICENSE                         # MIT License
 ├── requirements.txt                # Pinned production dependencies
 └── README.md                       # Comprehensive documentation
 ```
@@ -206,17 +225,27 @@ Open `.env` in an editor and specify your Telegram parameters:
 
 # Telegram Emergency Alerts Bot
 # Obtain your bot token from @BotFather on Telegram
-TELEGRAM_BOT_TOKEN=1234567890:ABCdefGHIjklMNOpqrsTUVwxyz
+TELEGRAM_BOT_TOKEN=your_bot_token_here
 
 # Your Telegram numeric Chat ID
 # Obtain via @userinfobot on Telegram
-TELEGRAM_CHAT_ID=1061709901
+TELEGRAM_CHAT_ID=your_chat_id_here
 
 # Minimum cooldown period (in seconds) between alerts for the same zone
 TELEGRAM_COOLDOWN_SECONDS=300
 ```
 
 > **Note**: If `TELEGRAM_BOT_TOKEN` is left unconfigured, CrowdSense operates normally in simulation mode without raising exceptions.
+
+---
+
+## Sample Data & Benchmarks
+
+For offline evaluation without a live camera setup, pre-configured sample datasets and guides are available in the [sample_data/](sample_data/) directory:
+- `sample_data/sample_venue_config.json`: Ready-to-use 30m × 15m exhibition hall configuration.
+- `sample_data/sample_camera_calibration.json`: Pre-computed 4-point homography calibration.
+- `sample_data/sample_crowd_log.csv`: Synthetic multi-zone crowd telemetry across SAFE, WARNING, and CRITICAL states.
+- `sample_data/README.md`: Instructions on loading sample data and acquiring public research benchmark video sets (PETS 2009, Town Centre).
 
 ---
 
@@ -281,19 +310,25 @@ CrowdSense exposes a REST API consumed by the web client and external security s
 The repository includes a comprehensive automated test suite covering all critical safety, risk calculation, Telegram alert dispatch, and PDF generation subsystems.
 
 ### Running All Tests
-Execute the unified test runner:
+Execute the unified master test runner:
 ```bash
 python tests/run_all_tests.py
 ```
 
 ### Running Individual Test Suites
-1. **Zone Thresholds & PDF Integration Tests**:
+1. **Crowd Counting & Spatial Density Unit Tests**:
+   ```bash
+   python tests/test_crowd_density.py
+   ```
+   *Covers:* Grid generation, coordinate resolution to zones, single/multi-person counting, density ($\text{people}/m^2$) calculation, area capacities, occupancy percentages, boundary clamping, circular venue geometry, and threshold transitions. *(10/10 Tests Passing)*
+
+2. **Zone Thresholds & PDF Integration Tests**:
    ```bash
    python tests/test_zone_thresholds.py
    ```
-   *Covers:* VenueConfig initialization, PhysicalZoneManager grid creation, validation of threshold ranges (`warning < critical`), custom threshold application, zone risk state calculation, API threshold endpoints, AnalyticsManager integration, and PDF report creation. *(12/12 Tests Passing)*
+   *Covers:* VenueConfig initialization, PhysicalZoneManager grid creation, validation of threshold ranges (`warning < critical`), custom threshold application, zone risk state calculation, API threshold endpoints, AnalyticsManager integration, and 15-section PDF report generation. *(12/12 Tests Passing)*
 
-2. **Telegram Alerting & Security Unit Tests**:
+3. **Telegram Alerting & Security Unit Tests**:
    ```bash
    python tests/test_telegram_service.py
    ```
@@ -301,23 +336,11 @@ python tests/run_all_tests.py
 
 ---
 
-## Publishing to GitHub
+## Publishing & Repository Information
 
-To publish this project to the official GitHub repository (`https://github.com/Deveshsharma5/crowdsense_monitoring_system`):
-
-```bash
-# 1. Update the remote URL to the target repository
-git remote set-url origin https://github.com/Deveshsharma5/crowdsense_monitoring_system.git
-
-# 2. Stage all organized files (ignoring models, virtual environments, and secrets)
-git add .
-
-# 3. Commit the prepared codebase
-git commit -m "feat: complete CrowdSense monitoring system with real-time YOLO detection, zoning, and automated alerts"
-
-# 4. Push to the main branch
-git push -u origin main
-```
+- **Official Repository**: [https://github.com/Deveshsharma5/crowdsense_monitoring_system](https://github.com/Deveshsharma5/crowdsense_monitoring_system)
+- **Primary Branch**: `main`
+- **License**: MIT License
 
 ---
 

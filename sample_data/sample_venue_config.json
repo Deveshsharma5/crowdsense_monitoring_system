@@ -1,0 +1,43 @@
+{
+    "name": "Metro Central Exhibition Hall",
+    "shape": "rectangle",
+    "length": 30.0,
+    "width": 15.0,
+    "diameter": 0.0,
+    "capacity": 200,
+    "warning_threshold": 70.0,
+    "critical_threshold": 90.0,
+    "grid_size": 5.0,
+    "zones": [],
+    "zone_thresholds": {
+        "A1": {
+            "warning_threshold": 50.0,
+            "critical_threshold": 75.0
+        },
+        "A6": {
+            "warning_threshold": 55.0,
+            "critical_threshold": 80.0
+        }
+    },
+    "special_areas": [
+        {
+            "id": "entry_gate_a",
+            "name": "North Main Entrance",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 5.0,
+            "height": 5.0,
+            "type": "entrance"
+        },
+        {
+            "id": "emergency_exit_1",
+            "name": "East Emergency Exit",
+            "x": 25.0,
+            "y": 10.0,
+            "width": 5.0,
+            "height": 5.0,
+            "type": "exit"
+        }
+    ],
+    "floorplan": null
+}
