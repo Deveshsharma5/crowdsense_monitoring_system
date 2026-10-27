@@ -44,37 +44,37 @@ Traditional physical security depends largely on human observation or delayed ma
 
 ```mermaid
 flowchart TD
-    subgraph VideoIngestion [1. Video Ingestion & Inference]
-        A[Camera Feeds\nWebcam / RTSP / Video] --> B[stream_capture.py\nLow-Latency Threaded Buffer]
-        B --> C[camera_worker.py\nYOLOv11 Object Detection]
-        C --> D[Person Centroid & Foot Coordinates]
+    subgraph VideoIngestion ["1. Video Ingestion & Inference"]
+        A["Camera Feeds<br/>Webcam / RTSP / Video"] --> B["stream_capture.py<br/>Low-Latency Threaded Buffer"]
+        B --> C["camera_worker.py<br/>YOLOv11 Object Detection"]
+        C --> D["Person Centroid & Foot Coordinates"]
     end
 
-    subgraph SpatialTransform [2. Perspective & Zoning Engine]
-        D --> E[calibration.py\n4-Point Homography Transformation]
-        E --> F[zones.py\nPhysical Zone Grid Mapping]
-        F --> G[Per-Zone Dynamic Density\n& Occupancy Calculation]
+    subgraph SpatialTransform ["2. Perspective & Zoning Engine"]
+        D --> E["calibration.py<br/>4-Point Homography Transformation"]
+        E --> F["zones.py<br/>Physical Zone Grid Mapping"]
+        F --> G["Per-Zone Dynamic Density<br/>& Occupancy Calculation"]
     end
 
-    subgraph RiskAlerting [3. Safety & Dispatch Engine]
-        G --> H[safety_manager.py\nRisk State Evaluator]
-        H -->|SAFE / WARNING / CRITICAL| I[alert_manager.py\nSound & UI Alerts]
-        H -->|State Transition: CRITICAL| J[telegram_service.py\nAsync Telegram Emergency Bot]
-        H -->|Critical Event| K[incident_manager.py\nIncident Audit & Snapshot Store]
+    subgraph RiskAlerting ["3. Safety & Dispatch Engine"]
+        G --> H["safety_manager.py<br/>Risk State Evaluator"]
+        H -->|"SAFE / WARNING / CRITICAL"| I["alert_manager.py<br/>Sound & UI Alerts"]
+        H -->|"State Transition: CRITICAL"| J["telegram_service.py<br/>Async Telegram Emergency Bot"]
+        H -->|"Critical Event"| K["incident_manager.py<br/>Incident Audit & Snapshot Store"]
     end
 
-    subgraph AnalyticsExport [4. Analytics & Compliance Logging]
-        G --> L[data_logger.py\nCSV Time-Series Recorder]
-        L --> M[analytics_manager.py\nTemporal Occupancy & Risk Engine]
-        M --> N[report_manager.py\nData Aggregator]
-        N --> O[report_exporter.py\n15-Section PDF Exporter with Charts]
+    subgraph AnalyticsExport ["4. Analytics & Compliance Logging"]
+        G --> L["data_logger.py<br/>CSV Time-Series Recorder"]
+        L --> M["analytics_manager.py<br/>Temporal Occupancy & Risk Engine"]
+        M --> N["report_manager.py<br/>Data Aggregator"]
+        N --> O["report_exporter.py<br/>15-Section PDF Exporter with Charts"]
     end
 
-    subgraph ControlInterfaces [5. User Interfaces & REST API]
-        P[main.py\nOpenCV Desktop GUI] --> C
+    subgraph ControlInterfaces ["5. User Interfaces & REST API"]
+        P["main.py<br/>OpenCV Desktop GUI"] --> C
         P --> H
-        Q[local_server.py\nFlask Web Server] --> R[api_endpoints.py\n40+ REST API Endpoints]
-        R --> S[Web Dashboard\n10-Page HTML5/CSS3/Vanilla JS UI]
+        Q["local_server.py<br/>Flask Web Server"] --> R["api_endpoints.py<br/>40+ REST API Endpoints"]
+        R --> S["Web Dashboard<br/>10-Page HTML5/CSS3/Vanilla JS UI"]
     end
 ```
 

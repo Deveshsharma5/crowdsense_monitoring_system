@@ -39,36 +39,36 @@ CrowdSense is an edge-native physical security and crowd monitoring platform dev
 
 ```mermaid
 flowchart TD
-    subgraph VideoIngestion [1. Video Ingestion Subsystem]
-        A[Camera Stream / RTSP / Video] --> B[stream_capture.py\nVideoStreamCapture]
-        B -->|Thread-Safe Latest Frame| C[camera_worker.py\nCameraWorker]
-        C -->|YOLOv11 Inference| D[Bounding Box & Bottom-Center Foot Detection]
+    subgraph VideoIngestion ["1. Video Ingestion Subsystem"]
+        A["Camera Stream / RTSP / Video"] --> B["stream_capture.py<br/>VideoStreamCapture"]
+        B -->|"Thread-Safe Latest Frame"| C["camera_worker.py<br/>CameraWorker"]
+        C -->|"YOLOv11 Inference"| D["Bounding Box & Bottom-Center Foot Detection"]
     end
 
-    subgraph SpatialTransformation [2. Perspective & Zoning Subsystem]
-        D -->|Pixel Coordinates u, v| E[calibration.py\nPlanar Homography Matrix H]
-        E -->|Real-World Metric Coordinates X, Y| F[zones.py\nPhysicalZoneManager]
-        F --> G[Dynamic Grid Zone Allocation\nArea, Capacity, People, Density, Occupancy]
+    subgraph SpatialTransformation ["2. Perspective & Zoning Subsystem"]
+        D -->|"Pixel Coordinates (u, v)"| E["calibration.py<br/>Planar Homography Matrix H"]
+        E -->|"Real-World Metric Coordinates (X, Y)"| F["zones.py<br/>PhysicalZoneManager"]
+        F --> G["Dynamic Grid Zone Allocation<br/>Area, Capacity, People, Density, Occupancy"]
     end
 
-    subgraph SafetyAndAlerting [3. Risk Assessment & Dispatch Engine]
-        G --> H[safety_manager.py\nSafetyManager]
-        H -->|Risk State: SAFE / WARNING / CRITICAL| I[alert_manager.py\nAlertManager]
-        H -->|Edge Trigger: Enter CRITICAL| J[telegram_service.py\nTelegramNotifier Daemon]
-        H -->|Incident Snapshot Store| K[incident_manager.py\nIncidentManager]
+    subgraph SafetyAndAlerting ["3. Risk Assessment & Dispatch Engine"]
+        G --> H["safety_manager.py<br/>SafetyManager"]
+        H -->|"Risk State: SAFE / WARNING / CRITICAL"| I["alert_manager.py<br/>AlertManager"]
+        H -->|"Edge Trigger: Enter CRITICAL"| J["telegram_service.py<br/>TelegramNotifier Daemon"]
+        H -->|"Incident Snapshot Store"| K["incident_manager.py<br/>IncidentManager"]
     end
 
-    subgraph AnalyticsAndReporting [4. Historical Analytics & Compliance]
-        G --> L[data_logger.py\nCSV Time-Series Logger]
-        L --> M[analytics_manager.py\nAnalytics Engine]
-        M --> N[report_manager.py\nReport Aggregator]
-        N --> O[report_exporter.py\n15-Section ReportLab PDF Exporter]
+    subgraph AnalyticsAndReporting ["4. Historical Analytics & Compliance"]
+        G --> L["data_logger.py<br/>CSV Time-Series Logger"]
+        L --> M["analytics_manager.py<br/>Analytics Engine"]
+        M --> N["report_manager.py<br/>Report Aggregator"]
+        N --> O["report_exporter.py<br/>15-Section ReportLab PDF Exporter"]
     end
 
-    subgraph PresentationTier [5. Dual Presentation Tier]
-        P[local_server.py\nFlask Application :5000] --> Q[api_endpoints.py\nCrowdSenseAPI (40+ Endpoints)]
-        Q --> R[10-Page Web Dashboard\nHTML5 / Vanilla JS / CSS3]
-        S[main.py\nOpenCV Desktop Interface] --> C
+    subgraph PresentationTier ["5. Dual Presentation Tier"]
+        P["local_server.py<br/>Flask Application (Port 5000)"] --> Q["api_endpoints.py<br/>CrowdSenseAPI (40+ Endpoints)"]
+        Q --> R["10-Page Web Dashboard<br/>HTML5 / Vanilla JS / CSS3"]
+        S["main.py<br/>OpenCV Desktop Interface"] --> C
         S --> H
     end
 ```
@@ -233,3 +233,4 @@ flowchart TD
 - **Multi-Camera Fused Tracking**: Implement 3D spatial re-identification across overlapping camera fields of view to cover massive convention centers with continuous tracking.
 - **Predictive Bottleneck AI**: Integrate recurrent/LSTM flow forecasting to predict choke point stampedes 3–5 minutes before critical thresholds are reached.
 - **Direct Public Address (PA) Integration**: Connect automated SIP/VoIP or automated audio hardware trigger to broadcast localized evacuation instructions automatically upon critical alerts.
+
