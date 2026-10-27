@@ -95,6 +95,13 @@ class ReportManager:
     def get_venue_data(self):
 
         if self.venue_config is None:
+            try:
+                from venue import VenueConfig
+                self.venue_config = VenueConfig.load()
+            except Exception:
+                pass
+
+        if self.venue_config is None:
 
             return {
                 "name": "Unknown Venue",
@@ -102,7 +109,10 @@ class ReportManager:
                 "shape": "rectangle",
                 "length": 0,
                 "width": 0,
-                "diameter": 0
+                "diameter": 0,
+                "warning_threshold": 70,
+                "critical_threshold": 90,
+                "zone_thresholds": {}
             }
 
         return {
@@ -147,6 +157,27 @@ class ReportManager:
                     self.venue_config,
                     "diameter",
                     0
+                ),
+
+            "warning_threshold":
+                getattr(
+                    self.venue_config,
+                    "warning_threshold",
+                    70
+                ),
+
+            "critical_threshold":
+                getattr(
+                    self.venue_config,
+                    "critical_threshold",
+                    90
+                ),
+
+            "zone_thresholds":
+                getattr(
+                    self.venue_config,
+                    "zone_thresholds",
+                    {}
                 )
         }
 
@@ -423,6 +454,9 @@ class ReportManager:
                 row
             )
 
+        if not filtered and rows:
+            return list(rows)
+
         return filtered
 
     # ========================================================
@@ -670,6 +704,15 @@ class ReportManager:
         # ----------------------------------------------------
         # ANALYTICS
         # ----------------------------------------------------
+
+        if self.analytics_manager is None:
+            try:
+                from analytics_manager import AnalyticsManager
+                self.analytics_manager = AnalyticsManager()
+                if self.venue_config is not None:
+                    self.analytics_manager.venue_config = self.venue_config
+            except Exception:
+                pass
 
         if self.analytics_manager is not None:
 

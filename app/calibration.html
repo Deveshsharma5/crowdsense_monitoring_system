@@ -1,2030 +1,552 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>CrowdSense - Calibration</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrowdSense - Camera Calibration</title>
+    <link rel="stylesheet" href="/static/css/common.css">
     <style>
-
-        * {
-            box-sizing: border-box;
+        .calibration-grid {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 24px;
         }
-
-        body {
-            margin: 0;
-            background: #050505;
-            color: white;
-            font-family: Arial, sans-serif;
+        @media (max-width: 1024px) {
+            .calibration-grid {
+                grid-template-columns: 1fr;
+            }
         }
-
-        header {
-            background: #0b0b0b;
-            border-bottom: 1px solid #222;
-            padding: 18px 25px;
+        .stream-viewport {
+            position: relative;
+            width: 100%;
+            height: 520px;
+            background: #000;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #cameraStream {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+            z-index: 1;
+        }
+        #calibrationCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            cursor: crosshair;
+        }
+        .stream-placeholder {
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 30px;
+            z-index: 0;
+        }
+        .point-step {
             display: flex;
             align-items: center;
             justify-content: space-between;
-        }
-
-        header h1 {
-            margin: 0;
-            color: #00d26a;
-            font-size: 24px;
-        }
-
-        header span {
-            color: #aaa;
-            font-size: 13px;
-        }
-
-        nav {
-            background: #0a0a0a;
-            border-bottom: 1px solid #222;
-            padding: 10px 20px;
-        }
-
-        nav a {
-            color: #aaa;
-            text-decoration: none;
-            margin-right: 20px;
-            font-size: 14px;
-        }
-
-        nav a:hover {
-            color: #00d26a;
-        }
-
-        nav a.active {
-            color: #00d26a;
-            font-weight: bold;
-        }
-
-        .container {
-            padding: 25px;
-            max-width: 1400px;
-            margin: auto;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 20px;
-        }
-
-        .panel {
-            background: #0c0c0c;
-            border: 1px solid #222;
-            border-radius: 10px;
-            padding: 20px;
-        }
-
-        .panel h2 {
-            margin-top: 0;
-            font-size: 18px;
-        }
-
-        label {
-            display: block;
-            color: #aaa;
-            font-size: 13px;
-            margin-bottom: 7px;
-        }
-
-        select,
-        input {
-            width: 100%;
-            background: #111;
-            color: white;
-            border: 1px solid #333;
-            border-radius: 6px;
-            padding: 10px;
-            margin-bottom: 15px;
-        }
-
-        select:focus,
-        input:focus {
-            outline: none;
-            border-color: #00d26a;
-        }
-
-        button {
-            border: none;
-            border-radius: 6px;
-            padding: 10px 15px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-right: 6px;
+            padding: 8px 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
             margin-bottom: 8px;
+            font-size: 13px;
         }
-
-        .green {
-            background: #00d26a;
-            color: #000;
-        }
-
-        .red {
-            background: #d60000;
+        .point-marker-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent-critical);
             color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            margin-right: 8px;
         }
-
-        .dark {
-            background: #222;
-            color: white;
-            border: 1px solid #444;
+        .point-marker-dot.active {
+            background: var(--accent-emerald);
+            color: black;
         }
-
-        .status {
+        .step-instruction-card {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: var(--radius-sm);
             padding: 12px;
-            border-radius: 6px;
-            background: #111;
-            border: 1px solid #333;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-
-        .status.calibrated {
-            border-color: #00d26a;
-            color: #00d26a;
-        }
-
-        .status.not-calibrated {
-            border-color: #d60000;
-            color: #ff5555;
-        }
-
-        /* =====================================================
-           CAMERA VIEW
-           ===================================================== */
-
-        .camera-box {
-            background: #000;
-            border: 2px solid #222;
-            border-radius: 10px;
-            min-height: 500px;
-            position: relative;
-            overflow: hidden;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #cameraStream {
-            position: absolute;
-
-            width: 100%;
-            height: 100%;
-
-            object-fit: contain;
-
-            background: #000;
-
-            display: none;
-
-            z-index: 1;
-        }
-
-        #calibrationCanvas {
-            position: absolute;
-
-            width: 100%;
-            height: 100%;
-
-            display: block;
-
-            z-index: 2;
-
-            cursor: crosshair;
-
-            background: transparent;
-        }
-
-        .camera-message {
-            position: absolute;
-
-            inset: 0;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            color: #777;
-
-            pointer-events: none;
-
-            z-index: 3;
-
-            text-align: center;
-
-            padding: 20px;
-        }
-
-        .camera-status {
-            position: absolute;
-
-            top: 12px;
-            right: 12px;
-
-            z-index: 4;
-
-            background: rgba(0, 0, 0, 0.75);
-
-            border: 1px solid #333;
-
-            border-radius: 6px;
-
-            padding: 7px 10px;
-
+            margin-bottom: 16px;
             font-size: 12px;
-
-            color: #aaa;
-
-            display: none;
+            line-height: 1.6;
+            color: var(--text-primary);
         }
-
-        .camera-status.connected {
-            color: #00d26a;
-            border-color: #00d26a;
-        }
-
-        .camera-status.error {
-            color: #ff5555;
-            border-color: #d60000;
-        }
-
-        .points-list {
-            margin-top: 15px;
-            color: #aaa;
+        .toast-notify {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
             font-size: 13px;
-            line-height: 1.7;
-        }
-
-        .info {
-            background: #101010;
-            border-left: 3px solid #00d26a;
-            padding: 12px;
-            margin-top: 15px;
-            color: #aaa;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .danger-info {
-            border-left-color: #d60000;
-        }
-
-        .message {
-            margin-top: 12px;
-            padding: 10px;
-            border-radius: 6px;
+            font-weight: 600;
+            z-index: 1000;
             display: none;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            animation: fadeIn 0.2s ease;
         }
-
-        .message.success {
-            display: block;
-            background: #062b17;
-            color: #00d26a;
-            border: 1px solid #00d26a;
+        .toast-notify.success {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-emerald);
+            color: var(--accent-emerald);
         }
-
-        .message.error {
-            display: block;
-            background: #2b0606;
-            color: #ff5555;
-            border: 1px solid #d60000;
+        .toast-notify.error {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-critical);
+            color: var(--accent-critical);
         }
-
-        @media (max-width: 900px) {
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .camera-box {
-                min-height: 350px;
-            }
-
-        }
-
     </style>
-
 </head>
-
 <body>
 
-<header>
+    <header class="app-header">
+        <div class="logo">
+            <div class="logo-icon">C</div>
+            <div class="logo-text">Crowd<span>Sense</span></div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="goBack()">Back</button>
+            <button class="btn btn-secondary" onclick="refreshPage()">Refresh</button>
+        </div>
+    </header>
 
-    <h1>CROWDSENSE</h1>
+    <nav class="app-nav">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/cameras">Cameras</a>
+        <a href="/zones">Zones</a>
+        <a href="/alerts">Alerts</a>
+        <a href="/analytics">Analytics</a>
+        <a href="/reports">Reports</a>
+        <a href="/session">Sessions</a>
+        <a href="/venue">Venue</a>
+        <a href="/calibration" class="active">Calibration</a>
+        <a href="/admin">Admin</a>
+    </nav>
 
-    <span>
-        Camera Calibration
-    </span>
+    <main class="page-container">
 
-</header>
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Perspective Calibration</h1>
+                <p class="page-subtitle">Map 4-point camera pixel space to real-world metric ground plane coordinates</p>
+            </div>
+            <div>
+                <span class="badge badge-warning" id="calibrationStatusBadge">Not Calibrated</span>
+            </div>
+        </div>
 
+        <div class="calibration-grid">
 
-<nav>
+            <!-- LEFT: Controls & Coordinates -->
+            <div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2 class="card-title" style="font-size:15px; color:var(--text-primary); font-weight:600;">Camera & Mapping Setup</h2>
+                    </div>
 
-    <a href="/">
-        Dashboard
-    </a>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Target Camera</label>
+                        <select id="cameraSelect" class="form-select" onchange="onCameraChange()">
+                            <option value="">Select a camera...</option>
+                        </select>
+                    </div>
 
-    <a href="/cameras">
-        Cameras
-    </a>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;" class="mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Venue Length (m)</label>
+                            <input type="number" id="venueLength" class="form-input" min="1" step="0.5" value="20">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Venue Width (m)</label>
+                            <input type="number" id="venueWidth" class="form-input" min="1" step="0.5" value="10">
+                        </div>
+                    </div>
 
-    <a href="/venue">
-        Venue
-    </a>
+                    <div class="step-instruction-card">
+                        <strong>Mapping Guide:</strong><br>
+                        Click exactly 4 ground boundary corners in sequential order on the live camera preview:<br>
+                        1. <strong>Top-Left</strong> &rarr; 2. <strong>Top-Right</strong> &rarr; 3. <strong>Bottom-Right</strong> &rarr; 4. <strong>Bottom-Left</strong>.
+                    </div>
 
-    <a href="/zones">
-        Zones
-    </a>
+                    <div class="mb-3">
+                        <label class="form-label">Mapped Anchor Points</label>
+                        <div class="point-step">
+                            <div style="display:flex; align-items:center;">
+                                <span class="point-marker-dot" id="dot1">1</span>
+                                <span>Top-Left</span>
+                            </div>
+                            <span id="point1Text" style="font-family:monospace; color:var(--text-secondary); font-size:12px;">Not selected</span>
+                        </div>
+                        <div class="point-step">
+                            <div style="display:flex; align-items:center;">
+                                <span class="point-marker-dot" id="dot2">2</span>
+                                <span>Top-Right</span>
+                            </div>
+                            <span id="point2Text" style="font-family:monospace; color:var(--text-secondary); font-size:12px;">Not selected</span>
+                        </div>
+                        <div class="point-step">
+                            <div style="display:flex; align-items:center;">
+                                <span class="point-marker-dot" id="dot3">3</span>
+                                <span>Bottom-Right</span>
+                            </div>
+                            <span id="point3Text" style="font-family:monospace; color:var(--text-secondary); font-size:12px;">Not selected</span>
+                        </div>
+                        <div class="point-step">
+                            <div style="display:flex; align-items:center;">
+                                <span class="point-marker-dot" id="dot4">4</span>
+                                <span>Bottom-Left</span>
+                            </div>
+                            <span id="point4Text" style="font-family:monospace; color:var(--text-secondary); font-size:12px;">Not selected</span>
+                        </div>
+                    </div>
 
-    <a href="/alerts">
-        Alerts
-    </a>
-
-    <a href="/analytics">
-        Analytics
-    </a>
-
-    <a href="/session">
-        Session
-    </a>
-
-    <a href="/reports">
-        Reports
-    </a>
-
-    <a href="/admin">
-        Admin
-    </a>
-
-    <a
-        href="/calibration"
-        class="active"
-    >
-        Calibration
-    </a>
-
-</nav>
-
-
-<div class="container">
-
-    <div class="grid">
-
-        <!-- ================================================= -->
-        <!-- SETTINGS -->
-        <!-- ================================================= -->
-
-        <div class="panel">
-
-            <h2>
-                Camera
-            </h2>
-
-            <label>
-                Select Camera
-            </label>
-
-            <select id="cameraSelect">
-
-                <option value="">
-                    Loading cameras...
-                </option>
-
-            </select>
-
-
-            <div
-                id="calibrationStatus"
-                class="status"
-            >
-                Select a camera.
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button class="btn btn-primary" onclick="saveCalibration()">Save Calibration</button>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <button class="btn btn-secondary" onclick="clearPoints()">Clear Points</button>
+                            <button class="btn btn-secondary" onclick="deleteCalibration()" style="color:var(--accent-critical); border-color:rgba(239,68,68,0.3);">Reset Mapping</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
+            <!-- RIGHT: Stream Viewport & Interactive Canvas -->
+            <div>
+                <div class="card">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h2 class="card-title" style="font-size:15px; color:var(--text-primary); font-weight:600;">Live Camera Alignment Feed</h2>
+                            <div style="font-size:12px; color:var(--text-secondary);" id="activeCameraHint">No camera selected</div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="reloadStream()" style="padding:5px 12px; font-size:12px;">Reload Feed</button>
+                    </div>
 
-            <h2>
-                Venue Dimensions
-            </h2>
-
-            <label>
-                Venue Length
-            </label>
-
-            <input
-                id="venueLength"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="Length"
-            >
-
-
-            <label>
-                Venue Width
-            </label>
-
-            <input
-                id="venueWidth"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="Width"
-            >
-
-
-            <h2>
-                Calibration Points
-            </h2>
-
-            <div class="points-list">
-
-                <div>
-                    Point 1:
-                    <span id="point1Text">
-                        Not selected
-                    </span>
+                    <div class="stream-viewport" id="viewportContainer">
+                        <img id="cameraStream" alt="Camera Stream">
+                        <canvas id="calibrationCanvas"></canvas>
+                        <div class="stream-placeholder" id="streamPlaceholder">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6; margin-bottom:8px;">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                <circle cx="12" cy="13" r="4"></circle>
+                            </svg>
+                            <div>Select a camera to initiate calibration stream.</div>
+                        </div>
+                    </div>
                 </div>
-
-                <div>
-                    Point 2:
-                    <span id="point2Text">
-                        Not selected
-                    </span>
-                </div>
-
-                <div>
-                    Point 3:
-                    <span id="point3Text">
-                        Not selected
-                    </span>
-                </div>
-
-                <div>
-                    Point 4:
-                    <span id="point4Text">
-                        Not selected
-                    </span>
-                </div>
-
-            </div>
-
-
-            <div style="margin-top:15px">
-
-                <button
-                    class="green"
-                    onclick="saveCalibration()"
-                >
-                    Save Calibration
-                </button>
-
-                <button
-                    class="dark"
-                    onclick="clearPoints()"
-                >
-                    Clear Points
-                </button>
-
-                <button
-                    class="red"
-                    onclick="deleteCalibration()"
-                >
-                    Delete Calibration
-                </button>
-
-            </div>
-
-
-            <div
-                id="message"
-                class="message"
-            ></div>
-
-
-            <div class="info">
-
-                Click four points on the actual
-                camera view in clockwise order.
-
-                <br><br>
-
-                Recommended order:
-
-                <br>
-
-                1 → Top Left
-
-                <br>
-
-                2 → Top Right
-
-                <br>
-
-                3 → Bottom Right
-
-                <br>
-
-                4 → Bottom Left
-
-            </div>
-
-
-            <div class="info danger-info">
-
-                Calibration connects camera pixels
-                to the physical venue.
-
-                Each camera must be calibrated
-                separately.
-
             </div>
 
         </div>
 
-
-        <!-- ================================================= -->
-        <!-- CAMERA VIEW -->
-        <!-- ================================================= -->
-
-        <div class="panel">
-
-            <h2>
-                Camera Calibration View
-            </h2>
-
-            <div
-                id="cameraBox"
-                class="camera-box"
-            >
-
-                <img
-                    id="cameraStream"
-                    alt="Camera stream"
-                >
-
-                <canvas
-                    id="calibrationCanvas"
-                ></canvas>
-
-
-                <div
-                    id="cameraMessage"
-                    class="camera-message"
-                >
-                    Select a camera
-                </div>
-
-
-                <div
-                    id="cameraStatus"
-                    class="camera-status"
-                >
-                    Camera
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<script>
-
-    /* ========================================================
-       GLOBAL VARIABLES
-    ======================================================== */
-
-    let cameras = [];
-
-    let selectedCamera = null;
-
-    let selectedCameraData = null;
-
-    let points = [];
-
-
-    /*
-     * Camera ID supplied by the Dashboard.
-     *
-     * Example:
-     *
-     * /calibration?camera=CAM1
-     */
-
-    const urlParams =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    const requestedCamera =
-        urlParams.get(
-            "camera"
-        );
-
-
-    /* ========================================================
-       ELEMENTS
-    ======================================================== */
-
-    const cameraSelect =
-        document.getElementById(
-            "cameraSelect"
-        );
-
-    const canvas =
-        document.getElementById(
-            "calibrationCanvas"
-        );
-
-    const ctx =
-        canvas.getContext(
-            "2d"
-        );
-
-    const cameraBox =
-        document.getElementById(
-            "cameraBox"
-        );
-
-    const cameraStream =
-        document.getElementById(
-            "cameraStream"
-        );
-
-    const cameraMessage =
-        document.getElementById(
-            "cameraMessage"
-        );
-
-    const cameraStatus =
-        document.getElementById(
-            "cameraStatus"
-        );
-
-    const calibrationStatus =
-        document.getElementById(
-            "calibrationStatus"
-        );
-
-    const message =
-        document.getElementById(
-            "message"
-        );
-
-
-    /* ========================================================
-       LOAD CAMERAS
-    ======================================================== */
-
-    async function loadCameras() {
-
-        try {
-
-            const response =
-                await fetch(
-                    "/api/cameras",
-                    {
-                        cache: "no-store"
-                    }
-                );
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "HTTP " +
-                    response.status
-                );
-
-            }
-
-
-            const data =
-                await response.json();
-
-
-            /*
-             * API may return either:
-             *
-             * [
-             *     {...}
-             * ]
-             *
-             * or:
-             *
-             * {
-             *     cameras: [...]
-             * }
-             */
-
-            cameras =
-                Array.isArray(
-                    data
-                )
-                    ? data
-                    : (
-                        data.cameras ||
-                        data.data ||
-                        []
-                    );
-
-
-            cameraSelect.innerHTML =
-                "";
-
-
-            if (
-                cameras.length === 0
-            ) {
-
-                cameraSelect.innerHTML =
-                    `
-                    <option value="">
-                        No cameras configured
-                    </option>
-                    `;
-
-
-                showCameraMessage(
-                    "No cameras configured."
-                );
-
-
-                calibrationStatus.className =
-                    "status not-calibrated";
-
-
-                calibrationStatus.textContent =
-                    "No cameras configured";
-
-
-                return;
-            }
-
-
-            /*
-             * Add cameras to dropdown.
-             */
-
-            cameras.forEach(
-                camera => {
-
-                    const cameraId =
-                        camera.camera_id ||
-                        camera.id ||
-                        "";
-
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option.value =
-                        cameraId;
-
-
-                    option.textContent =
-                        (
-                            camera.name ||
-                            "Camera"
-                        )
-                        +
-                        " ("
-                        +
-                        cameraId
-                        +
-                        ")";
-
-
-                    cameraSelect.appendChild(
-                        option
-                    );
-
-                }
-            );
-
-
-            /*
-             * If Dashboard supplied a camera ID,
-             * automatically select it.
-             */
-
-            if (
-                requestedCamera
-                &&
-                cameras.some(
-                    camera =>
-                        (
-                            camera.camera_id ||
-                            camera.id ||
-                            ""
-                        )
-                        ===
-                        requestedCamera
-                )
-            ) {
-
-                cameraSelect.value =
-                    requestedCamera;
-
+    </main>
+
+    <div id="toastMessage" class="toast-notify"></div>
+
+    <script>
+        let selectedCamera = null;
+        let points = [];
+        const canvas = document.getElementById("calibrationCanvas");
+        const ctx = canvas.getContext("2d");
+        const streamImg = document.getElementById("cameraStream");
+        const placeholder = document.getElementById("streamPlaceholder");
+
+        function goBack() {
+            if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+                window.history.back();
             } else {
-
-                cameraSelect.selectedIndex =
-                    0;
-
+                window.location.href = "/dashboard";
             }
-
-
-            /*
-             * Load the selected camera.
-             */
-
-            await cameraChanged();
-
-        }
-        catch (error) {
-
-            console.error(
-                "Camera loading error:",
-                error
-            );
-
-
-            showMessage(
-                error.message,
-                true
-            );
-
-
-            cameraSelect.innerHTML =
-                `
-                <option value="">
-                    Failed to load cameras
-                </option>
-                `;
-
-
-            showCameraMessage(
-                "Failed to load cameras."
-            );
-
         }
 
-    }
-
-
-    /* ========================================================
-       CAMERA CHANGED
-    ======================================================== */
-
-    cameraSelect.addEventListener(
-        "change",
-        cameraChanged
-    );
-
-
-    async function cameraChanged() {
-
-        selectedCamera =
-            cameraSelect.value;
-
-
-        selectedCameraData =
-            cameras.find(
-                camera =>
-                    (
-                        camera.camera_id ||
-                        camera.id ||
-                        ""
-                    )
-                    ===
-                    selectedCamera
-            )
-            ||
-            null;
-
-
-        points = [];
-
-
-        updatePointText();
-
-        clearCanvas();
-
-        stopCameraStream();
-
-
-        if (
-            !selectedCamera
-        ) {
-
-            calibrationStatus.className =
-                "status";
-
-
-            calibrationStatus.textContent =
-                "Select a camera.";
-
-
-            showCameraMessage(
-                "Select a camera."
-            );
-
-
-            return;
+        function refreshPage() {
+            loadCameras();
+            loadVenueDefaults();
+            reloadStream();
         }
 
-
-        /*
-         * Start the actual camera stream.
-         */
-
-        startCameraStream(
-            selectedCameraData
-        );
-
-
-        /*
-         * Load existing calibration
-         * for this specific camera.
-         */
-
-        await loadExistingCalibration();
-
-    }
-
-
-    /* ========================================================
-       START CAMERA STREAM
-    ======================================================== */
-
-    function startCameraStream(
-        camera
-    ) {
-
-        if (!camera) {
-
-            showCameraMessage(
-                "Camera not found."
-            );
-
-            return;
-        }
-
-
-        const source =
-            camera.source ||
-            camera.url ||
-            camera.stream_url ||
-            "";
-
-
-        if (!source) {
-
-            showCameraMessage(
-                "This camera has no stream URL."
-            );
-
-            return;
-        }
-
-
-        /*
-         * Numeric sources such as 0 are
-         * local OpenCV devices.
-         *
-         * A browser cannot directly display
-         * source 0 as an image.
-         */
-
-        if (
-            typeof source === "number"
-            ||
-            (
-                typeof source === "string"
-                &&
-                /^\d+$/.test(
-                    source.trim()
-                )
-            )
-        ) {
-
-            showCameraMessage(
-                "Local camera source selected. " +
-                "Use the Admin live camera view for this camera."
-            );
-
-            return;
-        }
-
-
-        cameraMessage.style.display =
-            "none";
-
-
-        cameraStatus.style.display =
-            "block";
-
-
-        cameraStatus.className =
-            "camera-status";
-
-
-        cameraStatus.textContent =
-            "Connecting...";
-
-
-        cameraStream.style.display =
-            "block";
-
-
-        /*
-         * Cache busting.
-         */
-
-        const separator =
-            source.includes("?")
-                ? "&"
-                : "?";
-
-
-        cameraStream.src =
-            source
-            +
-            separator
-            +
-            "crowdsense="
-            +
-            Date.now();
-
-
-        cameraStream.onload =
-            function() {
-
-                cameraStatus.className =
-                    "camera-status connected";
-
-
-                cameraStatus.textContent =
-                    "LIVE";
-
-
-                resizeCanvas();
-
-            };
-
-
-        cameraStream.onerror =
-            function() {
-
-                cameraStatus.className =
-                    "camera-status error";
-
-
-                cameraStatus.textContent =
-                    "STREAM ERROR";
-
-
-                cameraMessage.style.display =
-                    "flex";
-
-
-                cameraMessage.textContent =
-                    "Unable to display camera stream.";
-
-            };
-
-    }
-
-
-    /* ========================================================
-       STOP CAMERA STREAM
-    ======================================================== */
-
-    function stopCameraStream() {
-
-        cameraStream.onload =
-            null;
-
-
-        cameraStream.onerror =
-            null;
-
-
-        cameraStream.removeAttribute(
-            "src"
-        );
-
-
-        cameraStream.style.display =
-            "none";
-
-
-        cameraStatus.style.display =
-            "none";
-
-    }
-
-
-    /* ========================================================
-       CAMERA MESSAGE
-    ======================================================== */
-
-    function showCameraMessage(
-        text
-    ) {
-
-        cameraMessage.textContent =
-            text;
-
-
-        cameraMessage.style.display =
-            "flex";
-
-    }
-
-
-    /* ========================================================
-       LOAD EXISTING CALIBRATION
-    ======================================================== */
-
-    async function loadExistingCalibration() {
-
-        if (
-            !selectedCamera
-        ) {
-            return;
-        }
-
-
-        try {
-
-            const response =
-                await fetch(
-                    "/api/cameras/"
-                    +
-                    encodeURIComponent(
-                        selectedCamera
-                    )
-                    +
-                    "/calibration",
-                    {
-                        cache: "no-store"
-                    }
-                );
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "HTTP " +
-                    response.status
-                );
-
-            }
-
-
-            const data =
-                await response.json();
-
-
-            if (
-                !data.success
-                ||
-                !data.calibrated
-                ||
-                !data.calibration
-            ) {
-
-                calibrationStatus.className =
-                    "status not-calibrated";
-
-
-                calibrationStatus.textContent =
-                    "Not calibrated";
-
-
-                return;
-            }
-
-
-            const calibration =
-                data.calibration;
-
-
-            const length =
-                calibration.venue_length;
-
-
-            const width =
-                calibration.venue_width;
-
-
-            if (
-                length !== undefined
-            ) {
-
-                document.getElementById(
-                    "venueLength"
-                ).value =
-                    length;
-
-            }
-
-
-            if (
-                width !== undefined
-            ) {
-
-                document.getElementById(
-                    "venueWidth"
-                ).value =
-                    width;
-
-            }
-
-
-            /*
-             * Load saved calibration points
-             * if they exist.
-             */
-
-            if (
-                calibration.matrix
-                &&
-                Array.isArray(
-                    calibration.matrix.points
-                )
-                &&
-                calibration.matrix.points.length === 4
-            ) {
-
-                points =
-                    calibration.matrix.points.map(
-                        point => ({
-                            x: Number(
-                                point.x
-                            ),
-                            y: Number(
-                                point.y
-                            )
-                        })
-                    );
-
-
-                updatePointText();
-
+        function resizeCanvas() {
+            const container = document.getElementById("viewportContainer");
+            const rect = container.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+                canvas.width = Math.round(rect.width);
+                canvas.height = Math.round(rect.height);
                 drawOverlay();
-
             }
-
-
-            calibrationStatus.className =
-                "status calibrated";
-
-
-            calibrationStatus.textContent =
-                "Camera calibrated";
-
-
-            showMessage(
-                "Existing calibration loaded.",
-                false
-            );
-
         }
-        catch (error) {
+        window.addEventListener("resize", resizeCanvas);
 
-            console.error(
-                "Calibration loading error:",
-                error
-            );
+        async function loadCameras() {
+            try {
+                const res = await fetch("/api/cameras?_=" + Date.now());
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const data = await res.json();
+                const cameras = Array.isArray(data) ? data : (data.cameras || data.data || []);
+                const select = document.getElementById("cameraSelect");
 
+                select.innerHTML = '<option value="">Select a camera...</option>';
+                cameras.forEach(cam => {
+                    const id = cam.camera_id || cam.id;
+                    const name = cam.name || ("Camera " + id);
+                    const opt = document.createElement("option");
+                    opt.value = id;
+                    opt.textContent = `${name} (${id})`;
+                    select.appendChild(opt);
+                });
 
-            calibrationStatus.className =
-                "status not-calibrated";
-
-
-            calibrationStatus.textContent =
-                "Unable to load calibration";
-
-
-            showMessage(
-                error.message,
-                true
-            );
-
+                if (cameras.length > 0 && !selectedCamera) {
+                    select.value = cameras[0].camera_id || cameras[0].id;
+                    onCameraChange();
+                }
+            } catch (err) {
+                console.warn("Failed to load cameras for calibration:", err);
+            }
         }
 
-    }
-
-
-    /* ========================================================
-       CANVAS SIZE
-    ======================================================== */
-
-    function resizeCanvas() {
-
-        const rect =
-            cameraBox.getBoundingClientRect();
-
-
-        if (
-            rect.width <= 0
-            ||
-            rect.height <= 0
-        ) {
-            return;
+        async function loadVenueDefaults() {
+            try {
+                const res = await fetch("/api/venue?_=" + Date.now());
+                if (res.ok) {
+                    const data = await res.json();
+                    const v = data.venue || data.data || data;
+                    if (v.length) document.getElementById("venueLength").value = v.length;
+                    if (v.width) document.getElementById("venueWidth").value = v.width;
+                }
+            } catch (err) {
+                // Ignore venue load error
+            }
         }
 
-
-        canvas.width =
-            Math.max(
-                640,
-                Math.floor(
-                    rect.width
-                )
-            );
-
-
-        canvas.height =
-            Math.max(
-                360,
-                Math.floor(
-                    rect.height
-                )
-            );
-
-
-        drawOverlay();
-
-    }
-
-
-    window.addEventListener(
-        "resize",
-        resizeCanvas
-    );
-
-
-    function clearCanvas() {
-
-        canvas.width =
-            960;
-
-
-        canvas.height =
-            540;
-
-
-        drawOverlay();
-
-    }
-
-
-    /* ========================================================
-       DRAW OVERLAY
-    ======================================================== */
-
-    function drawOverlay() {
-
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
-
-        drawPoints();
-
-    }
-
-
-    /* ========================================================
-       CLICK CALIBRATION POINT
-    ======================================================== */
-
-    canvas.addEventListener(
-        "click",
-        function(event) {
-
-            if (
-                !selectedCamera
-            ) {
-
-                showMessage(
-                    "Select a camera first.",
-                    true
-                );
-
-                return;
-            }
-
-
-            if (
-                points.length >= 4
-            ) {
-
-                showMessage(
-                    "Four points already selected. " +
-                    "Clear them to select again.",
-                    true
-                );
-
-                return;
-            }
-
-
-            const rect =
-                canvas.getBoundingClientRect();
-
-
-            const scaleX =
-                canvas.width /
-                rect.width;
-
-
-            const scaleY =
-                canvas.height /
-                rect.height;
-
-
-            const x =
-                (
-                    event.clientX -
-                    rect.left
-                )
-                *
-                scaleX;
-
-
-            const y =
-                (
-                    event.clientY -
-                    rect.top
-                )
-                *
-                scaleY;
-
-
-            points.push({
-                x: x,
-                y: y
-            });
-
-
+        async function onCameraChange() {
+            const select = document.getElementById("cameraSelect");
+            selectedCamera = select.value;
+            points = [];
             updatePointText();
 
-            drawOverlay();
+            if (!selectedCamera) {
+                streamImg.style.display = "none";
+                placeholder.style.display = "block";
+                document.getElementById("activeCameraHint").textContent = "No camera selected";
+                updateStatusBadge(false);
+                clearCanvas();
+                return;
+            }
 
+            document.getElementById("activeCameraHint").textContent = "Camera " + selectedCamera + " active";
+            reloadStream();
+            await checkExistingCalibration();
         }
-    );
 
+        function reloadStream() {
+            if (!selectedCamera) return;
+            placeholder.style.display = "none";
+            streamImg.style.display = "block";
+            streamImg.src = "/api/cameras/" + encodeURIComponent(selectedCamera) + "/stream?_=" + Date.now();
+            streamImg.onload = resizeCanvas;
+        }
 
-    /* ========================================================
-       DRAW POINTS
-    ======================================================== */
+        async function checkExistingCalibration() {
+            if (!selectedCamera) return;
+            try {
+                const res = await fetch("/api/cameras/" + encodeURIComponent(selectedCamera) + "/calibration?_=" + Date.now());
+                if (res.ok) {
+                    const data = await res.json();
+                    const cal = data.calibration || data;
+                    if (cal && cal.matrix && cal.matrix.points && cal.matrix.points.length === 4) {
+                        points = cal.matrix.points.map(p => ({ x: Number(p.x), y: Number(p.y) }));
+                        updatePointText();
+                        drawOverlay();
+                        updateStatusBadge(true);
+                        return;
+                    }
+                }
+            } catch (e) {
+                // Not calibrated
+            }
+            updateStatusBadge(false);
+        }
 
-    function drawPoints() {
+        function updateStatusBadge(calibrated) {
+            const badge = document.getElementById("calibrationStatusBadge");
+            if (calibrated) {
+                badge.textContent = "Calibrated";
+                badge.className = "badge badge-emerald";
+            } else {
+                badge.textContent = "Not Calibrated";
+                badge.className = "badge badge-warning";
+            }
+        }
 
-        points.forEach(
-            (
-                point,
-                index
-            ) => {
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
 
+        canvas.addEventListener("click", function(e) {
+            if (!selectedCamera) {
+                showToast("Select a camera first", "error");
+                return;
+            }
+            if (points.length >= 4) {
+                showToast("4 points already selected. Clear points to re-align.", "error");
+                return;
+            }
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            points.push({ x: Math.round(x), y: Math.round(y) });
+            updatePointText();
+            drawOverlay();
+        });
+
+        function drawOverlay() {
+            clearCanvas();
+            if (!points.length) return;
+
+            // Draw connecting polygon
+            if (points.length >= 2) {
                 ctx.beginPath();
+                ctx.moveTo(points[0].x, points[0].y);
+                for (let i = 1; i < points.length; i++) {
+                    ctx.lineTo(points[i].x, points[i].y);
+                }
+                if (points.length === 4) {
+                    ctx.closePath();
+                    ctx.fillStyle = "rgba(16, 185, 129, 0.15)";
+                    ctx.fill();
+                }
+                ctx.strokeStyle = "#10b981";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
 
-
-                ctx.arc(
-                    point.x,
-                    point.y,
-                    9,
-                    0,
-                    Math.PI * 2
-                );
-
-
-                ctx.fillStyle =
-                    "#ff0000";
-
-
+            // Draw points
+            points.forEach((p, idx) => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+                ctx.fillStyle = "#ef4444";
                 ctx.fill();
-
-
-                ctx.strokeStyle =
-                    "#ffffff";
-
-
-                ctx.lineWidth =
-                    2;
-
-
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
                 ctx.stroke();
 
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 13px Inter, sans-serif";
+                ctx.fillText(String(idx + 1), p.x + 12, p.y - 8);
+            });
+        }
 
-                ctx.fillStyle =
-                    "#ffffff";
-
-
-                ctx.font =
-                    "bold 14px Arial";
-
-
-                ctx.textAlign =
-                    "left";
-
-
-                ctx.fillText(
-                    String(
-                        index + 1
-                    ),
-                    point.x + 12,
-                    point.y - 12
-                );
-
+        function updatePointText() {
+            for (let i = 1; i <= 4; i++) {
+                const txt = document.getElementById("point" + i + "Text");
+                const dot = document.getElementById("dot" + i);
+                if (points[i - 1]) {
+                    txt.textContent = `(${points[i - 1].x}, ${points[i - 1].y})`;
+                    txt.style.color = "var(--accent-emerald)";
+                    dot.classList.add("active");
+                } else {
+                    txt.textContent = "Not selected";
+                    txt.style.color = "var(--text-secondary)";
+                    dot.classList.remove("active");
+                }
             }
-        );
-
-
-        if (
-            points.length >= 2
-        ) {
-
-            ctx.beginPath();
-
-
-            ctx.moveTo(
-                points[0].x,
-                points[0].y
-            );
-
-
-            for (
-                let i = 1;
-                i < points.length;
-                i++
-            ) {
-
-                ctx.lineTo(
-                    points[i].x,
-                    points[i].y
-                );
-
-            }
-
-
-            if (
-                points.length === 4
-            ) {
-
-                ctx.closePath();
-
-            }
-
-
-            ctx.strokeStyle =
-                "#00d26a";
-
-
-            ctx.lineWidth =
-                2;
-
-
-            ctx.stroke();
-
         }
 
-    }
-
-
-    /* ========================================================
-       POINT TEXT
-    ======================================================== */
-
-    function updatePointText() {
-
-        for (
-            let i = 1;
-            i <= 4;
-            i++
-        ) {
-
-            const element =
-                document.getElementById(
-                    "point"
-                    +
-                    i
-                    +
-                    "Text"
-                );
-
-
-            if (
-                !points[i - 1]
-            ) {
-
-                element.textContent =
-                    "Not selected";
-
-                continue;
-
-            }
-
-
-            element.textContent =
-                "("
-                +
-                Math.round(
-                    points[
-                        i - 1
-                    ].x
-                )
-                +
-                ", "
-                +
-                Math.round(
-                    points[
-                        i - 1
-                    ].y
-                )
-                +
-                ")";
-
-        }
-
-    }
-
-
-    /* ========================================================
-       CLEAR POINTS
-    ======================================================== */
-
-    function clearPoints() {
-
-        points = [];
-
-
-        updatePointText();
-
-
-        drawOverlay();
-
-
-        showMessage(
-            "Calibration points cleared.",
-            false
-        );
-
-    }
-
-
-    /* ========================================================
-       SAVE CALIBRATION
-    ======================================================== */
-
-    async function saveCalibration() {
-
-        if (
-            !selectedCamera
-        ) {
-
-            showMessage(
-                "Select a camera first.",
-                true
-            );
-
-            return;
-        }
-
-
-        if (
-            points.length !== 4
-        ) {
-
-            showMessage(
-                "Select exactly four calibration points.",
-                true
-            );
-
-            return;
-        }
-
-
-        const venueLength =
-            parseFloat(
-                document.getElementById(
-                    "venueLength"
-                ).value
-            );
-
-
-        const venueWidth =
-            parseFloat(
-                document.getElementById(
-                    "venueWidth"
-                ).value
-            );
-
-
-        if (
-            !Number.isFinite(
-                venueLength
-            )
-            ||
-            venueLength <= 0
-        ) {
-
-            showMessage(
-                "Enter a valid venue length.",
-                true
-            );
-
-            return;
-        }
-
-
-        if (
-            !Number.isFinite(
-                venueWidth
-            )
-            ||
-            venueWidth <= 0
-        ) {
-
-            showMessage(
-                "Enter a valid venue width.",
-                true
-            );
-
-            return;
-        }
-
-
-        const calibrationPayload = {
-
-            matrix: {
-
-                points:
-                    points.map(
-                        point => ({
-                            x: point.x,
-                            y: point.y
-                        })
-                    )
-
-            },
-
-            venue_length:
-                venueLength,
-
-            venue_width:
-                venueWidth
-
-        };
-
-
-        try {
-
-            const response =
-                await fetch(
-                    "/api/cameras/"
-                    +
-                    encodeURIComponent(
-                        selectedCamera
-                    )
-                    +
-                    "/calibration",
-                    {
-
-                        method:
-                            "POST",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body:
-                            JSON.stringify(
-                                calibrationPayload
-                            )
-
-                    }
-                );
-
-
-            const data =
-                await response.json();
-
-
-            if (
-                !response.ok
-            ) {
-
-                throw new Error(
-                    data.error ||
-                    "Failed to save calibration."
-                );
-
-            }
-
-
-            calibrationStatus.className =
-                "status calibrated";
-
-
-            calibrationStatus.textContent =
-                "Camera calibrated";
-
-
-            showMessage(
-                "Calibration saved successfully.",
-                false
-            );
-
-        }
-        catch (error) {
-
-            console.error(
-                "Calibration save error:",
-                error
-            );
-
-
-            showMessage(
-                error.message,
-                true
-            );
-
-        }
-
-    }
-
-
-    /* ========================================================
-       DELETE CALIBRATION
-    ======================================================== */
-
-    async function deleteCalibration() {
-
-        if (
-            !selectedCamera
-        ) {
-
-            showMessage(
-                "Select a camera first.",
-                true
-            );
-
-            return;
-        }
-
-
-        const confirmed =
-            confirm(
-                "Delete calibration for "
-                +
-                selectedCamera
-                +
-                "?"
-            );
-
-
-        if (
-            !confirmed
-        ) {
-
-            return;
-        }
-
-
-        try {
-
-            const response =
-                await fetch(
-                    "/api/cameras/"
-                    +
-                    encodeURIComponent(
-                        selectedCamera
-                    )
-                    +
-                    "/calibration",
-                    {
-                        method:
-                            "DELETE"
-                    }
-                );
-
-
-            const data =
-                await response.json();
-
-
-            if (
-                !response.ok
-            ) {
-
-                throw new Error(
-                    data.error ||
-                    "Failed to delete calibration."
-                );
-
-            }
-
-
+        function clearPoints() {
             points = [];
-
-
             updatePointText();
-
-
             drawOverlay();
-
-
-            calibrationStatus.className =
-                "status not-calibrated";
-
-
-            calibrationStatus.textContent =
-                "Not calibrated";
-
-
-            showMessage(
-                "Calibration deleted.",
-                false
-            );
-
-        }
-        catch (error) {
-
-            console.error(
-                "Calibration delete error:",
-                error
-            );
-
-
-            showMessage(
-                error.message,
-                true
-            );
-
+            showToast("Calibration points cleared", "success");
         }
 
-    }
+        async function saveCalibration() {
+            if (!selectedCamera) {
+                showToast("Select a camera first", "error");
+                return;
+            }
+            if (points.length !== 4) {
+                showToast("Select exactly 4 corner points", "error");
+                return;
+            }
+            const length = parseFloat(document.getElementById("venueLength").value);
+            const width = parseFloat(document.getElementById("venueWidth").value);
+            if (!length || !width || length <= 0 || width <= 0) {
+                showToast("Enter valid venue length & width", "error");
+                return;
+            }
 
+            const payload = {
+                matrix: { points: points.map(p => ({ x: p.x, y: p.y })) },
+                venue_length: length,
+                venue_width: width
+            };
 
-    /* ========================================================
-       MESSAGE
-    ======================================================== */
+            try {
+                const res = await fetch("/api/cameras/" + encodeURIComponent(selectedCamera) + "/calibration", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Save failed");
 
-    function showMessage(
-        text,
-        error
-    ) {
+                updateStatusBadge(true);
+                showToast("Calibration saved successfully", "success");
+            } catch (err) {
+                showToast(err.message, "error");
+            }
+        }
 
-        message.textContent =
-            text;
+        async function deleteCalibration() {
+            if (!selectedCamera) {
+                showToast("Select a camera first", "error");
+                return;
+            }
+            if (!confirm("Are you sure you want to reset calibration for camera " + selectedCamera + "?")) return;
 
+            try {
+                const res = await fetch("/api/cameras/" + encodeURIComponent(selectedCamera) + "/calibration", {
+                    method: "DELETE"
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Delete failed");
 
-        message.className =
-            error
-                ? "message error"
-                : "message success";
+                clearPoints();
+                updateStatusBadge(false);
+                showToast("Calibration reset", "success");
+            } catch (err) {
+                showToast(err.message, "error");
+            }
+        }
 
-    }
+        function showToast(text, type) {
+            const toast = document.getElementById("toastMessage");
+            toast.textContent = text;
+            toast.className = "toast-notify " + type;
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 3000);
+        }
 
-
-    /* ========================================================
-       INITIALIZE
-    ======================================================== */
-
-    clearCanvas();
-
-    loadCameras();
-
-</script>
-
+        resizeCanvas();
+        loadCameras();
+        loadVenueDefaults();
+    </script>
 </body>
-
 </html>

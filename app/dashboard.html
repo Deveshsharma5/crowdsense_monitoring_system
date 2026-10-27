@@ -3,2233 +3,1760 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>CrowdSense Dashboard</title>
-
+    <title>CrowdSense - Real-Time Dashboard</title>
+    <link rel="stylesheet" href="/static/css/common.css">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        .dashboard-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px;
         }
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #050505;
-            color: #ffffff;
-            min-height: 100vh;
-        }
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        header {
-            height: 72px;
-            background: #080808;
-            border-bottom: 1px solid #1f1f1f;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 0 28px;
-
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            width: 38px;
-            height: 38px;
-
-            background: #00ff66;
-            color: #000000;
-
-            border-radius: 8px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .logo-text {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        .logo-text span {
-            color: #00ff66;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .venue-name {
-            color: #aaaaaa;
-            font-size: 14px;
-        }
-
-        /* =========================
-           ADD CAMERA BUTTON
-        ========================= */
-
-        .add-camera-button {
-            background: #00ff66;
-            color: #000000;
-
-            border: none;
-
-            padding: 9px 14px;
-
-            border-radius: 6px;
-
-            font-size: 12px;
-            font-weight: bold;
-
-            cursor: pointer;
-
-            transition: 0.2s;
-        }
-
-        .add-camera-button:hover {
-            background: #00dd55;
-        }
-
-        .system-badge {
-            padding: 8px 14px;
-            border-radius: 20px;
-
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-
-            background: #10351e;
-            color: #00ff66;
-            border: 1px solid #00ff66;
-        }
-
-        .system-badge.warning {
-            background: #332b0c;
-            color: #ffd400;
-            border-color: #ffd400;
-        }
-
-        .system-badge.critical {
-            background: #3a0d0d;
-            color: #ff3333;
-            border-color: #ff3333;
-        }
-
-        /* =========================
-           NAVIGATION
-        ========================= */
-
-        .main-nav {
-            height: 58px;
-            background: #080808;
-            border-bottom: 1px solid #1f1f1f;
-
-            display: flex;
-            align-items: center;
-
-            padding: 0 28px;
-
-            gap: 30px;
-
-            position: sticky;
-            top: 72px;
-            z-index: 99;
-        }
-
-        .main-nav a {
-            color: #ffffff;
-            text-decoration: none;
-
-            font-size: 14px;
-            font-weight: bold;
-
-            transition: 0.2s;
-        }
-
-        .main-nav a:hover {
-            color: #00ff66;
-        }
-
-        .main-nav a.active {
-            color: #00ff66;
-        }
-
-        /* =========================
-           MAIN
-        ========================= */
-
-        main {
-            padding: 25px 28px 40px;
-            max-width: 1700px;
-            margin: auto;
-        }
-
-        .page-title {
-            margin-bottom: 22px;
-        }
-
-        .page-title h1 {
-            font-size: 27px;
-            margin-bottom: 5px;
-        }
-
-        .page-title p {
-            color: #777777;
-            font-size: 13px;
-        }
-
-        /* =========================
-           TOP CARDS
-        ========================= */
-
-        .cards {
+        /* KPI Cards */
+        .kpi-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 18px;
-        }
-
-        .card {
-            background: #0b0b0b;
-            border: 1px solid #202020;
-            border-radius: 10px;
-            padding: 20px;
-
-            min-height: 125px;
-        }
-
-        .card-title {
-            color: #888888;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 14px;
-        }
-
-        .card-value {
-            font-size: 34px;
-            font-weight: 800;
-        }
-
-        .card-sub {
-            color: #666666;
-            font-size: 12px;
-            margin-top: 7px;
-        }
-
-        .green {
-            color: #00ff66;
-        }
-
-        .yellow {
-            color: #ffd400;
-        }
-
-        .red {
-            color: #ff3333;
-        }
-
-        /* =========================
-           GRID
-        ========================= */
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1.4fr 1fr;
             gap: 18px;
+            margin-bottom: 24px;
         }
 
-        .panel {
-            background: #0b0b0b;
-            border: 1px solid #202020;
-            border-radius: 10px;
+        @media (max-width: 1024px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 18px 22px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
             overflow: hidden;
         }
 
-        .panel-header {
-            height: 55px;
-            padding: 0 18px;
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--border-panel);
+        }
 
+        .kpi-card.safe::after { background: var(--accent-emerald); }
+        .kpi-card.warning::after { background: var(--status-warning); }
+        .kpi-card.critical::after { background: var(--status-critical); }
+
+        .kpi-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-
-            border-bottom: 1px solid #202020;
+            margin-bottom: 10px;
         }
 
-        .panel-header h2 {
-            font-size: 15px;
+        .kpi-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
         }
 
-        .panel-header span {
-            color: #666666;
-            font-size: 11px;
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--text-primary);
+            margin-bottom: 6px;
         }
 
-        .panel-body {
-            padding: 18px;
-        }
-
-        /* =========================
-           ZONES
-        ========================= */
-
-        .zones {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
-            gap: 10px;
-        }
-
-        .zone {
-            background: #111111;
-            border: 1px solid #252525;
-            border-radius: 8px;
-            padding: 14px;
-            min-height: 110px;
-        }
-
-        .zone.warning {
-            border-color: #ffd400;
-        }
-
-        .zone.critical {
-            border-color: #ff3333;
-        }
-
-        .zone-name {
+        .kpi-sub {
             font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 9px;
+            color: var(--text-muted);
         }
 
-        .zone-people {
-            font-size: 25px;
-            font-weight: bold;
+        /* Central Camera Section */
+        .camera-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            margin-bottom: 24px;
         }
 
-        .zone-info {
-            color: #777777;
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        .risk {
-            display: inline-block;
-            margin-top: 9px;
-
-            padding: 4px 7px;
-            border-radius: 4px;
-
-            font-size: 9px;
-            font-weight: bold;
-        }
-
-        .risk.safe {
-            background: #10351e;
-            color: #00ff66;
-        }
-
-        .risk.warning {
-            background: #332b0c;
-            color: #ffd400;
-        }
-
-        .risk.critical {
-            background: #3a0d0d;
-            color: #ff3333;
-        }
-
-        /* =========================
-           ALERTS
-        ========================= */
-
-        .alerts {
+        .camera-panel-header {
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 14px 20px;
             display: flex;
-            flex-direction: column;
-            gap: 9px;
-            max-height: 330px;
-            overflow-y: auto;
-        }
-
-        .alert {
-            background: #111111;
-            border-left: 4px solid #ffd400;
-            border-radius: 5px;
-            padding: 12px;
-        }
-
-        .alert.critical {
-            border-left-color: #ff3333;
-        }
-
-        .alert-top {
-            display: flex;
+            align-items: center;
             justify-content: space-between;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
-        .alert-title {
+        .layout-switchers {
+            display: flex;
+            background: var(--bg-main);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--radius-sm);
+            padding: 3px;
+            gap: 4px;
+        }
+
+        .layout-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 5px 12px;
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
         }
 
-        .alert-time {
-            color: #666666;
-            font-size: 10px;
+        .layout-btn:hover {
+            color: var(--text-primary);
         }
 
-        .alert-details {
-            color: #888888;
-            font-size: 11px;
-            margin-top: 5px;
+        .layout-btn.active {
+            background: var(--accent-emerald);
+            color: #0a0d14;
         }
 
-        .no-data {
-            color: #555555;
-            text-align: center;
-            padding: 35px 10px;
-            font-size: 12px;
-        }
-
-        /* =========================
-           TREND
-        ========================= */
-
-        .trend-panel {
-            margin-top: 18px;
-        }
-
-        canvas {
+        /* Feed Displays */
+        .feed-container-single {
+            position: relative;
             width: 100%;
-            height: 240px;
+            background: #000;
+            min-height: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feed-img-main {
+            width: 100%;
+            max-height: 640px;
+            object-fit: contain;
             display: block;
         }
 
-        /* =========================
-           CAMERA TABLE
-        ========================= */
-
-        .camera-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .camera-table th,
-        .camera-table td {
-            text-align: left;
-            padding: 11px 8px;
-            border-bottom: 1px solid #1b1b1b;
-            font-size: 12px;
-        }
-
-        .camera-table th {
-            color: #666666;
-            font-size: 10px;
-            text-transform: uppercase;
-        }
-
-        .camera-status {
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .camera-status.connected {
-            color: #00ff66;
-        }
-
-        .camera-status.disconnected {
-            color: #ff3333;
-        }
-
-        .camera-status.error {
-            color: #ff3333;
-        }
-
-        /* =========================
-           SESSION
-        ========================= */
-
-        .session-grid {
+        /* Multi Grid Views */
+        .feed-grid-quad {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
             gap: 10px;
+            padding: 12px;
+            background: #07090f;
         }
 
-        .session-item {
-            background: #111111;
-            padding: 13px;
-            border-radius: 7px;
+        .feed-grid-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, auto);
+            gap: 8px;
+            padding: 10px;
+            background: #07090f;
         }
 
-        .session-label {
-            color: #666666;
-            font-size: 10px;
-            text-transform: uppercase;
-        }
-
-        .session-value {
-            margin-top: 6px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        /* =========================
-           FOOTER
-        ========================= */
-
-        footer {
-            margin-top: 25px;
-            border-top: 1px solid #1b1b1b;
-            padding-top: 15px;
-
+        .grid-camera-cell {
+            background: #0d121c;
+            border: 1px solid var(--border-panel);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 16 / 9;
+            cursor: pointer;
+            transition: var(--transition);
             display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grid-camera-cell:hover {
+            border-color: var(--accent-emerald);
+        }
+
+        .grid-camera-cell.active-cell {
+            border: 2px solid var(--accent-emerald);
+            box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
+        }
+
+        .grid-camera-cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cell-overlay-top {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            display: flex;
+            align-items: center;
             justify-content: space-between;
-
-            color: #555555;
-            font-size: 10px;
+            z-index: 2;
         }
 
-        /* =========================
-           RESPONSIVE
-        ========================= */
+        .cell-overlay-bottom {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 2;
+        }
 
-        @media (max-width: 1100px) {
+        .cell-badge {
+            background: rgba(10, 13, 20, 0.85);
+            backdrop-filter: blur(4px);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-            .cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        /* Action Toolbar */
+        .incident-action-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
 
-            .dashboard-grid {
+        /* Middle Grid: Zones and Alerts */
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 960px) {
+            .two-col-grid {
                 grid-template-columns: 1fr;
             }
-
         }
 
-        @media (max-width: 900px) {
-
-            .main-nav {
-                gap: 18px;
-                overflow-x: auto;
-                white-space: nowrap;
-                padding: 0 18px;
-            }
-
-            .main-nav a {
-                font-size: 13px;
-            }
-
+        .zone-cards-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
         }
 
-        @media (max-width: 650px) {
-
-            header {
-                padding: 0 15px;
-            }
-
-            .venue-name {
-                display: none;
-            }
-
-            .add-camera-button {
-                padding: 8px 10px;
-            }
-
-            main {
-                padding: 18px 14px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-
-            .session-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
+        .zone-card-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
+        .zone-card-item.critical {
+            border-color: var(--status-critical);
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .zone-card-item.warning {
+            border-color: var(--status-warning);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .zone-id-badge {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .zone-people-count {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .alerts-feed-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .alert-card-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .alert-card-item.critical {
+            border-left: 4px solid var(--status-critical);
+        }
+
+        .alert-card-item.warning {
+            border-left: 4px solid var(--status-warning);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
     </style>
 </head>
-
 <body>
 
-<header>
-
-    <div class="logo">
-
-        <div class="logo-icon">
-            C
-        </div>
-
-        <div class="logo-text">
-            CROWD<span>SENSE</span>
-        </div>
-
+    <!-- CRITICAL EMERGENCY BANNER -->
+    <div id="emergencyBanner" class="emergency-banner" style="display:none; justify-content:center; align-items:center; padding:12px 24px; text-align:center;">
+        <span style="display:flex; align-items:center; gap:10px; font-weight:800;">
+            <span style="font-size:20px; animation:bannerPulse 1s infinite;">⚠️</span>
+            <span>CRITICAL CROWD INCIDENT DETECTED — OCCUPANCY THRESHOLD EXCEEDED</span>
+        </span>
     </div>
 
-    <div class="header-right">
+    <!-- MAIN HEADER -->
+    <header class="cs-header">
+        <a href="/" class="cs-brand">
+            <div class="cs-brand-icon">C</div>
+            <div class="cs-brand-text">CROWD<span>SENSE</span></div>
+        </a>
 
-        <div
-            class="venue-name"
-            id="venueName"
-        >
-            Not configured
-        </div>
-
-        <!-- =========================
-             ADD CAMERA
-        ========================= -->
-
-        <button
-            class="add-camera-button"
-            onclick="window.location.href='/cameras'"
-        >
-            + Add Camera
-        </button>
-
-        <div
-            class="system-badge"
-            id="systemBadge"
-        >
-            READY
-        </div>
-
-    </div>
-
-</header>
-
-<!-- =========================
-     MAIN NAVIGATION
-========================= -->
-
-<nav class="main-nav">
-
-    <a href="/" class="active">
-        Dashboard
-    </a>
-
-    <a href="/cameras">
-        Cameras
-    </a>
-
-    <a href="/venue">
-        Venue
-    </a>
-
-    <a href="/zones">
-        Zones
-    </a>
-
-    <a href="/alerts">
-        Alerts
-    </a>
-
-    <a href="/analytics">
-        Analytics
-    </a>
-
-    <a href="/session">
-        Session
-    </a>
-
-    <a href="/reports">
-        Reports
-    </a>
-
-    <a href="/admin">
-        Admin
-    </a>
-
-    <a href="/calibration">
-        Calibration
-    </a>
-
-</nav>
-
-<main>
-
-    <div class="page-title">
-
-        <h1>
-            Crowd Monitoring Dashboard
-        </h1>
-
-        <p>
-            Real-time crowd density and safety monitoring
-        </p>
-
-    </div>
-
-    <!-- =========================
-         TOP CARDS
-    ========================= -->
-
-    <section class="cards">
-
-        <div class="card">
-
-            <div class="card-title">
-                Current People
-            </div>
-
-            <div
-                class="card-value green"
-                id="totalPeople"
-            >
-                0
-            </div>
-
-            <div
-                class="card-sub"
-                id="capacityText"
-            >
-                Capacity: 0
-            </div>
-
-        </div>
-
-        <div class="card">
-
-            <div class="card-title">
-                Occupancy
-            </div>
-
-            <div
-                class="card-value"
-                id="occupancy"
-            >
-                0%
-            </div>
-
-            <div class="card-sub">
-                Venue utilization
-            </div>
-
-        </div>
-
-        <div class="card">
-
-            <div class="card-title">
-                Risk Level
-            </div>
-
-            <div
-                class="card-value green"
-                id="riskLevel"
-            >
+        <div class="cs-header-actions">
+            <button class="btn-nav-action" onclick="handleBack()" title="Back">
+                Back
+            </button>
+            <button class="btn-nav-action" onclick="handleRefresh()" title="Refresh">
+                Refresh
+            </button>
+            <button id="sirenBtn" class="btn btn-primary btn-sm" onclick="toggleSirenMute()">
+                Alarm: ON
+            </button>
+            <div id="headerRiskBadge" class="badge badge-safe">
                 SAFE
             </div>
-
-            <div
-                class="card-sub"
-                id="lastAlert"
-            >
-                No active alerts
-            </div>
-
         </div>
+    </header>
 
-        <div class="card">
+    <!-- NAVIGATION BAR -->
+    <nav class="cs-nav-bar">
+        <a href="/dashboard" class="cs-nav-link active">Dashboard</a>
+        <a href="/cameras" class="cs-nav-link">Cameras</a>
+        <a href="/zones" class="cs-nav-link">Zones</a>
+        <a href="/alerts" class="cs-nav-link">Alerts</a>
+        <a href="/analytics" class="cs-nav-link">Analytics</a>
+        <a href="/reports" class="cs-nav-link">Reports</a>
+        <a href="/session" class="cs-nav-link">Session</a>
+        <a href="/venue" class="cs-nav-link">Venue</a>
+        <a href="/calibration" class="cs-nav-link">Calibration</a>
+        <a href="/admin" class="cs-nav-link">Admin</a>
+    </nav>
 
-            <div class="card-title">
-                Cameras
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="dashboard-container">
+
+        <!-- 1. KPI CARDS -->
+        <section class="kpi-grid">
+            <div class="kpi-card safe" id="peopleCard">
+                <div class="kpi-header">
+                    <span class="kpi-title">Total People</span>
+                    <span class="badge badge-safe" id="peopleRateBadge">Live</span>
+                </div>
+                <div class="kpi-value" id="totalPeopleVal">0</div>
+                <div class="kpi-sub" id="capacitySubText">Permitted Capacity: 0</div>
             </div>
 
-            <div
-                class="card-value"
-                id="cameraCount"
-            >
-                0
+            <div class="kpi-card safe" id="occupancyCard">
+                <div class="kpi-header">
+                    <span class="kpi-title">Occupancy Rate</span>
+                    <span class="badge badge-safe" id="occupancyBadge">Safe</span>
+                </div>
+                <div class="kpi-value" id="occupancyVal">0.0%</div>
+                <div class="kpi-sub" id="venueSubText">pcce hall</div>
             </div>
 
-            <div
-                class="card-sub"
-                id="cameraStatusText"
-            >
-                No cameras configured
+            <div class="kpi-card safe" id="riskCard">
+                <div class="kpi-header">
+                    <span class="kpi-title">Risk Assessment</span>
+                    <span class="badge badge-safe" id="systemStateBadge">Active</span>
+                </div>
+                <div class="kpi-value" id="riskLevelVal" style="color: var(--accent-emerald);">SAFE</div>
+                <div class="kpi-sub" id="riskDetailSub">Zero active hazards</div>
             </div>
 
-        </div>
+            <div class="kpi-card safe" id="camerasCard">
+                <div class="kpi-header">
+                    <span class="kpi-title">Camera Pipeline</span>
+                    <span class="badge badge-safe" id="pipelineFpsBadge">30 FPS</span>
+                </div>
+                <div class="kpi-value" id="cameraCountVal">1</div>
+                <div class="kpi-sub" id="cameraSourceSub">Source: 0 (DirectShow)</div>
+            </div>
+        </section>
 
-    </section>
+        <!-- 2. LIVE CAMERA FEED SECTION (CENTER OF MONITORING) -->
+        <section class="camera-panel">
+            <div class="camera-panel-header">
+                <div class="cs-panel-title">
+                    <span style="color: var(--accent-emerald); animation: bannerPulse 1.5s infinite;">●</span>
+                    Live Video Feed & AI Overlays
+                    <span style="font-size: 12px; font-weight: normal; color: var(--text-secondary); margin-left: 8px;" id="activeCameraName">
+                        [Active: laptop (0)]
+                    </span>
+                </div>
 
-    <!-- =========================
-         MAIN GRID
-    ========================= -->
-
-    <section class="dashboard-grid">
-
-        <!-- ZONES -->
-
-        <div class="panel">
-
-            <div class="panel-header">
-
-                <h2>
-                    Live Zone Status
-                </h2>
-
-                <span id="zoneCount">
-                    0 zones
-                </span>
-
+                <!-- 1x1, 2x2, 3x3 Layout Switchers -->
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="layout-switchers">
+                        <button class="layout-btn active" id="layoutSingleBtn" onclick="switchLayout('single')">1×1 Single</button>
+                        <button class="layout-btn" id="layoutQuadBtn" onclick="switchLayout('quad')">2×2 Quad</button>
+                        <button class="layout-btn" id="layoutMatrixBtn" onclick="switchLayout('matrix')">3×3 Matrix</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="panel-body">
+            <!-- Single 1x1 View -->
+            <div id="singleViewContainer" class="feed-container-single">
+                <img id="mainLiveFeed" src="/api/dashboard/stream" alt="CrowdSense Live Feed" class="feed-img-main" onerror="this.onerror=null; this.src='/static/img/no_feed.png';">
+                <div class="cell-overlay-top">
+                    <span class="cell-badge" style="background: rgba(16, 185, 129, 0.2); border-color: var(--accent-emerald); color: var(--accent-emerald);">
+                        ● LIVE STREAM
+                    </span>
+                    <span class="cell-badge" id="singleStreamStats">
+                        YOLOv11 Detection Active
+                    </span>
+                </div>
+                <div class="cell-overlay-bottom">
+                    <span class="cell-badge" id="activeCamFootprint">
+                        Zone Grid & Perspective Overlaid
+                    </span>
+                    <span class="cell-badge" id="singleStreamPeopleCount">
+                        Detected: 0 People
+                    </span>
+                </div>
+            </div>
 
-                <div
-                    class="zones"
-                    id="zonesContainer"
-                >
+            <!-- Quad 2x2 View -->
+            <div id="quadViewContainer" class="feed-grid-quad" style="display: none;">
+                <!-- Up to 4 camera slots populated dynamically -->
+            </div>
 
-                    <div class="no-data">
-                        Waiting for zone data...
+            <!-- Matrix 3x3 View -->
+            <div id="matrixViewContainer" class="feed-grid-matrix" style="display: none;">
+                <!-- Up to 9 camera slots populated dynamically -->
+            </div>
+        </section>
+
+        <!-- 3. INCIDENT ACTION & SIREN TOOLBAR -->
+        <section class="incident-action-bar">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 13px; font-weight: 700; color: var(--text-secondary);">INCIDENT CONTROLS:</span>
+                <button class="btn btn-warning btn-sm" onclick="triggerTestAlert()">
+                    Test Alarm
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="acknowledgeActiveAlerts()">
+                    Acknowledge All
+                </button>
+                <!-- Telegram Test Notification Button -->
+                <button class="btn btn-sm" id="telegramTestBtn"
+                    onclick="sendTelegramTestNotification()"
+                    style="background: #229ED9; color: #fff; font-weight: 700; padding: 5px 12px; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px;"
+                    title="Send a safe test message to your Telegram phone. Does not affect live data.">
+                    ✈ Telegram Test
+                </button>
+                <span id="telegramStatusBadge" style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 4px; display: none;"></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a href="/reports" class="btn btn-secondary btn-sm">
+                    Export Report
+                </a>
+                <a href="/alerts" class="btn btn-primary btn-sm">
+                    View Incident Log
+                </a>
+            </div>
+        </section>
+
+        <!-- 4. TWO-COLUMN: LIVE ZONES & RECENT ALERTS -->
+        <section class="two-col-grid" id="zonesAlertsSection">
+            
+            <!-- Live Zones Panel with Clickable Heatmap & Venue Map Option -->
+            <div class="cs-panel" id="liveZonesPanel">
+                <div class="cs-panel-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <div class="cs-panel-title" style="margin:0;">
+                            Live Zone Status
+                        </div>
+                        <!-- Clickable option: Cards vs Venue Heatmap -->
+                        <div class="view-toggle-pills" style="display:inline-flex; background:#080c14; border:1px solid var(--border-subtle); border-radius:6px; padding:2px; gap:2px;">
+                            <button id="btnZoneCardsView" class="btn btn-sm" onclick="switchZoneDisplay('cards')" style="background:var(--accent-emerald); color:#050505; font-size:11px; font-weight:700; padding:4px 10px; border-radius:4px; border:none; cursor:pointer; transition:all 0.15s;">
+                                🔲 Cards View
+                            </button>
+                            <button id="btnZoneHeatmapView" class="btn btn-sm btn-secondary" onclick="switchZoneDisplay('heatmap')" style="font-size:11px; font-weight:700; padding:4px 10px; border-radius:4px; border:none; cursor:pointer; transition:all 0.15s;">
+                                🗺️ Venue Map & Heatmap
+                            </button>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="badge badge-muted" id="zoneSummaryBadge">0 Zones</span>
+                    </div>
+                </div>
+
+                <div class="cs-panel-body" style="padding:16px;">
+
+                    <!-- VIEW 1: Standard Zone Cards Grid -->
+                    <div id="zonesCardsContainer">
+                        <div class="zone-cards-list" id="zonesListContainer">
+                            <div style="color: var(--text-muted); font-size: 13px; padding: 20px;">
+                                Waiting for zone detection data...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VIEW 2: Connected Venue Blueprint with Real-Time Density Heatmap -->
+                    <div id="zonesHeatmapContainer" style="display:none;">
+                        <!-- Controls Bar -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px; padding:10px 14px; background:#0a0f1d; border:1px solid rgba(255,255,255,0.06); border-radius:6px;">
+                            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                <div style="font-size:13px; font-weight:700; color:var(--text-primary);" id="heatmapVenueName">Loading venue blueprint...</div>
+                                <span class="badge badge-emerald" id="heatmapShapeBadge" style="font-size:10px;">Rectangle</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                <button id="btnToggleHeatmapOverlay" class="btn btn-sm btn-secondary" onclick="toggleHeatmapOverlay()" style="padding:4px 10px; font-size:11px; font-weight:600;" title="Toggle density overlay coloring on/off">
+                                    <span>🔥 Heatmap Overlay: ON</span>
+                                </button>
+                                <a href="/venue" class="btn btn-sm btn-secondary" style="padding:4px 10px; font-size:11px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:4px;" title="Open Venue setup to edit doors, exits, and blueprint">
+                                    <span>⚙️ Venue Setup &rarr;</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Live Blueprint Preview SVG Container (Identical to Venue Setup) -->
+                        <div class="blueprint-container" style="width:100%; min-height:300px; max-height:380px; background:#080c14; border:1px solid var(--border-color, #1e293b); border-radius:6px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                            <svg id="heatmapSvg" viewBox="0 0 500 350" style="width:100%; height:100%; max-height:380px; display:block;"></svg>
+                            <div id="heatmapPlaceholder" style="color:var(--text-muted); font-size:13px; text-align:center; padding:30px; display:none;">
+                                Waiting for venue blueprint data…
+                            </div>
+                        </div>
+
+                        <!-- Legend & Status Strip -->
+                        <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-size:11px;">
+                            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; color:var(--text-muted);">
+                                <span><span style="display:inline-block;width:10px;height:10px;background:#10b981;border-radius:2px;margin-right:4px;"></span>Safe</span>
+                                <span><span style="display:inline-block;width:10px;height:10px;background:#f59e0b;border-radius:2px;margin-right:4px;"></span>Warning</span>
+                                <span><span style="display:inline-block;width:10px;height:10px;background:#ef4444;border-radius:2px;margin-right:4px;"></span>Critical</span>
+                                <span><span style="display:inline-block;width:10px;height:10px;background:rgba(16,185,129,0.35);border:1px solid #10b981;border-radius:2px;margin-right:4px;"></span>🚪 Entrance</span>
+                                <span><span style="display:inline-block;width:10px;height:10px;background:rgba(244,63,94,0.35);border:1px solid #f43f5e;border-radius:2px;margin-right:4px;"></span>🏃 Exit</span>
+                            </div>
+                            <span class="badge badge-muted" id="heatmapZoneCount">0 Zones</span>
+                        </div>
                     </div>
 
                 </div>
-
             </div>
 
-        </div>
-
-        <!-- ALERTS -->
-
-        <div class="panel">
-
-            <div class="panel-header">
-
-                <h2>
-                    Recent Alerts
-                </h2>
-
-                <span>
-                    Live
-                </span>
-
+            <!-- Recent Alerts -->
+            <div class="cs-panel">
+                <div class="cs-panel-header">
+                    <div class="cs-panel-title">
+                        Recent Alerts & Surges
+                    </div>
+                    <span class="badge badge-muted" id="alertCountBadge">0 Active</span>
+                </div>
+                <div class="cs-panel-body">
+                    <div class="alerts-feed-list" id="alertsListContainer">
+                        <div style="color: var(--text-muted); font-size: 13px; padding: 20px;">
+                            No safety incidents reported.
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="panel-body">
+        </section>
 
-                <div
-                    class="alerts"
-                    id="alertsContainer"
-                >
-
-                    <div class="no-data">
-                        No alerts
-                    </div>
-
+        <!-- 6. REAL-TIME CROWD OCCUPANCY TREND -->
+        <section class="cs-panel" style="margin-bottom: 24px;">
+            <div class="cs-panel-header">
+                <div class="cs-panel-title">
+                    Live Occupancy Trend
                 </div>
-
+                <span class="badge badge-muted">Last 60 Readings</span>
             </div>
-
-        </div>
-
-    </section>
-
-    <!-- =========================
-         LIVE CROWDSENSE CAMERA
-    ========================= -->
-
-    <section
-        class="panel"
-        style="margin-top:18px;"
-    >
-
-        <div class="panel-header">
-
-            <h2>
-                Live CrowdSense Camera
-            </h2>
-
-            <span id="liveCameraStatus">
-                Waiting for camera...
-            </span>
-
-        </div>
-
-        <div
-            class="panel-body"
-            style="
-                padding:0;
-                background:#000000;
-            "
-        >
-
-            <div
-                style="
-                    position:relative;
-                    width:100%;
-                    background:#000000;
-                    min-height:300px;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                "
-            >
-
-                <img
-                    id="liveCamera"
-                    src="/api/dashboard/stream"
-                    alt="CrowdSense Live Camera"
-                    style="
-                        width:100%;
-                        max-height:650px;
-                        object-fit:contain;
-                        display:block;
-                        background:#000000;
-                    "
-                >
-
-                <div
-                    id="cameraOverlay"
-                    style="
-                        position:absolute;
-                        top:15px;
-                        left:15px;
-                        padding:7px 11px;
-                        background:rgba(0,0,0,0.75);
-                        border:1px solid #00ff66;
-                        border-radius:5px;
-                        color:#00ff66;
-                        font-size:11px;
-                        font-weight:bold;
-                    "
-                >
-                    ● LIVE
+            <div class="cs-panel-body">
+                <div class="chart-container">
+                    <canvas id="trendChartCanvas" style="width: 100%; height: 100%;"></canvas>
                 </div>
-
             </div>
+        </section>
 
-        </div>
-
-    </section>
-
-    <!-- =========================
-         CROWD TREND
-    ========================= -->
-
-    <section
-        class="panel trend-panel"
-    >
-
-        <div class="panel-header">
-
-            <h2>
-                Live Crowd Trend
-            </h2>
-
-            <span>
-                Last 60 readings
-            </span>
-
-        </div>
-
-        <div class="panel-body">
-
-            <canvas
-                id="trendCanvas"
-            ></canvas>
-
-        </div>
-
-    </section>
-
-    <!-- =========================
-         CAMERAS
-    ========================= -->
-
-    <section
-        class="panel"
-        style="margin-top:18px;"
-    >
-
-        <div class="panel-header">
-
-            <h2>
-                Camera Status
-            </h2>
-
-            <span id="cameraUpdated">
-                Waiting...
-            </span>
-
-        </div>
-
-        <div class="panel-body">
-
-            <table class="camera-table">
-
-                <thead>
-
-                    <tr>
-                        <th>Name</th>
-                        <th>Source</th>
-                        <th>Status</th>
-                        <th>Last Checked</th>
-                    </tr>
-
-                </thead>
-
-                <tbody id="cameraTable">
-
-                    <tr>
-
-                        <td
-                            colspan="4"
-                            class="no-data"
-                        >
-                            No camera data
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </section>
-
-    <!-- =========================
-         SESSION
-    ========================= -->
-
-    <section
-        class="panel"
-        style="margin-top:18px;"
-    >
-
-        <div class="panel-header">
-
-            <h2>
-                Current Session
-            </h2>
-
-            <span id="sessionStatus">
-                INACTIVE
-            </span>
-
-        </div>
-
-        <div class="panel-body">
-
-            <div class="session-grid">
-
-                <div class="session-item">
-
-                    <div class="session-label">
-                        Peak People
-                    </div>
-
-                    <div
-                        class="session-value"
-                        id="sessionPeak"
-                    >
-                        0
-                    </div>
-
+        <!-- 6. SESSION OVERVIEW -->
+        <section class="cs-panel">
+            <div class="cs-panel-header">
+                <div class="cs-panel-title">
+                    Active Monitoring Session
                 </div>
-
-                <div class="session-item">
-
-                    <div class="session-label">
-                        Average People
-                    </div>
-
-                    <div
-                        class="session-value"
-                        id="sessionAverage"
-                    >
-                        0
-                    </div>
-
-                </div>
-
-                <div class="session-item">
-
-                    <div class="session-label">
-                        Peak Occupancy
-                    </div>
-
-                    <div
-                        class="session-value"
-                        id="sessionOccupancy"
-                    >
-                        0%
-                    </div>
-
-                </div>
-
-                <div class="session-item">
-
-                    <div class="session-label">
-                        Duration
-                    </div>
-
-                    <div
-                        class="session-value"
-                        id="sessionDuration"
-                    >
-                        00:00:00
-                    </div>
-
-                </div>
-
+                <span class="badge badge-safe" id="sessionStateBadge">MONITORING</span>
             </div>
+            <div class="cs-panel-body">
+                <div class="kpi-grid" style="margin-bottom: 0;">
+                    <div>
+                        <div class="form-label">Peak Occupancy</div>
+                        <div style="font-size: 20px; font-weight: 800;" id="sessionPeakVal">0%</div>
+                    </div>
+                    <div>
+                        <div class="form-label">Peak People Count</div>
+                        <div style="font-size: 20px; font-weight: 800;" id="sessionPeakPeopleVal">0</div>
+                    </div>
+                    <div>
+                        <div class="form-label">Average Count</div>
+                        <div style="font-size: 20px; font-weight: 800;" id="sessionAvgVal">0</div>
+                    </div>
+                    <div>
+                        <div class="form-label">Session Duration</div>
+                        <div style="font-size: 20px; font-weight: 800; font-family: monospace; color: var(--accent-emerald);" id="sessionDurationVal">00:00:00</div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        </div>
+    </main>
 
-    </section>
+    <!-- Dashboard Toast Container -->
+    <div id="dashboardToast" style="display:none;"></div>
 
-    <footer>
+    <script>
+        // Global State
+        let currentLayout = 'single';
+        let registeredCameras = [];
+        let trendHistory = [];
+        let sirenMuted = false;
+        let audioCtx = null;
+        let lastKnownRisk = 'SAFE';
+        let alarmActive = false;
+        let alarmLoopTimer = null;
+        let alarmNodes = [];
 
-        <div>
-            CrowdSense Local Safety System
-        </div>
-
-        <div id="lastUpdate">
-            Last update: --
-        </div>
-
-    </footer>
-
-</main>
-
-<script>
-
-    /*
-     * ==========================================
-     * CROWD SENSE DASHBOARD
-     * ==========================================
-     *
-     * Everything communicates with the local
-     * Flask API.
-     *
-     * No external libraries.
-     * No cloud services.
-     * No internet required.
-     */
-
-    const API = "";
-
-    let trendData = [];
-
-    /* ==========================================
-       API HELPER
-    ========================================== */
-
-    async function apiFetch(url, options = {}) {
-
+        // Heatmap & Venue Map State
+        let venueConfig = null;
+        let currentZoneDisplay = 'cards';
         try {
+            currentZoneDisplay = localStorage.getItem('crowdsense_zone_view') || 'cards';
+        } catch (e) {}
+        let showHeatmapOverlay = true;
+        let focusedZoneId = null;
+        let lastKnownZones = [];
 
-            const response =
-                await fetch(
-                    API + url,
-                    {
-                        cache: "no-store",
-                        ...options
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+        }
+
+        // ─── Dual Beep-Beep Electronic Alarm ────────────────────────────────────
+        // Replaces the siren with a clean, rhythmic "beep ... beep" electronic tone.
+        // Each pulse is ~120ms with a clean attack/release envelope at 960 Hz.
+        // Repeats cleanly every ~0.95 seconds while CRITICAL alarm is active.
+
+        function _ensureAudioCtx() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function _createBeepPulse(ctx, startTime, duration = 0.12, freq = 960) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, startTime);
+
+            // Smooth anti-pop envelope
+            gain.gain.setValueAtTime(0.0001, startTime);
+            gain.gain.linearRampToValueAtTime(0.28, startTime + 0.012);
+            gain.gain.setValueAtTime(0.28, startTime + duration - 0.02);
+            gain.gain.linearRampToValueAtTime(0.0001, startTime + duration);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(startTime);
+            osc.stop(startTime + duration + 0.02);
+
+            alarmNodes.push(osc, gain);
+        }
+
+        function _playBeepCycle(ctx) {
+            const now = ctx.currentTime;
+            const cycleDuration = 0.95;
+
+            // First Beep: "beep"
+            _createBeepPulse(ctx, now, 0.12, 960);
+
+            // Short 80ms pause, then Second Beep: "beep"
+            _createBeepPulse(ctx, now + 0.20, 0.12, 960);
+
+            return cycleDuration;
+        }
+
+        function _scheduleAlarmLoop() {
+            if (!alarmActive || sirenMuted) return;
+            try {
+                const ctx = _ensureAudioCtx();
+                const cycleLen = _playBeepCycle(ctx);
+                alarmLoopTimer = setTimeout(_scheduleAlarmLoop, cycleLen * 1000 - 30);
+            } catch (e) {
+                console.warn('Alarm audio error:', e);
+            }
+        }
+
+        function startAlarm() {
+            if (alarmActive) return;   // already running, don't double-start
+            alarmActive = true;
+            _scheduleAlarmLoop();
+        }
+
+        function stopAlarm() {
+            alarmActive = false;
+            if (alarmLoopTimer) {
+                clearTimeout(alarmLoopTimer);
+                alarmLoopTimer = null;
+            }
+            // Ramp down any playing nodes quickly
+            if (audioCtx) {
+                try {
+                    alarmNodes.forEach(n => {
+                        try {
+                            if (typeof n.stop === 'function') {
+                                n.stop(audioCtx.currentTime + 0.02);
+                            }
+                        } catch (e) {}
+                    });
+                } catch (e) {}
+            }
+            alarmNodes = [];
+        }
+
+        // One-shot beep-beep tone for test button
+        function playSirenTone() {
+            if (sirenMuted) return;
+            try {
+                const ctx = _ensureAudioCtx();
+                _playBeepCycle(ctx);
+            } catch (e) {}
+        }
+        const playAlarmTone = playSirenTone;
+
+        function toggleSirenMute() {
+            sirenMuted = !sirenMuted;
+            const btn = document.getElementById('sirenBtn');
+            if (sirenMuted) {
+                btn.textContent = 'Alarm: MUTED';
+                btn.className = 'btn btn-secondary btn-sm';
+                if (alarmActive) stopAlarm();
+            } else {
+                btn.textContent = 'Alarm: ON';
+                btn.className = 'btn btn-primary btn-sm';
+            }
+        }
+
+        function handleBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.reload();
+            }
+        }
+
+        function handleRefresh() {
+            updateDashboard();
+            loadCamerasList();
+            loadRecentAlerts();
+            loadSessionMetrics();
+        }
+
+        // Layout Switching (1x1, 2x2, 3x3)
+        function switchLayout(layout) {
+            currentLayout = layout;
+            document.getElementById('layoutSingleBtn').className = 'layout-btn ' + (layout === 'single' ? 'active' : '');
+            document.getElementById('layoutQuadBtn').className = 'layout-btn ' + (layout === 'quad' ? 'active' : '');
+            document.getElementById('layoutMatrixBtn').className = 'layout-btn ' + (layout === 'matrix' ? 'active' : '');
+
+            const singleCont = document.getElementById('singleViewContainer');
+            const quadCont = document.getElementById('quadViewContainer');
+            const matrixCont = document.getElementById('matrixViewContainer');
+
+            if (layout === 'single') {
+                singleCont.style.display = 'flex';
+                quadCont.style.display = 'none';
+                matrixCont.style.display = 'none';
+            } else if (layout === 'quad') {
+                singleCont.style.display = 'none';
+                quadCont.style.display = 'grid';
+                matrixCont.style.display = 'none';
+                renderMultiGrid(4, quadCont);
+            } else if (layout === 'matrix') {
+                singleCont.style.display = 'none';
+                quadCont.style.display = 'none';
+                matrixCont.style.display = 'grid';
+                renderMultiGrid(9, matrixCont);
+            }
+        }
+
+        function renderMultiGrid(count, container) {
+            container.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const cam = registeredCameras[i] || {
+                    camera_id: 'CAM' + (i + 1),
+                    name: 'Camera ' + (i + 1),
+                    source: i === 0 ? '0' : '--',
+                    people: i === 0 ? (document.getElementById('totalPeopleVal').textContent || 0) : 0,
+                    status: i === 0 ? 'CONNECTED' : 'STANDBY'
+                };
+
+                const cell = document.createElement('div');
+                cell.className = 'grid-camera-cell' + (i === 0 ? ' active-cell' : '');
+                
+                // Clicking any cell switches active camera
+                cell.onclick = () => {
+                    if (cam.camera_id) {
+                        switchActiveCamera(cam.camera_id);
                     }
-                );
+                };
 
-            if (!response.ok) {
+                const streamSrc = (i === 0) ? '/api/dashboard/stream' : (cam.camera_id ? `/api/cameras/${cam.camera_id}/stream` : '');
 
-                throw new Error(
-                    "HTTP " + response.status
-                );
+                cell.innerHTML = `
+                    <img src="${streamSrc}" alt="${cam.name}" onerror="this.onerror=null; this.src='/static/img/no_feed.png'; this.style.opacity=0.3;">
+                    <div class="cell-overlay-top">
+                        <span class="cell-badge">${cam.name}</span>
+                        <span class="cell-badge ${cam.status === 'CONNECTED' ? 'badge-safe' : 'badge-muted'}">${cam.status}</span>
+                    </div>
+                    <div class="cell-overlay-bottom">
+                        <span class="cell-badge">Src: ${cam.source}</span>
+                        <span class="cell-badge" style="background: rgba(16,185,129,0.25); color: #10b981;">${cam.people || 0} People</span>
+                    </div>
+                `;
+                container.appendChild(cell);
+            }
+        }
 
+        async function switchActiveCamera(camId) {
+            try {
+                await fetch(`/api/cameras/${encodeURIComponent(camId)}/switch`, { method: 'POST' });
+                // Reload single stream image to refresh connection
+                const img = document.getElementById('mainLiveFeed');
+                img.src = '/api/dashboard/stream?t=' + Date.now();
+                updateDashboard();
+            } catch (e) {
+                console.error('Camera switch failed:', e);
+            }
+        }
+
+        async function triggerTestAlert() {
+            playSirenTone();
+            updateDashboard();
+        }
+
+        // =====================================================
+        // TELEGRAM TEST NOTIFICATION
+        // =====================================================
+
+        async function sendTelegramTestNotification() {
+            const btn = document.getElementById('telegramTestBtn');
+            const badge = document.getElementById('telegramStatusBadge');
+            if (!btn) return;
+
+            btn.disabled = true;
+            btn.textContent = '✈ Sending…';
+            if (badge) {
+                badge.style.display = 'none';
             }
 
-            return await response.json();
+            try {
+                const res = await fetch('/api/telegram/test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                const data = await res.json();
 
-        } catch (error) {
-
-            console.warn(
-                "API request failed:",
-                url,
-                error
-            );
-
-            return null;
+                if (data.success) {
+                    btn.textContent = '✈ Sent!';
+                    btn.style.background = '#10b981';
+                    if (badge) {
+                        badge.style.display = 'inline-block';
+                        badge.style.background = 'rgba(16,185,129,0.15)';
+                        badge.style.color = '#10b981';
+                        badge.style.border = '1px solid #10b981';
+                        badge.textContent = '✓ Test message delivered to Telegram';
+                    }
+                } else {
+                    btn.textContent = '✈ Failed';
+                    btn.style.background = '#ef4444';
+                    const errMsg = data.message || data.error || 'Unknown error';
+                    if (badge) {
+                        badge.style.display = 'inline-block';
+                        badge.style.background = 'rgba(239,68,68,0.15)';
+                        badge.style.color = '#ef4444';
+                        badge.style.border = '1px solid #ef4444';
+                        badge.textContent = '✗ ' + errMsg;
+                    }
+                }
+            } catch (err) {
+                btn.textContent = '✈ Error';
+                btn.style.background = '#ef4444';
+                if (badge) {
+                    badge.style.display = 'inline-block';
+                    badge.style.background = 'rgba(239,68,68,0.15)';
+                    badge.style.color = '#ef4444';
+                    badge.style.border = '1px solid #ef4444';
+                    badge.textContent = '✗ Network error';
+                }
+            } finally {
+                // Reset button appearance after 4 seconds
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '✈ Telegram Test';
+                    btn.style.background = '#229ED9';
+                    if (badge) badge.style.display = 'none';
+                }, 4000);
+            }
         }
 
-    }
+        async function acknowledgeActiveAlerts() {
+            if (alarmActive) {
+                stopAlarm();
+            }
 
-    /* ==========================================
-       STATUS
-    ========================================== */
+            // Immediate optimistic UI feedback in recent alerts feed
+            const cont = document.getElementById('alertsListContainer');
+            if (cont) {
+                const btns = cont.querySelectorAll('button');
+                btns.forEach(b => {
+                    const span = document.createElement('span');
+                    span.style.fontSize = '11px';
+                    span.style.color = 'var(--text-muted)';
+                    span.textContent = 'Acknowledged';
+                    b.replaceWith(span);
+                });
+            }
 
-    async function updateStatus() {
+            // Button feedback
+            const ackAllBtn = event && event.target ? event.target : null;
+            if (ackAllBtn && ackAllBtn.tagName === 'BUTTON') {
+                const orig = ackAllBtn.textContent;
+                ackAllBtn.textContent = 'Acknowledged!';
+                ackAllBtn.disabled = true;
+                setTimeout(() => {
+                    ackAllBtn.textContent = orig;
+                    ackAllBtn.disabled = false;
+                }, 1600);
+            }
 
-        const data =
-            await apiFetch("/api/status");
-
-        if (!data) {
-
-            setSystemStatus(
-                "OFFLINE",
-                "critical"
-            );
-
-            return;
+            try {
+                await Promise.all([
+                    fetch('/api/alerts/acknowledge_all', { method: 'POST' }),
+                    fetch('/api/incidents/acknowledge_all', { method: 'POST' })
+                ]);
+            } catch (e) {
+                console.warn('acknowledgeActiveAlerts error:', e);
+            }
+            updateDashboard();
+            loadRecentAlerts();
         }
 
-        const status =
-            data.data || data;
+        // Fetch Cameras List
+        async function loadCamerasList() {
+            try {
+                const res = await fetch('/api/cameras', { cache: 'no-store' });
+                if (!res.ok) return;
+                const data = await res.json();
+                registeredCameras = Array.isArray(data) ? data : [];
+                document.getElementById('cameraCountVal').textContent = registeredCameras.length || 1;
+                if (currentLayout !== 'single') {
+                    switchLayout(currentLayout);
+                }
+            } catch (e) {}
+        }
 
-        const liveCameraStatus =
-            document.getElementById(
-                "liveCameraStatus"
-            );
+        // Fetch Status & Metrics
+        async function updateDashboard() {
+            try {
+                const res = await fetch('/api/status', { cache: 'no-store' });
+                if (!res.ok) throw new Error('Status offline');
+                const data = await res.json();
 
-        if (liveCameraStatus) {
+                // Total people & capacity
+                const people = data.total_people ?? 0;
+                const capacity = data.capacity ?? 0;
+                const occ = parseFloat(data.occupancy ?? 0);
+                const risk = (data.risk || 'SAFE').toUpperCase();
 
-            if (status.camera_source) {
+                document.getElementById('totalPeopleVal').textContent = people;
+                document.getElementById('capacitySubText').textContent = `Permitted Capacity: ${capacity}`;
+                document.getElementById('singleStreamPeopleCount').textContent = `Detected: ${people} People`;
 
-                liveCameraStatus.textContent =
-                    "Camera: " +
-                    status.camera_source;
+                // Occupancy
+                const occVal = document.getElementById('occupancyVal');
+                occVal.textContent = occ.toFixed(1) + '%';
+                document.getElementById('venueSubText').textContent = data.venue || 'Default Venue';
+
+                const occBadge = document.getElementById('occupancyBadge');
+                occBadge.textContent = occ >= 90 ? 'Critical' : (occ >= 70 ? 'Warning' : 'Normal');
+                occBadge.className = 'badge ' + (occ >= 90 ? 'badge-critical' : (occ >= 70 ? 'badge-warning' : 'badge-safe'));
+
+                // Risk
+                const riskVal = document.getElementById('riskLevelVal');
+                riskVal.textContent = risk;
+                riskVal.style.color = risk === 'CRITICAL' ? 'var(--status-critical)' : (risk === 'WARNING' ? 'var(--status-warning)' : 'var(--accent-emerald)');
+
+                const headerRisk = document.getElementById('headerRiskBadge');
+                headerRisk.textContent = risk;
+                headerRisk.className = 'badge ' + (risk === 'CRITICAL' ? 'badge-critical' : (risk === 'WARNING' ? 'badge-warning' : 'badge-safe'));
+
+                // Emergency Banner & Looping Alarm Siren
+                const banner = document.getElementById('emergencyBanner');
+                if (risk === 'CRITICAL') {
+                    banner.style.display = 'flex';
+                    if (lastKnownRisk !== 'CRITICAL') {
+                        startAlarm();   // start looping siren on transition to CRITICAL
+                    }
+                } else {
+                    banner.style.display = 'none';
+                    if (lastKnownRisk === 'CRITICAL') {
+                        stopAlarm();    // stop looping siren when risk clears
+                    }
+                }
+                lastKnownRisk = risk;
+
+                // Active camera source
+                const src = data.camera_source ?? '0';
+                document.getElementById('cameraSourceSub').textContent = `Source: ${src}`;
+                document.getElementById('activeCameraName').textContent = `[Active: ${data.venue || 'Camera'} (${src})]`;
+
+                // Zones list
+                renderZones(data.zones || []);
+                renderHeatmap(data.zones || []);
+
+                // Trend history push
+                trendHistory.push({ time: new Date().toLocaleTimeString(), occupancy: occ, people: people });
+                if (trendHistory.length > 60) trendHistory.shift();
+                drawTrendChart();
+
+            } catch (err) {
+                console.warn('Dashboard fetch err:', err);
+            }
+        }
+
+        // Render Zones List
+        function renderZones(zones) {
+            lastKnownZones = zones || [];
+            const cont = document.getElementById('zonesListContainer');
+            const summaryBadge = document.getElementById('zoneSummaryBadge');
+            if (summaryBadge) summaryBadge.textContent = `${lastKnownZones.length} Zones`;
+            if (!cont) return;
+
+            if (!zones || zones.length === 0) {
+                cont.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px;">No zone assignment active</div>';
+                return;
+            }
+
+            cont.innerHTML = zones.map(z => {
+                const zRisk = (z.risk || 'SAFE').toUpperCase();
+                const cardClass = zRisk === 'CRITICAL' ? 'critical' : (zRisk === 'WARNING' ? 'warning' : '');
+                const occ = z.occupancy !== undefined ? Number(z.occupancy).toFixed(0) : '0';
+                return `
+                    <div class="zone-card-item ${cardClass}" onclick="focusZoneOnMap('${z.id}')" style="cursor:pointer;" title="Click to view on venue heatmap">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="zone-id-badge">${z.id}${z.has_custom_threshold ? ' <span style="font-size:9px; color:var(--accent-warning);" title="Custom thresholds active">⚙</span>' : ''}</span>
+                            <div style="display:flex; align-items:center; gap:4px;">
+                                <span class="badge ${zRisk === 'CRITICAL' ? 'badge-critical' : (zRisk === 'WARNING' ? 'badge-warning' : 'badge-safe')}" style="padding:2px 6px; font-size:10px;">${zRisk}</span>
+                                <span style="font-size:10px; opacity:0.7;" title="View on Venue Map">🗺️</span>
+                            </div>
+                        </div>
+                        <div class="zone-people-count">${z.people || 0} <span style="font-size:11px; font-weight:normal; color:var(--text-secondary);">people</span></div>
+                        <div style="font-size:11px; color:var(--text-muted);">${occ}% Occ (${(z.density || 0).toFixed(2)}/m²)</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render Recent Alerts
+        async function loadRecentAlerts() {
+            try {
+                const res = await fetch('/api/alerts?_=' + Date.now(), { cache: 'no-store' });
+                if (!res.ok) return;
+                const raw = await res.json();
+                const cont = document.getElementById('alertsListContainer');
+
+                // Backend returns a plain array; normalize just in case
+                let allAlerts = Array.isArray(raw) ? raw : (raw.alerts || raw.data || []);
+
+                // Sort newest first
+                allAlerts.sort((a, b) => {
+                    const ta = new Date(a.timestamp || 0).getTime();
+                    const tb = new Date(b.timestamp || 0).getTime();
+                    return tb - ta;
+                });
+
+                const list = allAlerts.slice(0, 8);
+                document.getElementById('alertCountBadge').textContent = `${allAlerts.length} Alert${allAlerts.length !== 1 ? 's' : ''}`;
+
+                if (list.length === 0) {
+                    cont.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px;">No alerts logged</div>';
+                    return;
+                }
+
+                cont.innerHTML = list.map(a => {
+                    const sev = String(a.risk || a.severity || 'WARNING').toUpperCase();
+                    const isAcked = String(a.status || 'OPEN').toUpperCase() === 'ACKNOWLEDGED';
+                    const alertId = a.alert_id || a.id || '';
+
+                    return `
+                        <div class="alert-card-item ${sev === 'CRITICAL' ? 'critical' : 'warning'}">
+                            <div style="flex:1;">
+                                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                    <span class="badge ${sev === 'CRITICAL' ? 'badge-critical' : 'badge-warning'}" style="padding:2px 6px; font-size:10px;">${sev}</span>
+                                    <span style="font-weight:700; font-size:13px;">${a.message || 'Safety Alert'}</span>
+                                </div>
+                                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+                                    ${a.timestamp || 'Just now'} &bull; Zone: <strong>${a.zone_id || 'Venue'}</strong>
+                                </div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                ${!isAcked && alertId
+                                    ? `<button class="btn btn-secondary btn-sm" style="font-size:11px; padding:3px 8px;" onclick="ackAlert('${alertId.replace(/'/g, "\\'")}')">Acknowledge</button>`
+                                    : '<span style="font-size:11px; color:var(--text-muted);">Acknowledged</span>'}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.warn('loadRecentAlerts error:', e);
+            }
+        }
+
+        async function ackAlert(id) {
+            if (!id) return;
+            if (event && event.target) {
+                const btn = event.target;
+                const span = document.createElement('span');
+                span.style.fontSize = '11px';
+                span.style.color = 'var(--text-muted)';
+                span.textContent = 'Acknowledged';
+                btn.replaceWith(span);
+            }
+            try {
+                const res = await fetch(`/api/alerts/${encodeURIComponent(id)}/acknowledge`, { method: 'POST' });
+                if (res.ok) loadRecentAlerts();
+            } catch (e) {}
+        }
+
+        function showDashboardNotification(msg, type = 'info') {
+            let toast = document.getElementById('dashboardToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'dashboardToast';
+                toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,0.5);transition:opacity 0.3s;max-width:420px;white-space:pre-line;word-break:break-word;';
+                document.body.appendChild(toast);
+            }
+            if (type === 'success') {
+                toast.style.background = '#065f46';
+                toast.style.color = '#ecfdf5';
+                toast.style.border = '1px solid #10b981';
+            } else if (type === 'error') {
+                toast.style.background = '#7f1d1d';
+                toast.style.color = '#fef2f2';
+                toast.style.border = '1px solid #ef4444';
+            } else {
+                toast.style.background = '#1e293b';
+                toast.style.color = '#f1f5f9';
+                toast.style.border = '1px solid #334155';
+            }
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            toast.style.display = 'block';
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => { toast.style.display = 'none'; }, 300);
+            }, 4500);
+        }
+
+        // =====================================================================
+        // FEATURE 1: AUTHORITATIVE LIVE SESSION TIMER & METRICS
+        // =====================================================================
+        let sessionTimerInterval = null;
+        let activeSessionStartIso = null;
+        let isSessionActive = false;
+        let sessionFinalDurationStr = null;
+        let isSessionMetricsFetching = false;
+
+        function formatDurationHMS(totalSeconds) {
+            const s = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+            const hours = Math.floor(s / 3600);
+            const minutes = Math.floor((s % 3600) / 60);
+            const seconds = s % 60;
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function getElapsedSeconds(startIso) {
+            if (!startIso) return 0;
+            const parsed = typeof startIso === 'string' ? new Date(startIso.replace(' ', 'T')).getTime() : new Date(startIso).getTime();
+            if (isNaN(parsed)) return 0;
+            return Math.max(0, Math.floor((Date.now() - parsed) / 1000));
+        }
+
+        function updateLiveSessionTimer() {
+            if (isSessionActive && activeSessionStartIso) {
+                const el = document.getElementById('sessionDurationVal');
+                if (el) {
+                    el.textContent = formatDurationHMS(getElapsedSeconds(activeSessionStartIso));
+                }
+            }
+        }
+
+        async function loadSessionMetrics() {
+            if (isSessionMetricsFetching) return;
+            isSessionMetricsFetching = true;
+
+            try {
+                const res = await fetch('/api/session?_=' + Date.now(), {
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+
+                const session = data.session || data;
+                const status = String(session.status || (session.active ? 'ACTIVE' : 'NO SESSION')).toUpperCase();
+                const active = status === 'ACTIVE' || status === 'RUNNING';
+
+                const durEl = document.getElementById('sessionDurationVal');
+                const badgeEl = document.getElementById('sessionStateBadge');
+
+                if (active) {
+                    isSessionActive = true;
+                    sessionFinalDurationStr = null;
+
+                    const startIso = session.start_time || session.started_at || session.start;
+                    if (startIso) {
+                        activeSessionStartIso = startIso;
+                    }
+
+                    if (durEl) {
+                        durEl.textContent = formatDurationHMS(getElapsedSeconds(activeSessionStartIso));
+                    }
+
+                    if (badgeEl) {
+                        badgeEl.textContent = 'MONITORING';
+                        badgeEl.className = 'badge badge-safe';
+                    }
+
+                    // Update live timer interval if not running
+                    if (!sessionTimerInterval) {
+                        sessionTimerInterval = setInterval(updateLiveSessionTimer, 1000);
+                    }
+
+                    // Metrics
+                    if (session.peak_occupancy !== undefined && session.peak_occupancy !== null) {
+                        document.getElementById('sessionPeakVal').textContent = Number(session.peak_occupancy).toFixed(1) + '%';
+                    }
+                    if (session.peak_people !== undefined && session.peak_people !== null) {
+                        document.getElementById('sessionPeakPeopleVal').textContent = session.peak_people;
+                    }
+                    if (session.average_people !== undefined && session.average_people !== null) {
+                        document.getElementById('sessionAvgVal').textContent = Number(session.average_people).toFixed(0);
+                    }
+                } else {
+                    // Session is not active
+                    if (badgeEl) {
+                        badgeEl.textContent = 'INACTIVE';
+                        badgeEl.className = 'badge badge-muted';
+                    }
+
+                    if (isSessionActive) {
+                        // Session just transitioned to stopped!
+                        isSessionActive = false;
+                        if (sessionTimerInterval) {
+                            clearInterval(sessionTimerInterval);
+                            sessionTimerInterval = null;
+                        }
+
+                        let finalSec = null;
+                        if (session.duration_seconds !== undefined && session.duration_seconds > 0) {
+                            finalSec = session.duration_seconds;
+                        } else if (data.last_session && data.last_session.duration_seconds !== undefined) {
+                            finalSec = data.last_session.duration_seconds;
+                        } else if (activeSessionStartIso) {
+                            finalSec = getElapsedSeconds(activeSessionStartIso);
+                        }
+
+                        if (finalSec !== null) {
+                            sessionFinalDurationStr = formatDurationHMS(finalSec);
+                            if (durEl) durEl.textContent = sessionFinalDurationStr;
+                        } else {
+                            if (durEl) durEl.textContent = '00:00:00';
+                        }
+                    } else if (sessionFinalDurationStr !== null) {
+                        // Preserve final duration if session just stopped
+                        if (durEl) durEl.textContent = sessionFinalDurationStr;
+                    } else {
+                        // No active session
+                        if (sessionTimerInterval) {
+                            clearInterval(sessionTimerInterval);
+                            sessionTimerInterval = null;
+                        }
+                        if (durEl) durEl.textContent = '00:00:00';
+                    }
+                }
+            } catch (e) {
+                console.warn('loadSessionMetrics error:', e);
+            } finally {
+                isSessionMetricsFetching = false;
+            }
+        }
+
+        // Draw Canvas Trend Chart
+        function drawTrendChart() {
+            const canvas = document.getElementById('trendChartCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const w = rect.width;
+            const h = rect.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            if (trendHistory.length < 2) {
+                ctx.fillStyle = '#64748b';
+                ctx.font = '12px sans-serif';
+                ctx.fillText('Accumulating real-time trend data...', 20, h / 2);
+                return;
+            }
+
+            // Grid lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            for (let y = 0; y <= h; y += h / 4) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+
+            // Threshold line at 90% (critical) and 70% (warning)
+            const yCritical = h - (0.90 * h);
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(0, yCritical);
+            ctx.lineTo(w, yCritical);
+            ctx.stroke();
+
+            const yWarning = h - (0.70 * h);
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.3)';
+            ctx.beginPath();
+            ctx.moveTo(0, yWarning);
+            ctx.lineTo(w, yWarning);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Plot curve
+            ctx.beginPath();
+            const step = w / (trendHistory.length - 1);
+            trendHistory.forEach((pt, i) => {
+                const px = i * step;
+                const py = Math.max(10, Math.min(h - 10, h - (pt.occupancy / 100) * h));
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            });
+
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Gradient Fill
+            ctx.lineTo((trendHistory.length - 1) * step, h);
+            ctx.lineTo(0, h);
+            ctx.closePath();
+            const grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+            grad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+            ctx.fillStyle = grad;
+            ctx.fill();
+        }
+
+        // ─── VENUE CONFIG & HEATMAP CONTROLS ─────────────────────────────────────
+        async function loadVenueConfig() {
+            try {
+                const res = await fetch('/api/venue?_=' + Date.now(), { cache: 'no-store' });
+                if (!res.ok) return;
+                venueConfig = await res.json();
+                const nameEl = document.getElementById('heatmapVenueName');
+                const badgeEl = document.getElementById('heatmapShapeBadge');
+                if (venueConfig) {
+                    const shape = (venueConfig.shape || 'rectangle').toLowerCase();
+                    const dim = shape === 'circle'
+                        ? `⌀ ${venueConfig.diameter || '?'}m`
+                        : `${venueConfig.length || '?'}m × ${venueConfig.width || '?'}m`;
+                    if (nameEl) nameEl.textContent = `${venueConfig.name || 'Venue'} (${dim})`;
+                    if (badgeEl) {
+                        badgeEl.textContent = shape.toUpperCase();
+                        badgeEl.className = 'badge ' + (shape === 'circle' ? 'badge-warning' : 'badge-emerald');
+                    }
+                }
+                if (currentZoneDisplay === 'heatmap') {
+                    renderHeatmap(lastKnownZones);
+                }
+            } catch (e) {
+                console.warn('loadVenueConfig error:', e);
+            }
+        }
+
+        // Switch between Zone Cards View and Venue Map & Heatmap View
+        function switchZoneDisplay(view) {
+            currentZoneDisplay = view;
+            try { localStorage.setItem('crowdsense_zone_view', view); } catch (e) {}
+
+            const cardsCont = document.getElementById('zonesCardsContainer');
+            const mapCont = document.getElementById('zonesHeatmapContainer');
+            const btnCards = document.getElementById('btnZoneCardsView');
+            const btnMap = document.getElementById('btnZoneHeatmapView');
+
+            if (view === 'heatmap') {
+                if (cardsCont) cardsCont.style.display = 'none';
+                if (mapCont) mapCont.style.display = 'block';
+                if (btnCards) {
+                    btnCards.style.background = 'transparent';
+                    btnCards.style.color = 'var(--text-secondary)';
+                }
+                if (btnMap) {
+                    btnMap.style.background = 'var(--accent-emerald)';
+                    btnMap.style.color = '#050505';
+                }
+                renderHeatmap(lastKnownZones);
+            } else {
+                if (cardsCont) cardsCont.style.display = 'block';
+                if (mapCont) mapCont.style.display = 'none';
+                if (btnCards) {
+                    btnCards.style.background = 'var(--accent-emerald)';
+                    btnCards.style.color = '#050505';
+                }
+                if (btnMap) {
+                    btnMap.style.background = 'transparent';
+                    btnMap.style.color = 'var(--text-secondary)';
+                }
+            }
+        }
+
+        // Focus a specific zone clicked from the card list
+        function focusZoneOnMap(zoneId) {
+            focusedZoneId = zoneId;
+            switchZoneDisplay('heatmap');
+            renderHeatmap(lastKnownZones);
+            setTimeout(() => {
+                focusedZoneId = null;
+                renderHeatmap(lastKnownZones);
+            }, 3500);
+        }
+
+        // Toggle density overlay coloring
+        function toggleHeatmapOverlay() {
+            showHeatmapOverlay = !showHeatmapOverlay;
+            const btn = document.getElementById('btnToggleHeatmapOverlay');
+            if (btn) {
+                btn.innerHTML = `<span>🔥 Heatmap Overlay: ${showHeatmapOverlay ? 'ON' : 'OFF'}</span>`;
+                btn.style.color = showHeatmapOverlay ? 'var(--text-primary)' : 'var(--text-muted)';
+            }
+            renderHeatmap(lastKnownZones);
+        }
+
+        // ─── HEATMAP RENDERER (Connected Directly to Live Blueprint Preview) ──────
+        function renderHeatmap(zones) {
+            const svg = document.getElementById("heatmapSvg");
+            const placeholder = document.getElementById("heatmapPlaceholder");
+            const zoneCountEl = document.getElementById("heatmapZoneCount");
+
+            if (!svg || !venueConfig) {
+                if (placeholder) placeholder.style.display = 'block';
+                if (svg) svg.style.display = 'none';
+                return;
+            }
+            if (placeholder) placeholder.style.display = 'none';
+            svg.style.display = 'block';
+
+            const activeZones = zones && zones.length > 0 ? zones : lastKnownZones;
+            if (zoneCountEl) zoneCountEl.textContent = `${activeZones.length} Zone${activeZones.length !== 1 ? 's' : ''}`;
+
+            const length = Math.max(1, Number(venueConfig.length || 10));
+            const width = Math.max(1, Number(venueConfig.width || 10));
+            const diameter = Math.max(1, Number(venueConfig.diameter || 10));
+            const gridSize = Math.max(0.5, Number(venueConfig.grid_size || 5));
+            const shape = (venueConfig.shape || 'rectangle').toLowerCase();
+            const isCircle = shape === 'circle';
+
+            const svgWidth = 500;
+            const svgHeight = 350;
+            const pad = 35;
+            const drawW = svgWidth - pad * 2;
+            const drawH = svgHeight - pad * 2;
+
+            let markup = `
+                <defs>
+                    <pattern id="blueprintGridPattern" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                    </pattern>
+                </defs>
+                <rect width="${svgWidth}" height="${svgHeight}" fill="#080c14" />
+                <rect width="${svgWidth}" height="${svgHeight}" fill="url(#blueprintGridPattern)" />
+            `;
+
+            if (!isCircle) {
+                // ── Rectangle Arena (Identical to Live Blueprint Preview) ──────────
+                const scale = Math.min(drawW / length, drawH / width);
+                const rw = length * scale;
+                const rh = width * scale;
+                const rx = pad + (drawW - rw) / 2;
+                const ry = pad + (drawH - rh) / 2;
+
+                const cols = Math.max(1, Math.ceil(length / gridSize));
+                const rows = Math.max(1, Math.ceil(width / gridSize));
+
+                // Main Arena Box
+                markup += `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="rgba(16, 185, 129, 0.05)" stroke="var(--accent-emerald)" stroke-width="2" rx="4"/>`;
+
+                // Grid divisions (dashed lines)
+                const cellW = (gridSize / length) * rw;
+                const cellH = (gridSize / width) * rh;
+                for (let c = 1; c < cols; c++) {
+                    const gx = rx + c * cellW;
+                    if (gx < rx + rw) {
+                        markup += `<line x1="${gx}" y1="${ry}" x2="${gx}" y2="${ry + rh}" stroke="rgba(16,185,129,0.2)" stroke-dasharray="3,3" stroke-width="1"/>`;
+                    }
+                }
+                for (let r = 1; r < rows; r++) {
+                    const gy = ry + r * cellH;
+                    if (gy < ry + rh) {
+                        markup += `<line x1="${rx}" y1="${gy}" x2="${rx + rw}" y2="${gy}" stroke="rgba(16,185,129,0.2)" stroke-dasharray="3,3" stroke-width="1"/>`;
+                    }
+                }
+
+                // Dimension annotations
+                markup += `
+                    <text x="${rx + rw/2}" y="${ry - 10}" fill="var(--text-secondary)" font-size="11" font-weight="600" text-anchor="middle">${length}m</text>
+                    <text x="${rx - 10}" y="${ry + rh/2}" fill="var(--text-secondary)" font-size="11" font-weight="600" text-anchor="middle" transform="rotate(-90 ${rx - 10} ${ry + rh/2})">${width}m</text>
+                `;
+
+                // ── Live Crowd Heatmap Overlay ───────────────────────────────────
+                if (showHeatmapOverlay && activeZones && activeZones.length > 0) {
+                    activeZones.forEach(z => {
+                        const zx = rx + ((z.x || 0) / length) * rw;
+                        const zy = ry + ((z.y || 0) / width) * rh;
+                        const zw = ((z.width || gridSize) / length) * rw;
+                        const zh = ((z.height || gridSize) / width) * rh;
+
+                        const risk = (z.risk || 'SAFE').toUpperCase();
+                        const occ = Number(z.occupancy || 0);
+                        const isFocused = focusedZoneId && focusedZoneId === z.id;
+
+                        let heatFill, heatBorder, heatText;
+                        if (risk === 'CRITICAL') {
+                            heatFill = 'rgba(239, 68, 68, 0.42)';
+                            heatBorder = 'rgba(239, 68, 68, 0.9)';
+                            heatText = '#fca5a5';
+                        } else if (risk === 'WARNING') {
+                            heatFill = 'rgba(245, 158, 11, 0.32)';
+                            heatBorder = 'rgba(245, 158, 11, 0.8)';
+                            heatText = '#fde68a';
+                        } else {
+                            heatFill = 'rgba(16, 185, 129, 0.16)';
+                            heatBorder = 'rgba(16, 185, 129, 0.35)';
+                            heatText = '#6ee7b7';
+                        }
+
+                        if (isFocused) {
+                            heatBorder = '#38bdf8';
+                        }
+
+                        markup += `
+                            <g class="zone-heat-cell" style="cursor:pointer;" onclick="focusZoneOnMap('${escapeHtml(z.id)}')">
+                                <rect x="${zx}" y="${zy}" width="${zw}" height="${zh}" fill="${heatFill}" stroke="${heatBorder}" stroke-width="${isFocused ? 2.5 : 1}" rx="3"/>
+                                <text x="${zx + zw/2}" y="${zy + zh/2 - 8}" fill="#f1f5f9" font-size="11" font-weight="800" text-anchor="middle">${escapeHtml(z.id)}</text>
+                                <text x="${zx + zw/2}" y="${zy + zh/2 + 6}" fill="${heatText}" font-size="13" font-weight="800" text-anchor="middle">${z.people || 0}</text>
+                                <text x="${zx + zw/2}" y="${zy + zh/2 + 18}" fill="rgba(241,245,249,0.6)" font-size="9" font-weight="600" text-anchor="middle">${occ.toFixed(0)}% Occ</text>
+                            </g>
+                        `;
+                    });
+                }
+
+                // ── Special Areas (Entrances, Exits, Gates) from Venue Setup ───────
+                const areas = Array.isArray(venueConfig.special_areas) ? venueConfig.special_areas : [];
+                areas.forEach(a => {
+                    const ax = rx + ((a.x || 0) / length) * rw;
+                    const ay = ry + ((a.y || 0) / width) * rh;
+                    const aw = Math.max(16, ((a.width || 2) / length) * rw);
+                    const ah = Math.max(16, ((a.height || 2) / width) * rh);
+
+                    const typeStr = (a.type || 'Area').toLowerCase();
+                    const isExit = typeStr.includes('exit');
+                    const isEntrance = typeStr.includes('entrance') || typeStr.includes('enter') || typeStr.includes('in') || typeStr.includes('door');
+
+                    const fillColor = isExit ? 'rgba(244, 63, 94, 0.35)' : (isEntrance ? 'rgba(16, 185, 129, 0.35)' : 'rgba(245, 158, 11, 0.30)');
+                    const strokeColor = isExit ? '#f43f5e' : (isEntrance ? '#10b981' : '#f59e0b');
+                    const icon = isExit ? '🏃 ' : (isEntrance ? '🚪 ' : '');
+
+                    markup += `
+                        <g class="special-area-cell">
+                            <rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="1.8" stroke-dasharray="3,2" rx="3"/>
+                            <text x="${ax + aw/2}" y="${ay + ah/2 + 4}" fill="#ffffff" font-size="9" font-weight="800" text-anchor="middle">${icon}${escapeHtml((a.type || '').toUpperCase())}</text>
+                        </g>
+                    `;
+                });
 
             } else {
-
-                liveCameraStatus.textContent =
-                    "Waiting for camera...";
-
-            }
-
-        }
-
-        document.getElementById(
-            "venueName"
-        ).textContent =
-            status.venue || "Not configured";
-
-        document.getElementById(
-            "totalPeople"
-        ).textContent =
-            status.total_people ?? 0;
-
-        document.getElementById(
-            "capacityText"
-        ).textContent =
-            "Capacity: " +
-            (status.capacity ?? 0);
-
-        const occupancy =
-            Number(
-                status.occupancy || 0
-            );
-
-        const occupancyElement =
-            document.getElementById(
-                "occupancy"
-            );
-
-        occupancyElement.textContent =
-            occupancy.toFixed(1) + "%";
-
-        setOccupancyColor(
-            occupancyElement,
-            occupancy
-        );
-
-        const risk =
-            status.risk || "SAFE";
-
-        setSystemStatus(
-            status.system || "READY",
-            risk.toLowerCase()
-        );
-
-        setRisk(
-            document.getElementById(
-                "riskLevel"
-            ),
-            risk
-        );
-
-        document.getElementById(
-            "lastAlert"
-        ).textContent =
-            status.last_alert ||
-            "No active alerts";
-
-        const zones =
-            Array.isArray(status.zones)
-                ? status.zones
-                : [];
-
-        renderZones(zones);
-
-        trendData.push(
-            Number(
-                status.total_people || 0
-            )
-        );
-
-        if (trendData.length > 60) {
-            trendData.shift();
-        }
-
-        drawTrend();
-
-        document.getElementById(
-            "lastUpdate"
-        ).textContent =
-            "Last update: " +
-            (
-                status.last_update ||
-                new Date().toLocaleTimeString()
-            );
-
-    }
-
-    /* ==========================================
-       SYSTEM STATUS
-    ========================================== */
-
-    function setSystemStatus(
-        text,
-        state
-    ) {
-
-        const badge =
-            document.getElementById(
-                "systemBadge"
-            );
-
-        badge.textContent =
-            String(text).toUpperCase();
-
-        badge.className =
-            "system-badge";
-
-        if (state === "warning") {
-
-            badge.classList.add(
-                "warning"
-            );
-
-        }
-
-        if (
-            state === "critical" ||
-            state === "offline"
-        ) {
-
-            badge.classList.add(
-                "critical"
-            );
-
-        }
-
-    }
-
-    /* ==========================================
-       RISK
-    ========================================== */
-
-    function setRisk(
-        element,
-        risk
-    ) {
-
-        element.textContent =
-            risk;
-
-        element.className =
-            "card-value";
-
-        if (risk === "CRITICAL") {
-
-            element.classList.add(
-                "red"
-            );
-
-        } else if (
-            risk === "WARNING"
-        ) {
-
-            element.classList.add(
-                "yellow"
-            );
-
-        } else {
-
-            element.classList.add(
-                "green"
-            );
-
-        }
-
-    }
-
-    function setOccupancyColor(
-        element,
-        occupancy
-    ) {
-
-        element.className =
-            "card-value";
-
-        if (occupancy >= 90) {
-
-            element.classList.add(
-                "red"
-            );
-
-        } else if (
-            occupancy >= 70
-        ) {
-
-            element.classList.add(
-                "yellow"
-            );
-
-        } else {
-
-            element.classList.add(
-                "green"
-            );
-
-        }
-
-    }
-
-    /* ==========================================
-       ZONES
-    ========================================== */
-
-    function renderZones(
-        zones
-    ) {
-
-        const container =
-            document.getElementById(
-                "zonesContainer"
-            );
-
-        document.getElementById(
-            "zoneCount"
-        ).textContent =
-            zones.length + " zones";
-
-        if (!zones.length) {
-
-            container.innerHTML = `
-                <div class="no-data">
-                    No zone data available
-                </div>
-            `;
-
-            return;
-        }
-
-        container.innerHTML = "";
-
-        zones.forEach(
-            zone => {
-
-                const risk =
-                    zone.risk || "SAFE";
-
-                const zoneElement =
-                    document.createElement(
-                        "div"
-                    );
-
-                zoneElement.className =
-                    "zone " +
-                    risk.toLowerCase();
-
-                const people =
-                    Number(
-                        zone.people || 0
-                    );
-
-                const capacity =
-                    Number(
-                        zone.zone_capacity ||
-                        zone.capacity ||
-                        0
-                    );
-
-                const occupancy =
-                    Number(
-                        zone.occupancy || 0
-                    );
-
-                const density =
-                    Number(
-                        zone.density || 0
-                    );
-
-                zoneElement.innerHTML = `
-
-                    <div class="zone-name">
-                        ${escapeHtml(
-                            zone.id || "Zone"
-                        )}
-                    </div>
-
-                    <div class="zone-people">
-                        ${people}
-                    </div>
-
-                    <div class="zone-info">
-                        Capacity:
-                        ${capacity.toFixed(1)}
-                    </div>
-
-                    <div class="zone-info">
-                        Occupancy:
-                        ${occupancy.toFixed(1)}%
-                    </div>
-
-                    <div class="zone-info">
-                        Density:
-                        ${density.toFixed(2)}
-                    </div>
-
-                    <span
-                        class="risk ${risk.toLowerCase()}"
-                    >
-                        ${risk}
-                    </span>
-
+                // ── Circle Arena (Identical to Live Blueprint Preview) ─────────────
+                const radius = Math.min(drawW, drawH) / 2;
+                const cx = svgWidth / 2;
+                const cy = svgHeight / 2;
+
+                markup += `
+                    <circle cx="${cx}" cy="${cy}" r="${radius}" fill="rgba(245, 158, 11, 0.05)" stroke="var(--accent-warning)" stroke-width="2"/>
+                    <circle cx="${cx}" cy="${cy}" r="${radius * 0.5}" fill="none" stroke="rgba(245,158,11,0.2)" stroke-dasharray="4,4" stroke-width="1"/>
+                    <line x1="${cx - radius}" y1="${cy}" x2="${cx + radius}" y2="${cy}" stroke="rgba(245,158,11,0.2)" stroke-dasharray="4,4" stroke-width="1"/>
+                    <line x1="${cx}" y1="${cy - radius}" x2="${cx}" y2="${cy + radius}" stroke="rgba(245,158,11,0.2)" stroke-dasharray="4,4" stroke-width="1"/>
+                    <text x="${cx}" y="${cy - radius - 10}" fill="var(--text-secondary)" font-size="11" font-weight="600" text-anchor="middle">&Oslash; ${diameter}m</text>
                 `;
 
-                container.appendChild(
-                    zoneElement
-                );
+                // Live Zone Heatmap Overlay in Circle
+                if (showHeatmapOverlay && activeZones && activeZones.length > 0) {
+                    activeZones.forEach(z => {
+                        const scale = (radius * 2) / diameter;
+                        const zx = (cx - radius) + (z.x || 0) * scale;
+                        const zy = (cy - radius) + (z.y || 0) * scale;
+                        const zw = (z.width || gridSize) * scale;
+                        const zh = (z.height || gridSize) * scale;
 
-            }
-        );
+                        const risk = (z.risk || 'SAFE').toUpperCase();
+                        const occ = Number(z.occupancy || 0);
 
-    }
+                        let heatFill, heatBorder, heatText;
+                        if (risk === 'CRITICAL') {
+                            heatFill = 'rgba(239, 68, 68, 0.42)';
+                            heatBorder = 'rgba(239, 68, 68, 0.9)';
+                            heatText = '#fca5a5';
+                        } else if (risk === 'WARNING') {
+                            heatFill = 'rgba(245, 158, 11, 0.32)';
+                            heatBorder = 'rgba(245, 158, 11, 0.8)';
+                            heatText = '#fde68a';
+                        } else {
+                            heatFill = 'rgba(16, 185, 129, 0.16)';
+                            heatBorder = 'rgba(16, 185, 129, 0.35)';
+                            heatText = '#6ee7b7';
+                        }
 
-    /* ==========================================
-       ALERTS
-    ========================================== */
+                        markup += `
+                            <g class="zone-heat-cell" style="cursor:pointer;" onclick="focusZoneOnMap('${escapeHtml(z.id)}')">
+                                <rect x="${zx}" y="${zy}" width="${zw}" height="${zh}" fill="${heatFill}" stroke="${heatBorder}" stroke-width="1" rx="3"/>
+                                <text x="${zx + zw/2}" y="${zy + zh/2 - 6}" fill="#f1f5f9" font-size="10" font-weight="800" text-anchor="middle">${escapeHtml(z.id)}</text>
+                                <text x="${zx + zw/2}" y="${zy + zh/2 + 6}" fill="${heatText}" font-size="12" font-weight="800" text-anchor="middle">${z.people || 0}</text>
+                            </g>
+                        `;
+                    });
+                }
 
-    async function updateAlerts() {
+                // Special Areas in circular arena from Venue Setup
+                const areas = Array.isArray(venueConfig.special_areas) ? venueConfig.special_areas : [];
+                const scale = (radius * 2) / diameter;
+                areas.forEach(a => {
+                    const ax = (cx - radius) + (a.x || 0) * scale;
+                    const ay = (cy - radius) + (a.y || 0) * scale;
+                    const aw = Math.max(16, (a.width || 2) * scale);
+                    const ah = Math.max(16, (a.height || 2) * scale);
 
-        const data =
-            await apiFetch("/api/alerts");
+                    const typeStr = (a.type || 'Area').toLowerCase();
+                    const isExit = typeStr.includes('exit');
+                    const isEntrance = typeStr.includes('entrance') || typeStr.includes('enter') || typeStr.includes('in') || typeStr.includes('door');
 
-        if (!data) {
-            return;
-        }
+                    const fillColor = isExit ? 'rgba(244, 63, 94, 0.35)' : (isEntrance ? 'rgba(16, 185, 129, 0.35)' : 'rgba(168, 85, 247, 0.35)');
+                    const strokeColor = isExit ? '#f43f5e' : (isEntrance ? '#10b981' : '#a855f7');
+                    const icon = isExit ? '🏃 ' : (isEntrance ? '🚪 ' : '');
 
-        const alerts =
-            Array.isArray(data)
-                ? data
-                : (
-                    data.alerts ||
-                    data.data ||
-                    []
-                );
-
-        const container =
-            document.getElementById(
-                "alertsContainer"
-            );
-
-        if (!alerts.length) {
-
-            container.innerHTML = `
-                <div class="no-data">
-                    No recent alerts
-                </div>
-            `;
-
-            return;
-        }
-
-        container.innerHTML = "";
-
-        alerts
-            .slice(0, 15)
-            .forEach(
-                alert => {
-
-                    const risk =
-                        alert.risk ||
-                        "WARNING";
-
-                    const element =
-                        document.createElement(
-                            "div"
-                        );
-
-                    element.className =
-                        "alert " +
-                        (
-                            risk === "CRITICAL"
-                                ? "critical"
-                                : ""
-                        );
-
-                    element.innerHTML = `
-
-                        <div class="alert-top">
-
-                            <div class="alert-title">
-
-                                ${risk}
-                                -
-                                Zone
-                                ${escapeHtml(
-                                    alert.zone_id ||
-                                    "UNKNOWN"
-                                )}
-
-                            </div>
-
-                            <div class="alert-time">
-
-                                ${escapeHtml(
-                                    alert.timestamp ||
-                                    ""
-                                )}
-
-                            </div>
-
-                        </div>
-
-                        <div class="alert-details">
-
-                            People:
-                            ${alert.people ?? 0}
-
-                            &nbsp; | &nbsp;
-
-                            Density:
-                            ${Number(
-                                alert.density || 0
-                            ).toFixed(2)}
-
-                            ${
-                                alert.camera_id
-                                    ? `
-                                        &nbsp; | &nbsp;
-                                        Camera:
-                                        ${escapeHtml(
-                                            alert.camera_id
-                                        )}
-                                      `
-                                    : ""
-                            }
-
-                        </div>
-
+                    markup += `
+                        <g class="special-area-cell">
+                            <rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="1.8" stroke-dasharray="3,2" rx="3"/>
+                            <text x="${ax + aw/2}" y="${ay + ah/2 + 4}" fill="#ffffff" font-size="9" font-weight="800" text-anchor="middle">${icon}${escapeHtml((a.type || '').toUpperCase())}</text>
+                        </g>
                     `;
-
-                    container.appendChild(
-                        element
-                    );
-
-                }
-            );
-
-    }
-
-    /* ==========================================
-       CAMERAS
-    ========================================== */
-
-    async function updateCameras() {
-
-        const data =
-            await apiFetch(
-                "/api/cameras"
-            );
-
-        if (!data) {
-
-            document.getElementById(
-                "cameraStatusText"
-            ).textContent =
-                "Camera API unavailable";
-
-            return;
-        }
-
-        const cameras =
-            Array.isArray(data)
-                ? data
-                : (
-                    data.cameras ||
-                    data.data ||
-                    []
-                );
-
-        document.getElementById(
-            "cameraCount"
-        ).textContent =
-            cameras.length;
-
-        const connected =
-            cameras.filter(
-                camera =>
-                    String(
-                        camera.status ||
-                        ""
-                    ).toUpperCase() ===
-                    "CONNECTED"
-            ).length;
-
-        document.getElementById(
-            "cameraStatusText"
-        ).textContent =
-            connected +
-            " connected / " +
-            cameras.length +
-            " configured";
-
-        document.getElementById(
-            "cameraUpdated"
-        ).textContent =
-            "Updated " +
-            new Date().toLocaleTimeString();
-
-        const table =
-            document.getElementById(
-                "cameraTable"
-            );
-
-        if (!cameras.length) {
-
-            table.innerHTML = `
-                <tr>
-
-                    <td
-                        colspan="4"
-                        class="no-data"
-                    >
-                        No cameras configured
-                    </td>
-
-                </tr>
-            `;
-
-            return;
-        }
-
-        table.innerHTML = "";
-
-        cameras.forEach(
-            camera => {
-
-                const status =
-                    camera.status ||
-                    "DISCONNECTED";
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-                row.innerHTML = `
-
-                    <td>
-                        ${escapeHtml(
-                            camera.name ||
-                            camera.camera_id ||
-                            camera.id ||
-                            "Camera"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            camera.source ||
-                            "-"
-                        )}
-                    </td>
-
-                    <td>
-
-                        <span
-                            class="camera-status
-                            ${String(
-                                status
-                            ).toLowerCase()}"
-                        >
-
-                            ${escapeHtml(
-                                status
-                            )}
-
-                        </span>
-
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            camera.last_check ||
-                            camera.last_checked ||
-                            "-"
-                        )}
-                    </td>
-
-                `;
-
-                table.appendChild(
-                    row
-                );
-
-            }
-        );
-
-    }
-
-    /* ==========================================
-       SESSION
-    ========================================== */
-
-    async function updateSession() {
-
-        const data =
-            await apiFetch(
-                "/api/session"
-            );
-
-        if (!data) {
-            return;
-        }
-
-        const session =
-            data.session ||
-            data.data ||
-            data;
-
-        if (
-            !session ||
-            session.active === false
-        ) {
-
-            document.getElementById(
-                "sessionStatus"
-            ).textContent =
-                "INACTIVE";
-
-            return;
-        }
-
-        document.getElementById(
-            "sessionStatus"
-        ).textContent =
-            "ACTIVE";
-
-        document.getElementById(
-            "sessionPeak"
-        ).textContent =
-            session.peak_people || 0;
-
-        document.getElementById(
-            "sessionAverage"
-        ).textContent =
-            Number(
-                session.average_people || 0
-            ).toFixed(1);
-
-        document.getElementById(
-            "sessionOccupancy"
-        ).textContent =
-            Number(
-                session.peak_occupancy || 0
-            ).toFixed(1) +
-            "%";
-
-        document.getElementById(
-            "sessionDuration"
-        ).textContent =
-            formatDuration(
-                session.duration_seconds || 0
-            );
-
-    }
-
-    /* ==========================================
-       TREND GRAPH
-    ========================================== */
-
-    function drawTrend() {
-
-        const canvas =
-            document.getElementById(
-                "trendCanvas"
-            );
-
-        const context =
-            canvas.getContext(
-                "2d"
-            );
-
-        const rect =
-            canvas.getBoundingClientRect();
-
-        const dpr =
-            window.devicePixelRatio || 1;
-
-        canvas.width =
-            rect.width * dpr;
-
-        canvas.height =
-            rect.height * dpr;
-
-        context.scale(
-            dpr,
-            dpr
-        );
-
-        const width =
-            rect.width;
-
-        const height =
-            rect.height;
-
-        context.clearRect(
-            0,
-            0,
-            width,
-            height
-        );
-
-        context.strokeStyle =
-            "#202020";
-
-        context.lineWidth = 1;
-
-        for (
-            let i = 0;
-            i < 5;
-            i++
-        ) {
-
-            const y =
-                20 +
-                (
-                    (
-                        height - 40
-                    ) /
-                    4
-                ) *
-                i;
-
-            context.beginPath();
-
-            context.moveTo(
-                0,
-                y
-            );
-
-            context.lineTo(
-                width,
-                y
-            );
-
-            context.stroke();
-
-        }
-
-        if (
-            trendData.length < 2
-        ) {
-
-            context.fillStyle =
-                "#555555";
-
-            context.font =
-                "12px Arial";
-
-            context.fillText(
-                "Waiting for crowd data...",
-                15,
-                height / 2
-            );
-
-            return;
-        }
-
-        const maxValue =
-            Math.max(
-                1,
-                ...trendData
-            );
-
-        context.strokeStyle =
-            "#00ff66";
-
-        context.lineWidth = 2;
-
-        context.beginPath();
-
-        trendData.forEach(
-            (value, index) => {
-
-                const x =
-                    (
-                        index /
-                        (
-                            trendData.length - 1
-                        )
-                    ) *
-                    width;
-
-                const y =
-                    height -
-                    20 -
-                    (
-                        value /
-                        maxValue
-                    ) *
-                    (
-                        height - 40
-                    );
-
-                if (
-                    index === 0
-                ) {
-
-                    context.moveTo(
-                        x,
-                        y
-                    );
-
-                } else {
-
-                    context.lineTo(
-                        x,
-                        y
-                    );
-
-                }
-
-            }
-        );
-
-        context.stroke();
-
-        const last =
-            trendData[
-                trendData.length - 1
-            ];
-
-        context.fillStyle =
-            "#00ff66";
-
-        context.font =
-            "12px Arial";
-
-        context.fillText(
-            String(last),
-            width - 35,
-            20
-        );
-
-    }
-
-    /* ==========================================
-       HELPERS
-    ========================================== */
-
-    function escapeHtml(
-        value
-    ) {
-
-        return String(value)
-
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-
-            .replace(
-                /</g,
-                "&lt;"
-            )
-
-            .replace(
-                />/g,
-                "&gt;"
-            )
-
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-
-            .replace(
-                /'/g,
-                "&#039;"
-            );
-
-    }
-
-    function formatDuration(
-        seconds
-    ) {
-
-        seconds =
-            Math.max(
-                0,
-                Number(seconds) || 0
-            );
-
-        const hours =
-            Math.floor(
-                seconds / 3600
-            );
-
-        const minutes =
-            Math.floor(
-                (
-                    seconds % 3600
-                ) / 60
-            );
-
-        const secs =
-            Math.floor(
-                seconds % 60
-            );
-
-        return (
-            String(hours).padStart(2, "0")
-            + ":" +
-            String(minutes).padStart(2, "0")
-            + ":" +
-            String(secs).padStart(2, "0")
-        );
-
-    }
-
-    /* ==========================================
-       LIVE CAMERA
-    ========================================== */
-
-    function updateLiveCameraStatus() {
-
-        const image =
-            document.getElementById(
-                "liveCamera"
-            );
-
-        const status =
-            document.getElementById(
-                "liveCameraStatus"
-            );
-
-        const overlay =
-            document.getElementById(
-                "cameraOverlay"
-            );
-
-        if (!image || !status) {
-            return;
-        }
-
-        image.onload = function() {
-
-            status.textContent =
-                "LIVE";
-
-            status.style.color =
-                "#00ff66";
-
-            if (overlay) {
-
-                overlay.textContent =
-                    "● LIVE";
-
-                overlay.style.color =
-                    "#00ff66";
-
-                overlay.style.borderColor =
-                    "#00ff66";
-
+                });
             }
 
-        };
+            svg.innerHTML = markup;
+        }
 
-        image.onerror = function() {
+        // Initialize and Timers
+        updateDashboard();
+        loadCamerasList();
+        loadRecentAlerts();
+        loadSessionMetrics();
+        loadVenueConfig();  // fetch venue shape/dimensions & marked doors
+        if (currentZoneDisplay === 'heatmap') {
+            switchZoneDisplay('heatmap');
+        }
 
-            status.textContent =
-                "CAMERA UNAVAILABLE";
+        // 1-second interval ensures timer advances smoothly every second
+        if (!sessionTimerInterval) {
+            sessionTimerInterval = setInterval(updateLiveSessionTimer, 1000);
+        }
 
-            status.style.color =
-                "#ff3333";
-
-            if (overlay) {
-
-                overlay.textContent =
-                    "● CAMERA UNAVAILABLE";
-
-                overlay.style.color =
-                    "#ff3333";
-
-                overlay.style.borderColor =
-                    "#ff3333";
-
-            }
-
-        };
-
-    }
-
-    /* ==========================================
-       REFRESH
-    ========================================== */
-
-    async function refreshDashboard() {
-
-        await updateStatus();
-
-        await updateAlerts();
-
-        await updateCameras();
-
-        await updateSession();
-
-        updateLiveCameraStatus();
-
-    }
-
-    refreshDashboard();
-
-    setInterval(
-        refreshDashboard,
-        1000
-    );
-
-    window.addEventListener(
-        "resize",
-        drawTrend
-    );
-
-</script>
-
+        setInterval(updateDashboard, 2000);
+        setInterval(loadRecentAlerts, 4000);
+        setInterval(loadSessionMetrics, 5000);
+    </script>
 </body>
 </html>

@@ -21,7 +21,8 @@ class CrowdSenseAPI:
         calibration=None,
         camera_calibration_manager=None,
         report_manager=None,
-        report_exporter=None
+        report_exporter=None,
+        zone_manager=None
     ):
 
         self.app = app
@@ -35,6 +36,13 @@ class CrowdSenseAPI:
         self.graph_manager = graph_manager
         self.venue_config = venue_config
         self.calibration = calibration
+        self.zone_manager = zone_manager
+        if self.zone_manager is None and self.venue_config is not None:
+            try:
+                from zones import PhysicalZoneManager
+                self.zone_manager = PhysicalZoneManager(self.venue_config)
+            except Exception:
+                self.zone_manager = None
 
         # =====================================================
         # CONNECT VENUE TO ANALYTICS
@@ -85,6 +93,53 @@ class CrowdSenseAPI:
         )
 
         self._register_routes()
+
+    def update_managers(
+        self,
+        camera_manager=None,
+        alert_manager=None,
+        incident_manager=None,
+        snapshot_manager=None,
+        session_manager=None,
+        analytics_manager=None,
+        graph_manager=None,
+        venue_config=None,
+        calibration=None,
+        camera_calibration_manager=None,
+        report_manager=None,
+        report_exporter=None,
+        zone_manager=None
+    ):
+        if camera_manager is not None:
+            self.camera_manager = camera_manager
+        if alert_manager is not None:
+            self.alert_manager = alert_manager
+        if incident_manager is not None:
+            self.incident_manager = incident_manager
+        if snapshot_manager is not None:
+            self.snapshot_manager = snapshot_manager
+        if session_manager is not None:
+            self.session_manager = session_manager
+        if analytics_manager is not None:
+            self.analytics_manager = analytics_manager
+            if self.venue_config is not None:
+                self.analytics_manager.venue_config = self.venue_config
+        if graph_manager is not None:
+            self.graph_manager = graph_manager
+        if venue_config is not None:
+            self.venue_config = venue_config
+            if self.analytics_manager is not None:
+                self.analytics_manager.venue_config = self.venue_config
+        if calibration is not None:
+            self.calibration = calibration
+        if camera_calibration_manager is not None:
+            self.camera_calibration_manager = camera_calibration_manager
+        if report_manager is not None:
+            self.report_manager = report_manager
+        if report_exporter is not None:
+            self.report_exporter = report_exporter
+        if zone_manager is not None:
+            self.zone_manager = zone_manager
 
     # =========================================================
     # HELPERS
@@ -1550,6 +1605,13 @@ class CrowdSenseAPI:
                             []
                         ),
 
+                    "zone_thresholds":
+                        getattr(
+                            self.venue_config,
+                            "zone_thresholds",
+                            {}
+                        ),
+
                     "special_areas":
                         getattr(
                             self.venue_config,
@@ -1677,7 +1739,17 @@ class CrowdSenseAPI:
                         data["floorplan"]
                     )
 
+                if "zone_thresholds" in data:
+
+                    self.venue_config.zone_thresholds = (
+                        data["zone_thresholds"]
+                    )
+
                 self.venue_config.save()
+
+                if self.zone_manager is not None:
+                    self.zone_manager.venue = self.venue_config
+                    self.zone_manager.apply_zone_thresholds()
 
                 if self.analytics_manager is not None:
 
@@ -1693,6 +1765,153 @@ class CrowdSenseAPI:
 
             except Exception as error:
 
+                return jsonify({
+                    "success": False,
+                    "error": str(error)
+                }), 400
+
+        # =====================================================
+        # ZONE THRESHOLDS (GET & UPDATE)
+        # =====================================================
+
+        @app.route(
+            "/api/zones/<zone_id>/thresholds",
+            methods=["GET"]
+        )
+        def get_zone_thresholds(zone_id):
+
+            if self.venue_config is None:
+                return jsonify({
+                    "success": False,
+                    "error": "Venue configuration unavailable"
+                }), 503
+
+            zm = self.zone_manager
+            if zm is None:
+                try:
+                    from zones import PhysicalZoneManager
+                    zm = PhysicalZoneManager(self.venue_config)
+                    self.zone_manager = zm
+                except Exception:
+                    zm = None
+
+            zones = zm.get_zones() if zm is not None else []
+            if not zones:
+                return jsonify({
+                    "success": False,
+                    "error": "No zones created yet. Configure venue dimensions first."
+                }), 400
+
+            target = next((z for z in zones if str(z.get("id")) == str(zone_id)), None)
+            if target is None:
+                return jsonify({
+                    "success": False,
+                    "error": f"Zone '{zone_id}' not found among created zones."
+                }), 404
+
+            thresholds_map = getattr(self.venue_config, "zone_thresholds", {}) or {}
+            custom_th = thresholds_map.get(zone_id, {})
+            has_custom = zone_id in thresholds_map
+
+            default_warn = float(getattr(self.venue_config, "warning_threshold", 70.0))
+            default_crit = float(getattr(self.venue_config, "critical_threshold", 90.0))
+
+            return jsonify({
+                "success": True,
+                "zone_id": zone_id,
+                "warning_threshold": float(target.get("warning_threshold", custom_th.get("warning_threshold", default_warn))),
+                "critical_threshold": float(target.get("critical_threshold", custom_th.get("critical_threshold", default_crit))),
+                "venue_warning_threshold": default_warn,
+                "venue_critical_threshold": default_crit,
+                "has_custom_threshold": has_custom,
+                "zone_capacity": float(target.get("zone_capacity", 0.0))
+            })
+
+        @app.route(
+            "/api/zones/<zone_id>/thresholds",
+            methods=["POST", "PUT"]
+        )
+        def update_zone_thresholds(zone_id):
+
+            if self.venue_config is None:
+                return jsonify({
+                    "success": False,
+                    "error": "Venue configuration unavailable"
+                }), 503
+
+            zm = self.zone_manager
+            if zm is None:
+                try:
+                    from zones import PhysicalZoneManager
+                    zm = PhysicalZoneManager(self.venue_config)
+                    self.zone_manager = zm
+                except Exception:
+                    zm = None
+
+            zones = zm.get_zones() if zm is not None else []
+            if not zones:
+                return jsonify({
+                    "success": False,
+                    "error": "Cannot edit thresholds: All venue zones must be created before custom thresholds can be edited. Configure venue dimensions in Venue settings first."
+                }), 400
+
+            target = next((z for z in zones if str(z.get("id")) == str(zone_id)), None)
+            if target is None:
+                return jsonify({
+                    "success": False,
+                    "error": f"Zone '{zone_id}' not found among created zones."
+                }), 404
+
+            data = self._json_body()
+            reset = bool(data.get("reset", False))
+
+            try:
+                if reset:
+                    updated_zone = zm.set_zone_threshold(
+                        zone_id=zone_id,
+                        reset=True
+                    )
+                    message = f"Zone {zone_id} thresholds reset to venue defaults."
+                else:
+                    if "warning_threshold" not in data or "critical_threshold" not in data:
+                        return jsonify({
+                            "success": False,
+                            "error": "Both warning_threshold (Min) and critical_threshold (Max) must be provided."
+                        }), 400
+
+                    warn_val = float(data["warning_threshold"])
+                    crit_val = float(data["critical_threshold"])
+
+                    if warn_val <= 0 or crit_val <= 0:
+                        return jsonify({
+                            "success": False,
+                            "error": "Thresholds must be positive percentage values greater than 0%."
+                        }), 400
+
+                    if warn_val >= crit_val:
+                        return jsonify({
+                            "success": False,
+                            "error": "Warning threshold (Min) must be strictly less than Critical threshold (Max)."
+                        }), 400
+
+                    updated_zone = zm.set_zone_threshold(
+                        zone_id=zone_id,
+                        warning_threshold=warn_val,
+                        critical_threshold=crit_val,
+                        reset=False
+                    )
+                    message = f"Zone {zone_id} thresholds updated successfully (Min: {warn_val}%, Max: {crit_val}%)."
+
+                if self.analytics_manager is not None:
+                    self.analytics_manager.venue_config = self.venue_config
+
+                return jsonify({
+                    "success": True,
+                    "message": message,
+                    "zone": self._json_safe(updated_zone)
+                })
+
+            except Exception as error:
                 return jsonify({
                     "success": False,
                     "error": str(error)
@@ -1747,6 +1966,54 @@ class CrowdSenseAPI:
                 return jsonify({
                     "error": str(error)
                 }), 500
+
+        # =====================================================
+        # TELEGRAM
+        # =====================================================
+
+        @app.route(
+            "/api/telegram/status",
+            methods=["GET"]
+        )
+        def get_telegram_status():
+
+            try:
+
+                from telegram_service import get_telegram_notifier
+                notifier = get_telegram_notifier()
+                return jsonify(self._json_safe(notifier.get_status()))
+
+            except Exception as error:
+
+                return jsonify({"error": str(error)}), 500
+
+        @app.route(
+            "/api/telegram/test",
+            methods=["POST"]
+        )
+        def send_telegram_test():
+
+            try:
+
+                from telegram_service import get_telegram_notifier
+                notifier = get_telegram_notifier()
+                venue_name = "CrowdSense Venue"
+                if self.venue_config is not None:
+                    venue_name = getattr(self.venue_config, "name", venue_name)
+                result = notifier.send_test_notification(venue_name=venue_name)
+                # send_test_notification returns (success, message, details)
+                if isinstance(result, tuple) and len(result) >= 2:
+                    success, message = result[0], result[1]
+                else:
+                    success, message = bool(result), "Test sent"
+                if success:
+                    return jsonify({"success": True, "message": message})
+                else:
+                    return jsonify({"success": False, "message": message}), 400
+
+            except Exception as error:
+
+                return jsonify({"success": False, "message": str(error)}), 500
 
         # =====================================================
         # HEALTH

@@ -20,7 +20,7 @@ dist_final/
 dist_fixed/
 *.spec
 
-# Runtime Data
+# Runtime Data (root level)
 data/logs/
 data/alerts/
 data/graphs/
@@ -36,7 +36,23 @@ data/camera_caliberation.json
 data/floorplan.json
 data/saved_cameras.json
 
-# YOLO Model (large binary)
+# Runtime Data (app level)
+app/data/
+app/data/logs/
+app/data/alerts/
+app/data/graphs/
+app/data/incidents/
+app/data/sessions/
+app/data/snapshots/
+app/data/reports/
+app/data/venue_config.json
+app/data/camera_config.json
+app/data/camera_calibration.json
+app/data/camera_calibrations.json
+app/data/floorplan.json
+app/data/saved_cameras.json
+
+# YOLO Model (large binary - download separately)
 *.pt
 
 # Models directory
@@ -53,6 +69,27 @@ models/
 Thumbs.db
 desktop.ini
 
+# Environment Variables & Secrets
+.env
+*.env
+.env.local
+
 # Misc
 *.log
 *.bak
+
+# Backup directories
+backup_session_dispatch_app/
+
+# Dev/test artifacts (not part of main codebase)
+patch_test.py
+font_readability_test.py
+font_readability_test.png
+brain_monitor_test.png
+brain_setup_test.png
+
+# Root-level legacy test scripts (consolidated into tests/)
+/test_*.py
+
+# Tests cache
+tests/__pycache__/

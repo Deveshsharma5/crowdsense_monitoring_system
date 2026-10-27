@@ -1,2872 +1,800 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>CrowdSense - Cameras</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrowdSense - Camera Management</title>
+    <link rel="stylesheet" href="/static/css/common.css">
     <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        .cameras-container {
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 24px;
         }
 
-        body {
-            background: #050505;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-            min-height: 100vh;
-        }
-
-        header {
-            height: 72px;
-            background: #080808;
-            border-bottom: 1px solid #202020;
+        .page-header-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 28px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
         }
 
-        .logo {
+        /* Live Stream Viewer Panel */
+        .stream-viewer-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            margin-bottom: 28px;
+        }
+
+        .viewer-controls-bar {
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 12px 20px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .viewer-stage {
+            position: relative;
+            width: 100%;
+            background: #000;
+            min-height: 440px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .viewer-img {
+            width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+            display: none;
+        }
+
+        .viewer-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .viewer-spinner {
+            width: 38px;
+            height: 38px;
+            border: 3px solid rgba(16, 185, 129, 0.2);
+            border-top-color: var(--accent-emerald);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .viewer-info-footer {
+            background: var(--bg-elevated);
+            border-top: 1px solid var(--border-subtle);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
             gap: 12px;
         }
 
-        .logo-icon {
-            width: 38px;
-            height: 38px;
-            background: #00ff66;
-            color: #000;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .logo-text {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        .logo-text span {
-            color: #00ff66;
-        }
-
-        .back-button {
-            background: #111;
-            color: #aaa;
-            border: 1px solid #333;
-            padding: 9px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .back-button:hover {
-            color: white;
-            border-color: #00ff66;
-        }
-
-        main {
-            max-width: 1500px;
-            margin: auto;
-            padding: 28px;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 22px;
-        }
-
-        .page-title h1 {
-            font-size: 27px;
-            margin-bottom: 5px;
-        }
-
-        .page-title p {
-            color: #777;
-            font-size: 13px;
-        }
-
-        button {
-            font-family: inherit;
-        }
-
-        .primary-button {
-            background: #00ff66;
-            color: #000;
-            border: none;
-            padding: 11px 18px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .primary-button:hover {
-            background: #00dd55;
-        }
-
-        .secondary-button {
-            background: #151515;
-            color: white;
-            border: 1px solid #333;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .secondary-button:hover {
-            border-color: #00ff66;
-        }
-
-        .danger-button {
-            background: #250909;
-            color: #ff3333;
-            border: 1px solid #551515;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .danger-button:hover {
-            background: #3a0d0d;
-        }
-
-        /* =====================================================
-           ACTIVE CAMERA
-        ===================================================== */
-
-        .viewer-panel {
-            background: #0b0b0b;
-            border: 1px solid #202020;
-            border-radius: 9px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .viewer-header {
-            min-height: 56px;
-            padding: 12px 18px;
-            border-bottom: 1px solid #202020;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            gap: 15px;
-        }
-
-        .viewer-header h2 {
-            font-size: 15px;
-        }
-
-        .viewer-header span {
-            color: #666;
-            font-size: 11px;
-        }
-
-        .viewer-controls {
-            padding: 15px 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid #202020;
-        }
-
-        .viewer-controls label {
-            color: #777;
-            font-size: 11px;
-            text-transform: uppercase;
-        }
-
-        .camera-selector {
-            min-width: 240px;
-            background: #111;
-            color: white;
-            border: 1px solid #333;
-            border-radius: 6px;
-            padding: 10px 12px;
-            outline: none;
-        }
-
-        .camera-selector:focus {
-            border-color: #00ff66;
-        }
-
-        .viewer-button {
-            background: #151515;
-            color: white;
-            border: 1px solid #333;
-            border-radius: 6px;
-            padding: 10px 15px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .viewer-button:hover {
-            border-color: #00ff66;
-        }
-
-        .viewer-button.green-button {
-            background: #00ff66;
-            color: #000;
-            border-color: #00ff66;
-        }
-
-        .viewer-button.green-button:hover {
-            background: #00dd55;
-        }
-
-        .viewer {
-            width: 100%;
-            min-height: 500px;
-            background: #000;
-
-            position: relative;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            overflow: hidden;
-        }
-
-        #activeCameraStream {
-            width: 100%;
-            height: 500px;
-            object-fit: contain;
-            background: #000;
-            display: none;
-        }
-
-        .viewer-message {
-            position: absolute;
-            inset: 0;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            color: #666;
-            text-align: center;
-            padding: 20px;
-            font-size: 13px;
-        }
-
-        .viewer-status {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #333;
-            border-radius: 6px;
-
-            padding: 7px 10px;
-
-            font-size: 10px;
-            font-weight: bold;
-
-            display: none;
-            z-index: 5;
-        }
-
-        .viewer-status.connected {
-            color: #00ff66;
-            border-color: #00ff66;
-        }
-
-        .viewer-status.error {
-            color: #ff3333;
-            border-color: #ff3333;
-        }
-
-        .viewer-info {
-            padding: 12px 18px;
-            border-top: 1px solid #202020;
-
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-
-            color: #777;
-            font-size: 11px;
-            flex-wrap: wrap;
-        }
-
-        .viewer-info strong {
-            color: white;
-        }
-
-        /* =====================================================
-           SUMMARY
-        ===================================================== */
-
-        .summary {
+        /* Summary Stats Row */
+        .summary-stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        .summary-card {
-            background: #0b0b0b;
-            border: 1px solid #202020;
-            border-radius: 9px;
-            padding: 18px;
+        @media (max-width: 768px) {
+            .summary-stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .summary-label {
-            color: #777;
-            font-size: 11px;
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .stat-card-title {
+            font-size: 12px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
         }
 
-        .summary-value {
-            font-size: 30px;
-            font-weight: bold;
-            margin-top: 8px;
+        .stat-card-num {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
         }
 
-        .green {
-            color: #00ff66;
-        }
-
-        .red {
-            color: #ff3333;
-        }
-
-        .yellow {
-            color: #ffd400;
-        }
-
-        /* =====================================================
-           FORM
-        ===================================================== */
-
-        .form-panel {
-            display: none;
-            background: #0b0b0b;
-            border: 1px solid #202020;
-            border-radius: 9px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-panel.active {
-            display: block;
-        }
-
-        .form-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 18px;
-        }
-
-        .form-grid {
+        /* Cameras Grid */
+        .cameras-grid {
             display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 20px;
         }
 
-        .form-group {
+        @media (max-width: 600px) {
+            .cameras-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .camera-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 7px;
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            color: #888;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        input {
-            width: 100%;
-            background: #050505;
-            color: white;
-            border: 1px solid #333;
-            border-radius: 5px;
-            padding: 11px 12px;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: #00ff66;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 18px;
-        }
-
-        /* =====================================================
-           CAMERA LIST
-        ===================================================== */
-
-        .camera-panel {
-            background: #0b0b0b;
-            border: 1px solid #202020;
-            border-radius: 9px;
-            overflow: hidden;
-        }
-
-        .panel-header {
-            height: 56px;
-            padding: 0 18px;
-            border-bottom: 1px solid #202020;
-            display: flex;
-            align-items: center;
             justify-content: space-between;
+            gap: 16px;
+            transition: var(--transition);
+            position: relative;
         }
 
-        .panel-header h2 {
-            font-size: 15px;
+        .camera-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
         }
 
-        .panel-header span {
-            color: #666;
-            font-size: 11px;
+        .camera-card.active-card {
+            border: 2px solid var(--accent-emerald);
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
         }
 
-        .camera-list {
-            padding: 15px;
-        }
-
-        .camera {
-            background: #111;
-            border: 1px solid #252525;
-            border-radius: 8px;
-            padding: 17px;
-            margin-bottom: 10px;
-
-            display: grid;
-
-            grid-template-columns:
-                1.3fr
-                2fr
-                1fr
-                auto;
-
-            gap: 20px;
-            align-items: center;
-        }
-
-        .camera:last-child {
-            margin-bottom: 0;
-        }
-
-        .camera-name {
-            font-size: 15px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .camera-id {
-            color: #666;
-            font-size: 10px;
-        }
-
-        .camera-source {
-            color: #999;
-            font-size: 11px;
-            word-break: break-all;
-        }
-
-        .camera-source-title {
-            color: #555;
-            font-size: 9px;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 6px 9px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .status.connected {
-            background: #10351e;
-            color: #00ff66;
-        }
-
-        .status.disconnected {
-            background: #3a0d0d;
-            color: #ff3333;
-        }
-
-        .status.error {
-            background: #3a0d0d;
-            color: #ff3333;
-        }
-
-        .status.disabled {
-            background: #222;
-            color: #777;
-        }
-
-        .status.connecting {
-            background: #332900;
-            color: #ffd400;
-        }
-
-        .status.stopped {
-            background: #222;
-            color: #888;
-        }
-
-        .status.unknown {
-            background: #222;
-            color: #aaa;
-        }
-
-        .camera-actions {
+        .camera-card-header {
             display: flex;
-            gap: 7px;
-            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
         }
 
-        .small-button {
-            background: #181818;
-            color: #aaa;
-            border: 1px solid #333;
-            padding: 7px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 10px;
+        .camera-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
-        .small-button:hover {
-            color: white;
-            border-color: #00ff66;
+        .camera-card-id {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: monospace;
+            margin-top: 2px;
         }
 
-        .small-button.green-action {
-            background: #00ff66;
-            color: #000;
-            border-color: #00ff66;
-            font-weight: bold;
-        }
-
-        .small-button.green-action:hover {
-            background: #00dd55;
-        }
-
-        .empty {
-            padding: 50px 20px;
-            text-align: center;
-            color: #555;
+        .camera-detail-row {
+            display: flex;
+            justify-content: space-between;
             font-size: 13px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
 
-        .toggle {
+        .camera-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .camera-card-actions {
             display: flex;
-            align-items: center;
             gap: 8px;
-            margin-top: 8px;
-            color: #777;
-            font-size: 11px;
+            flex-wrap: wrap;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-subtle);
         }
-
-        .toggle input {
-            width: auto;
-        }
-
-        .help-box {
-            background: #08150d;
-            border: 1px solid #164c2a;
-            border-radius: 6px;
-            padding: 14px;
-            color: #888;
-            font-size: 12px;
-            line-height: 1.7;
-        }
-
-        .help-box strong {
-            color: white;
-        }
-
-        .help-box .green-text {
-            color: #00ff66;
-        }
-
-        #message {
-            position: fixed;
-            right: 25px;
-            bottom: 25px;
-            background: #111;
-            border: 1px solid #333;
-            padding: 13px 17px;
-            border-radius: 6px;
-            font-size: 12px;
-            display: none;
-            z-index: 1000;
-        }
-
-        #message.success {
-            border-color: #00ff66;
-            color: #00ff66;
-        }
-
-        #message.error {
-            border-color: #ff3333;
-            color: #ff3333;
-        }
-
-        /* =====================================================
-           RESPONSIVE
-        ===================================================== */
-
-        @media(max-width: 1100px) {
-
-            .camera {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .camera-actions {
-                grid-column: 1 / -1;
-            }
-
-        }
-
-        @media(max-width: 950px) {
-
-            .viewer {
-                min-height: 400px;
-            }
-
-            #activeCameraStream {
-                height: 400px;
-            }
-
-        }
-
-        @media(max-width: 650px) {
-
-            header {
-                padding: 0 15px;
-            }
-
-            main {
-                padding: 18px 14px;
-            }
-
-            .summary {
-                grid-template-columns: 1fr;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-group.full {
-                grid-column: auto;
-            }
-
-            .camera {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .camera-actions {
-                grid-column: auto;
-            }
-
-            .viewer-controls {
-                align-items: stretch;
-                flex-direction: column;
-            }
-
-            .camera-selector {
-                width: 100%;
-            }
-
-            .viewer-button {
-                width: 100%;
-            }
-
-            .viewer {
-                min-height: 300px;
-            }
-
-            #activeCameraStream {
-                height: 300px;
-            }
-
-        }
-
     </style>
-
 </head>
-
 <body>
 
-<header>
+    <!-- MAIN HEADER -->
+    <header class="cs-header">
+        <a href="/" class="cs-brand">
+            <div class="cs-brand-icon">C</div>
+            <div class="cs-brand-text">CROWD<span>SENSE</span></div>
+        </a>
 
-    <div class="logo">
-
-        <div class="logo-icon">
-            C
+        <div class="cs-header-actions">
+            <button class="btn-nav-action" onclick="handleBack()" title="Back">
+                Back
+            </button>
+            <button class="btn-nav-action" onclick="handleRefresh()" title="Refresh">
+                Refresh
+            </button>
+            <div id="systemStateBadge" class="badge badge-safe">
+                ACTIVE
+            </div>
         </div>
+    </header>
 
-        <div class="logo-text">
-            CROWD<span>SENSE</span>
-        </div>
+    <!-- NAVIGATION BAR -->
+    <nav class="cs-nav-bar">
+        <a href="/dashboard" class="cs-nav-link">Dashboard</a>
+        <a href="/cameras" class="cs-nav-link active">Cameras</a>
+        <a href="/zones" class="cs-nav-link">Zones</a>
+        <a href="/alerts" class="cs-nav-link">Alerts</a>
+        <a href="/analytics" class="cs-nav-link">Analytics</a>
+        <a href="/reports" class="cs-nav-link">Reports</a>
+        <a href="/session" class="cs-nav-link">Session</a>
+        <a href="/venue" class="cs-nav-link">Venue</a>
+        <a href="/calibration" class="cs-nav-link">Calibration</a>
+        <a href="/admin" class="cs-nav-link">Admin</a>
+    </nav>
 
-    </div>
+    <!-- MAIN CONTAINER -->
+    <main class="cameras-container">
 
-    <button
-        class="back-button"
-        onclick="goDashboard()"
-    >
-        ← Dashboard
-    </button>
-
-</header>
-
-
-<main>
-
-    <div class="page-header">
-
-        <div class="page-title">
-
-            <h1>
-                Camera Management
-            </h1>
-
-            <p>
-                Configure, switch and monitor CrowdSense cameras
-            </p>
-
-        </div>
-
-        <button
-            class="primary-button"
-            onclick="openAddForm()"
-        >
-            + Add Camera
-        </button>
-
-    </div>
-
-
-    <!-- ====================================================
-         ACTIVE CAMERA VIEW
-    ===================================================== -->
-
-    <section class="viewer-panel">
-
-        <div class="viewer-header">
-
+        <!-- HEADER & ACTIONS -->
+        <div class="page-header-row">
             <div>
-
-                <h2>
-                    Active Camera
-                </h2>
-
+                <h1 style="font-size: 24px; font-weight: 800;">Camera Management</h1>
+                <p style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">
+                    Monitor, add, test, calibrate, and stream live camera feeds.
+                </p>
             </div>
-
-            <span id="activeCameraLabel">
-                No camera selected
-            </span>
-
-        </div>
-
-
-        <div class="viewer-controls">
-
-            <label>
-                Switch Camera
-            </label>
-
-            <select
-                id="activeCameraSelect"
-                class="camera-selector"
-            >
-
-                <option value="">
-                    No cameras configured
-                </option>
-
-            </select>
-
-
-            <button
-                class="viewer-button green-button"
-                onclick="viewSelectedCamera()"
-            >
-                View Camera
-            </button>
-
-
-            <button
-                class="viewer-button"
-                onclick="calibrateSelectedCamera()"
-            >
-                Calibrate
-            </button>
-
-
-            <button
-                class="viewer-button"
-                onclick="stopActiveCamera()"
-            >
-                Stop View
-            </button>
-
-        </div>
-
-
-        <div class="viewer">
-
-            <img
-                id="activeCameraStream"
-                alt="Active camera stream"
-            >
-
-
-            <div
-                id="viewerMessage"
-                class="viewer-message"
-            >
-                Select a camera to view its live stream.
-            </div>
-
-
-            <div
-                id="viewerStatus"
-                class="viewer-status"
-            >
-                CONNECTING
-            </div>
-
-        </div>
-
-
-        <div class="viewer-info">
-
             <div>
-                Camera:
-                <strong id="activeCameraName">-</strong>
+                <button class="btn btn-primary" onclick="openAddCameraModal()">
+                    + Add New Camera
+                </button>
             </div>
-
-            <div>
-                ID:
-                <strong id="activeCameraId">-</strong>
-            </div>
-
-            <div>
-                Source:
-                <strong id="activeCameraSource">-</strong>
-            </div>
-
         </div>
 
-    </section>
-
-
-    <!-- SUMMARY -->
-
-    <section class="summary">
-
-        <div class="summary-card">
-
-            <div class="summary-label">
-                Total Cameras
-            </div>
-
-            <div
-                class="summary-value"
-                id="totalCameras"
-            >
-                0
-            </div>
-
-        </div>
-
-        <div class="summary-card">
-
-            <div class="summary-label">
-                Connected
-            </div>
-
-            <div
-                class="summary-value green"
-                id="connectedCameras"
-            >
-                0
-            </div>
-
-        </div>
-
-        <div class="summary-card">
-
-            <div class="summary-label">
-                Disconnected
-            </div>
-
-            <div
-                class="summary-value red"
-                id="disconnectedCameras"
-            >
-                0
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- FORM -->
-
-    <section
-        class="form-panel"
-        id="cameraForm"
-    >
-
-        <div class="form-title">
-
-            <span id="formTitle">
-                Add Camera
-            </span>
-
-        </div>
-
-        <div class="form-grid">
-
-            <div class="form-group">
-
-                <label>
-                    Camera Name
-                </label>
-
-                <input
-                    id="cameraName"
-                    type="text"
-                    placeholder="Main Entrance"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Camera Source
-                </label>
-
-                <input
-                    id="cameraSource"
-                    type="text"
-                    placeholder="0 or http://192.168.1.100:8080/video"
-                >
-
-            </div>
-
-            <div class="form-group full">
-
-                <label>
-                    Camera Source Help
-                </label>
-
-                <div class="help-box">
-
-                    <strong>
-                        Laptop / USB camera:
-                    </strong>
-
-                    enter
-
-                    <span class="green-text">
-                        0
-                    </span>
-
-                    <br>
-
-                    <strong>
-                        Wi-Fi phone camera:
-                    </strong>
-
-                    enter the phone's video stream URL.
-
-                    <br>
-
-                    Example:
-
-                    <span class="green-text">
-                        http://192.168.1.100:8080/video
-                    </span>
-
-                    <br>
-
-                    Your phone and computer must be connected
-                    to the same Wi-Fi network.
-
+        <!-- 1. LIVE STREAM VIEWER -->
+        <section class="stream-viewer-panel">
+            <div class="viewer-controls-bar">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-weight: 700; font-size: 14px;">Live Stream Viewer:</span>
+                    <select id="cameraSelectDropdown" class="form-select" style="width: auto; min-width: 220px;" onchange="handleDropdownChange()">
+                        <option value="">Select a camera to view...</option>
+                    </select>
                 </div>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Camera Enabled
-                </label>
-
-                <label class="toggle">
-
-                    <input
-                        type="checkbox"
-                        id="cameraEnabled"
-                        checked
-                    >
-
-                    Enable camera
-
-                </label>
-
-            </div>
-
-        </div>
-
-        <div class="form-actions">
-
-            <button
-                class="primary-button"
-                onclick="saveCamera()"
-            >
-                Save Camera
-            </button>
-
-            <button
-                class="secondary-button"
-                onclick="closeForm()"
-            >
-                Cancel
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <!-- CAMERA LIST -->
-
-    <section class="camera-panel">
-
-        <div class="panel-header">
-
-            <h2>
-                Configured Cameras
-            </h2>
-
-            <span id="cameraCountText">
-                0 cameras
-            </span>
-
-        </div>
-
-        <div
-            class="camera-list"
-            id="cameraList"
-        >
-
-            <div class="empty">
-                Loading cameras...
-            </div>
-
-        </div>
-
-    </section>
-
-</main>
-
-
-<div id="message"></div>
-
-
-<script>
-
-/* ==========================================================
-   STATE
-========================================================== */
-
-let cameras = [];
-
-let editingCameraId = null;
-
-let activeCameraId = null;
-
-
-/* ==========================================================
-   API
-========================================================== */
-
-async function apiFetch(
-    url,
-    options = {}
-) {
-
-    try {
-
-        const response =
-            await fetch(
-                url,
-                {
-                    cache: "no-store",
-                    ...options
-                }
-            );
-
-        if (!response.ok) {
-
-            throw new Error(
-                "HTTP " +
-                response.status
-            );
-
-        }
-
-        return await response.json();
-
-    }
-
-    catch(error) {
-
-        console.error(
-            "API error:",
-            error
-        );
-
-        showMessage(
-            "API connection failed",
-            "error"
-        );
-
-        return null;
-
-    }
-
-}
-
-
-/* ==========================================================
-   LOAD CAMERAS
-========================================================== */
-
-async function loadCameras() {
-
-    const data =
-        await apiFetch(
-            "/api/cameras"
-        );
-
-    if (!data) {
-        return;
-    }
-
-    if (
-        Array.isArray(data)
-    ) {
-
-        cameras = data;
-
-    }
-
-    else {
-
-        cameras =
-            data.cameras ||
-            data.data ||
-            [];
-
-    }
-
-    if (
-        !Array.isArray(cameras)
-    ) {
-
-        cameras = [];
-
-    }
-
-    renderCameraSelector();
-
-    renderCameras();
-
-    /*
-     * Keep the currently selected camera
-     * if it still exists.
-     */
-
-    if (
-        activeCameraId
-        &&
-        cameras.some(
-            camera =>
-                getCameraId(camera) ===
-                String(activeCameraId)
-        )
-    ) {
-
-        document.getElementById(
-            "activeCameraSelect"
-        ).value =
-            activeCameraId;
-
-        updateActiveCameraInfo();
-
-    }
-
-    /*
-     * If there is no selected camera,
-     * select the first configured camera.
-     */
-
-    else if (
-        cameras.length > 0
-    ) {
-
-        const firstId =
-            getCameraId(
-                cameras[0]
-            );
-
-        activeCameraId =
-            firstId;
-
-        document.getElementById(
-            "activeCameraSelect"
-        ).value =
-            firstId;
-
-        updateActiveCameraInfo();
-
-    }
-
-    else {
-
-        activeCameraId =
-            null;
-
-        resetViewer();
-
-    }
-
-}
-
-
-/* ==========================================================
-   CAMERA ID HELPER
-========================================================== */
-
-function getCameraId(
-    camera
-) {
-
-    return String(
-        camera.camera_id ||
-        camera.id ||
-        ""
-    );
-
-}
-
-
-/* ==========================================================
-   RENDER CAMERA SELECTOR
-========================================================== */
-
-function renderCameraSelector() {
-
-    const selector =
-        document.getElementById(
-            "activeCameraSelect"
-        );
-
-    selector.innerHTML =
-        "";
-
-    if (
-        !cameras.length
-    ) {
-
-        selector.innerHTML = `
-            <option value="">
-                No cameras configured
-            </option>
-        `;
-
-        return;
-
-    }
-
-    cameras.forEach(
-        camera => {
-
-            const cameraId =
-                getCameraId(
-                    camera
-                );
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                cameraId;
-
-            option.textContent =
-                (
-                    camera.name ||
-                    "Unnamed Camera"
-                )
-                +
-                " ("
-                +
-                cameraId
-                +
-                ")";
-
-            selector.appendChild(
-                option
-            );
-
-        }
-    );
-
-    if (
-        activeCameraId
-        &&
-        cameras.some(
-            camera =>
-                getCameraId(camera) ===
-                String(activeCameraId)
-        )
-    ) {
-
-        selector.value =
-            activeCameraId;
-
-    }
-
-    else {
-
-        selector.selectedIndex =
-            0;
-
-    }
-
-}
-
-
-/* ==========================================================
-   CAMERA SELECTOR CHANGE
-========================================================== */
-
-document.getElementById(
-    "activeCameraSelect"
-).addEventListener(
-    "change",
-    function() {
-
-        /*
-         * Stop the old browser stream first.
-         * This does NOT stop the CrowdSense
-         * camera worker.
-         */
-
-        stopActiveCamera();
-
-        activeCameraId =
-            this.value;
-
-        updateActiveCameraInfo();
-
-    }
-);
-
-
-/* ==========================================================
-   GET ACTIVE CAMERA
-========================================================== */
-
-function getActiveCamera() {
-
-    if (
-        !activeCameraId
-    ) {
-
-        return null;
-
-    }
-
-    return cameras.find(
-        camera =>
-            getCameraId(camera) ===
-            String(activeCameraId)
-    ) || null;
-
-}
-
-
-/* ==========================================================
-   UPDATE ACTIVE CAMERA INFO
-========================================================== */
-
-function updateActiveCameraInfo() {
-
-    const camera =
-        getActiveCamera();
-
-    if (!camera) {
-
-        resetViewer();
-
-        return;
-
-    }
-
-    const cameraId =
-        getCameraId(
-            camera
-        );
-
-    document.getElementById(
-        "activeCameraLabel"
-    ).textContent =
-        camera.name ||
-        cameraId;
-
-    document.getElementById(
-        "activeCameraName"
-    ).textContent =
-        camera.name ||
-        "-";
-
-    document.getElementById(
-        "activeCameraId"
-    ).textContent =
-        cameraId ||
-        "-";
-
-    document.getElementById(
-        "activeCameraSource"
-    ).textContent =
-        camera.source ||
-        "-";
-
-}
-
-
-/* ==========================================================
-   VIEW SELECTED CAMERA
-========================================================== */
-
-function viewSelectedCamera() {
-
-    const camera =
-        getActiveCamera();
-
-    if (!camera) {
-
-        showMessage(
-            "Select a camera first.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    updateActiveCameraInfo();
-
-    startActiveCamera(
-        camera
-    );
-
-}
-
-
-/* ==========================================================
-   START ACTIVE CAMERA
-========================================================== */
-
-function startActiveCamera(
-    camera
-) {
-
-    const stream =
-        document.getElementById(
-            "activeCameraStream"
-        );
-
-    const viewerMessage =
-        document.getElementById(
-            "viewerMessage"
-        );
-
-    const viewerStatus =
-        document.getElementById(
-            "viewerStatus"
-        );
-
-    const cameraId =
-        getCameraId(
-            camera
-        );
-
-    if (!cameraId) {
-
-        stream.style.display =
-            "none";
-
-        viewerStatus.style.display =
-            "none";
-
-        viewerMessage.style.display =
-            "flex";
-
-        viewerMessage.textContent =
-            "Camera ID is not available.";
-
-        return;
-
-    }
-
-    /*
-     * Always use the CrowdSense local
-     * stream endpoint.
-     *
-     * The browser NEVER opens source 0
-     * directly. CameraWorker owns the
-     * physical camera.
-     */
-
-    const streamUrl =
-        "/api/cameras/" +
-        encodeURIComponent(
-            cameraId
-        ) +
-        "/stream?view=" +
-        Date.now();
-
-    /*
-     * Clear the old stream before
-     * switching cameras.
-     */
-
-    stream.onload =
-        null;
-
-    stream.onerror =
-        null;
-
-    stream.removeAttribute(
-        "src"
-    );
-
-    viewerMessage.style.display =
-        "none";
-
-    viewerStatus.style.display =
-        "block";
-
-    viewerStatus.className =
-        "viewer-status";
-
-    viewerStatus.textContent =
-        "CONNECTING";
-
-    stream.style.display =
-        "block";
-
-    /*
-     * Browser now connects only to
-     * CrowdSense.
-     */
-
-    stream.src =
-        streamUrl;
-
-    /*
-     * MJPEG streams may not fire onload
-     * until the stream closes, so we use
-     * a short delay to show LIVE once the
-     * browser has started requesting it.
-     */
-
-    setTimeout(
-        function() {
-
-            if (
-                stream.src.includes(
-                    "/api/cameras/" +
-                    encodeURIComponent(cameraId) +
-                    "/stream"
-                )
-            ) {
-
-                viewerStatus.className =
-                    "viewer-status connected";
-
-                viewerStatus.textContent =
-                    "LIVE";
-
-            }
-
-        },
-        1000
-    );
-
-    stream.onerror =
-        function() {
-
-            viewerStatus.className =
-                "viewer-status error";
-
-            viewerStatus.textContent =
-                "STREAM ERROR";
-
-            viewerMessage.style.display =
-                "flex";
-
-            viewerMessage.textContent =
-                "Unable to display the CrowdSense camera stream.";
-
-        };
-
-}
-
-
-/* ==========================================================
-   STOP ACTIVE CAMERA VIEW
-========================================================== */
-
-function stopActiveCamera() {
-
-    const stream =
-        document.getElementById(
-            "activeCameraStream"
-        );
-
-    const viewerStatus =
-        document.getElementById(
-            "viewerStatus"
-        );
-
-    const viewerMessage =
-        document.getElementById(
-            "viewerMessage"
-        );
-
-    stream.onload =
-        null;
-
-    stream.onerror =
-        null;
-
-    /*
-     * This only disconnects the browser
-     * from the stream.
-     *
-     * It does NOT stop the actual
-     * CameraWorker.
-     */
-
-    stream.removeAttribute(
-        "src"
-    );
-
-    stream.style.display =
-        "none";
-
-    viewerStatus.style.display =
-        "none";
-
-    viewerMessage.style.display =
-        "flex";
-
-    viewerMessage.textContent =
-        "Camera view stopped.";
-
-}
-
-
-/* ==========================================================
-   RESET VIEWER
-========================================================== */
-
-function resetViewer() {
-
-    activeCameraId =
-        null;
-
-    document.getElementById(
-        "activeCameraLabel"
-    ).textContent =
-        "No camera selected";
-
-    document.getElementById(
-        "activeCameraName"
-    ).textContent =
-        "-";
-
-    document.getElementById(
-        "activeCameraId"
-    ).textContent =
-        "-";
-
-    document.getElementById(
-        "activeCameraSource"
-    ).textContent =
-        "-";
-
-    stopActiveCamera();
-
-}
-
-
-/* ==========================================================
-   CALIBRATE SELECTED CAMERA
-========================================================== */
-
-function calibrateSelectedCamera() {
-
-    const camera =
-        getActiveCamera();
-
-    if (!camera) {
-
-        showMessage(
-            "Select a camera first.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const cameraId =
-        getCameraId(
-            camera
-        );
-
-    if (!cameraId) {
-
-        showMessage(
-            "Camera ID not available.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    window.location.href =
-        "/calibration?camera=" +
-        encodeURIComponent(
-            cameraId
-        );
-
-}
-
-
-/* ==========================================================
-   RENDER CAMERA LIST
-========================================================== */
-
-function renderCameras() {
-
-    const container =
-        document.getElementById(
-            "cameraList"
-        );
-
-    document.getElementById(
-        "totalCameras"
-    ).textContent =
-        cameras.length;
-
-    const connected =
-        cameras.filter(
-            camera =>
-                String(
-                    camera.status ||
-                    ""
-                ).toUpperCase() ===
-                "CONNECTED"
-        ).length;
-
-    const disconnected =
-        cameras.filter(
-            camera => {
-
-                const status =
-                    String(
-                        camera.status ||
-                        ""
-                    ).toUpperCase();
-
-                return (
-                    status !==
-                    "CONNECTED"
-                    &&
-                    status !==
-                    "DISABLED"
-                );
-
-            }
-        ).length;
-
-    document.getElementById(
-        "connectedCameras"
-    ).textContent =
-        connected;
-
-    document.getElementById(
-        "disconnectedCameras"
-    ).textContent =
-        disconnected;
-
-    document.getElementById(
-        "cameraCountText"
-    ).textContent =
-        cameras.length +
-        (
-            cameras.length === 1
-                ? " camera"
-                : " cameras"
-        );
-
-    if (
-        !cameras.length
-    ) {
-
-        container.innerHTML = `
-
-            <div class="empty">
-
-                No cameras configured.
-
-                <br><br>
-
-                Click
-                <b style="color:#00ff66;">
-                    + Add Camera
-                </b>
-                to add your first camera.
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-    container.innerHTML =
-        "";
-
-    cameras.forEach(
-        camera => {
-
-            const cameraId =
-                getCameraId(
-                    camera
-                );
-
-            const element =
-                document.createElement(
-                    "div"
-                );
-
-            element.className =
-                "camera";
-
-            let status =
-                String(
-                    camera.status ||
-                    "DISCONNECTED"
-                ).toUpperCase();
-
-            if (
-                camera.enabled === false
-            ) {
-
-                status =
-                    "DISABLED";
-
-            }
-
-            let statusClass =
-                status.toLowerCase();
-
-            if (
-                ![
-                    "connected",
-                    "disconnected",
-                    "error",
-                    "disabled",
-                    "connecting",
-                    "stopped",
-                    "unknown"
-                ].includes(
-                    statusClass
-                )
-            ) {
-
-                statusClass =
-                    "unknown";
-
-            }
-
-            element.innerHTML = `
-
-                <div>
-
-                    <div class="camera-name">
-
-                        ${escapeHtml(
-                            camera.name ||
-                            "Unnamed Camera"
-                        )}
-
-                    </div>
-
-                    <div class="camera-id">
-
-                        ID:
-                        ${escapeHtml(
-                            cameraId ||
-                            "-"
-                        )}
-
-                    </div>
-
-                </div>
-
-
-                <div>
-
-                    <div class="camera-source-title">
-                        SOURCE
-                    </div>
-
-                    <div class="camera-source">
-
-                        ${escapeHtml(
-                            camera.source ||
-                            "-"
-                        )}
-
-                    </div>
-
-                </div>
-
-
-                <div>
-
-                    <span
-                        class="status ${statusClass}"
-                    >
-
-                        ${escapeHtml(
-                            status
-                        )}
-
-                    </span>
-
-
-                    <div
-                        style="
-                            color:#555;
-                            font-size:10px;
-                            margin-top:7px;
-                        "
-                    >
-
-                        ${
-                            camera.last_check ||
-                            camera.last_checked ||
-                            "Not checked"
-                        }
-
-                    </div>
-
-                </div>
-
-
-                <div class="camera-actions">
-
-                    <button
-                        class="small-button green-action"
-                        data-action="view"
-                    >
-                        View
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="btn btn-primary btn-sm" onclick="startViewingActive()">
+                        View Camera
                     </button>
-
-
-                    <button
-                        class="small-button"
-                        data-action="calibrate"
-                    >
+                    <a href="/calibration" class="btn btn-secondary btn-sm">
                         Calibrate
+                    </a>
+                    <button class="btn btn-secondary btn-sm" onclick="stopViewingStream()">
+                        Stop View
                     </button>
+                </div>
+            </div>
 
+            <div class="viewer-stage" id="viewerStage">
+                
+                <!-- Live Image Element -->
+                <img id="cameraStreamImg" class="viewer-img" alt="CrowdSense Live Feed">
 
-                    <button
-                        class="small-button"
-                        data-action="check"
-                    >
-                        Check
-                    </button>
-
-
-                    <button
-                        class="small-button"
-                        data-action="edit"
-                    >
-                        Edit
-                    </button>
-
-
-                    <button
-                        class="small-button"
-                        data-action="toggle"
-                    >
-
-                        ${
-                            camera.enabled === false
-                                ? "Enable"
-                                : "Disable"
-                        }
-
-                    </button>
-
-
-                    <button
-                        class="danger-button"
-                        data-action="delete"
-                    >
-                        Delete
-                    </button>
-
+                <!-- Placeholder / Loading / Error Box -->
+                <div id="viewerPlaceholder" class="viewer-placeholder">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.6; color: var(--accent-emerald);">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                    <div style="font-size: 15px; font-weight: 600;" id="placeholderTitle">
+                        Select a camera to view its live feed
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-muted);" id="placeholderSub">
+                        Feeds are streamed directly via CrowdSense's high-efficiency MJPEG pipeline.
+                    </div>
                 </div>
 
-            `;
+                <!-- Overlaid Status Badge -->
+                <div id="viewerStatusPill" class="cell-overlay-top" style="display: none;">
+                    <span class="cell-badge" id="streamStatusBadge" style="background: rgba(16, 185, 129, 0.2); border-color: var(--accent-emerald); color: var(--accent-emerald);">
+                        LIVE STREAM
+                    </span>
+                    <span class="cell-badge" id="streamLatencyBadge">
+                        Active Stream
+                    </span>
+                </div>
+            </div>
 
-            element
-                .querySelector(
-                    '[data-action="view"]'
-                )
-                .addEventListener(
-                    "click",
-                    function() {
+            <div class="viewer-info-footer">
+                <div>Active Stream: <strong id="footerCamName">None</strong> (<span id="footerCamId">--</span>)</div>
+                <div>Source: <strong id="footerCamSource" style="font-family: monospace;">--</strong></div>
+                <div>Current People Detected: <strong id="footerCamPeople" style="color: var(--accent-emerald);">—</strong></div>
+            </div>
+        </section>
 
-                        selectCamera(
-                            cameraId,
-                            true
-                        );
+        <!-- 2. SUMMARY METRICS ROW -->
+        <section class="summary-stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-title">Total Configured Cameras</div>
+                <div class="stat-card-num" id="statTotalCameras">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-title">Connected & Active</div>
+                <div class="stat-card-num" style="color: var(--accent-emerald);" id="statConnectedCameras">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-title">Standby / Unreachable</div>
+                <div class="stat-card-num" style="color: var(--status-warning);" id="statDisconnectedCameras">0</div>
+            </div>
+        </section>
 
-                    }
-                );
+        <!-- 3. CONFIGURATION CARDS GRID -->
+        <div style="margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <h2 style="font-size: 17px; font-weight: 700;">Configured Camera Units</h2>
+            <span class="badge badge-muted" id="cameraUnitCountBadge">0 units</span>
+        </div>
 
-            element
-                .querySelector(
-                    '[data-action="calibrate"]'
-                )
-                .addEventListener(
-                    "click",
-                    function() {
+        <section class="cameras-grid" id="camerasCardGrid">
+            <div style="color: var(--text-muted); font-size: 14px; padding: 30px;">
+                Loading camera configurations...
+            </div>
+        </section>
 
-                        openCalibration(
-                            cameraId
-                        );
+    </main>
 
-                    }
-                );
+    <!-- ADD / EDIT CAMERA MODAL -->
+    <div id="cameraModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Camera</h3>
+                <button class="modal-close" onclick="closeCameraModal()">&times;</button>
+            </div>
+            <form id="cameraForm" onsubmit="handleCameraSubmit(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="editCameraId">
 
-            element
-                .querySelector(
-                    '[data-action="check"]'
-                )
-                .addEventListener(
-                    "click",
-                    function() {
+                    <div class="form-group">
+                        <label class="form-label" for="formCamName">Camera Name</label>
+                        <input type="text" id="formCamName" class="form-input" placeholder="e.g. Main Stadium Entrance" required>
+                    </div>
 
-                        checkCamera(
-                            cameraId
-                        );
+                    <div class="form-group">
+                        <label class="form-label" for="formCamSource">Camera Source</label>
+                        <input type="text" id="formCamSource" class="form-input" placeholder="e.g. 0, 1, or http://192.168.1.100:8080/video" required>
+                    </div>
 
-                    }
-                );
+                    <!-- Presets Helper -->
+                    <div style="background: var(--bg-elevated); border: 1px solid var(--border-panel); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 16px;">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px;">QUICK SOURCE PRESETS:</div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="setSourcePreset('0')">Webcam 0</button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="setSourcePreset('1')">Webcam 1</button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="setSourcePreset('http://192.168.1.100:8080/video')">Phone Stream</button>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                            ⚡ <strong>Zero-Delay Phone Tip:</strong> In your phone camera app (e.g. IP Webcam), set video resolution to <strong>720p (1280x720)</strong> or <strong>640x480</strong> and quality to ~70%. Connect phone &amp; PC to the same Wi-Fi (5GHz recommended) for real-time video streaming with minimal lag.
+                        </div>
+                    </div>
 
-            element
-                .querySelector(
-                    '[data-action="edit"]'
-                )
-                .addEventListener(
-                    "click",
-                    function() {
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="formCamEnabled" checked style="width: 18px; height: 18px; accent-color: var(--accent-emerald);">
+                        <label class="form-label" for="formCamEnabled" style="margin-bottom: 0; cursor: pointer;">Enable this camera in monitoring pipeline</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCameraModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="modalSaveBtn">Save Camera</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                        editCamera(
-                            cameraId
-                        );
+    <!-- CONFIRMATION MODAL -->
+    <div id="confirmModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="confirmTitle">Confirm Action</h3>
+                <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage" style="font-size: 14px; line-height: 1.5;"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+                <button class="btn btn-danger" id="confirmProceedBtn">Proceed</button>
+            </div>
+        </div>
+    </div>
 
-                    }
-                );
+    <script>
+        let cameras = [];
+        let currentlyViewingId = null;
+        let streamTimeout = null;
 
-            element
-                .querySelector(
-                    '[data-action="toggle"]'
-                )
-                .addEventListener(
-                    "click",
-                    function() {
-
-                        toggleCamera(
-                            cameraId
-                        );
-
-                    }
-                );
-
-            element
-                .querySelector(
-                    '[data-action="delete"]'
-                )
-                .addEventListener(
-                    "click",
-                    function() {
-
-                        deleteCamera(
-                            cameraId
-                        );
-
-                    }
-                );
-
-            container.appendChild(
-                element
-            );
-
+        function handleBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '/dashboard';
+            }
         }
-    );
 
-}
-
-
-/* ==========================================================
-   SELECT CAMERA
-========================================================== */
-
-function selectCamera(
-    cameraId,
-    startViewer
-) {
-
-    const camera =
-        cameras.find(
-            item =>
-                getCameraId(item) ===
-                String(cameraId)
-        );
-
-    if (!camera) {
-
-        showMessage(
-            "Camera not found.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    /*
-     * Disconnect the previous browser
-     * stream before switching.
-     */
-
-    stopActiveCamera();
-
-    activeCameraId =
-        String(cameraId);
-
-    const selector =
-        document.getElementById(
-            "activeCameraSelect"
-        );
-
-    selector.value =
-        activeCameraId;
-
-    updateActiveCameraInfo();
-
-    if (
-        startViewer
-    ) {
-
-        startActiveCamera(
-            camera
-        );
-
-    }
-
-}
-
-
-/* ==========================================================
-   OPEN CALIBRATION
-========================================================== */
-
-function openCalibration(
-    cameraId
-) {
-
-    if (!cameraId) {
-
-        showMessage(
-            "Camera ID not available.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    window.location.href =
-        "/calibration?camera=" +
-        encodeURIComponent(
-            cameraId
-        );
-
-}
-
-
-/* ==========================================================
-   ADD FORM
-========================================================== */
-
-function openAddForm() {
-
-    editingCameraId =
-        null;
-
-    document.getElementById(
-        "formTitle"
-    ).textContent =
-        "Add Camera";
-
-    document.getElementById(
-        "cameraName"
-    ).value =
-        "";
-
-    document.getElementById(
-        "cameraSource"
-    ).value =
-        "";
-
-    document.getElementById(
-        "cameraEnabled"
-    ).checked =
-        true;
-
-    document.getElementById(
-        "cameraForm"
-    ).classList.add(
-        "active"
-    );
-
-    document.getElementById(
-        "cameraName"
-    ).focus();
-
-}
-
-
-/* ==========================================================
-   CLOSE FORM
-========================================================== */
-
-function closeForm() {
-
-    editingCameraId =
-        null;
-
-    document.getElementById(
-        "cameraForm"
-    ).classList.remove(
-        "active"
-    );
-
-}
-
-
-/* ==========================================================
-   EDIT CAMERA
-========================================================== */
-
-function editCamera(
-    cameraId
-) {
-
-    const camera =
-        cameras.find(
-            item =>
-                getCameraId(item) ===
-                String(cameraId)
-        );
-
-    if (!camera) {
-
-        showMessage(
-            "Camera not found",
-            "error"
-        );
-
-        return;
-
-    }
-
-    editingCameraId =
-        getCameraId(
-            camera
-        );
-
-    document.getElementById(
-        "formTitle"
-    ).textContent =
-        "Edit Camera";
-
-    document.getElementById(
-        "cameraName"
-    ).value =
-        camera.name ||
-        "";
-
-    document.getElementById(
-        "cameraSource"
-    ).value =
-        camera.source ||
-        "";
-
-    document.getElementById(
-        "cameraEnabled"
-    ).checked =
-        camera.enabled !== false;
-
-    document.getElementById(
-        "cameraForm"
-    ).classList.add(
-        "active"
-    );
-
-    document.getElementById(
-        "cameraName"
-    ).focus();
-
-}
-
-
-/* ==========================================================
-   SAVE CAMERA
-========================================================== */
-
-async function saveCamera() {
-
-    const name =
-        document.getElementById(
-            "cameraName"
-        ).value.trim();
-
-    const source =
-        document.getElementById(
-            "cameraSource"
-        ).value.trim();
-
-    const enabled =
-        document.getElementById(
-            "cameraEnabled"
-        ).checked;
-
-    if (!name) {
-
-        showMessage(
-            "Enter a camera name",
-            "error"
-        );
-
-        return;
-
-    }
-
-    if (!source) {
-
-        showMessage(
-            "Enter a camera source",
-            "error"
-        );
-
-        return;
-
-    }
-
-    let result;
-
-    if (
-        editingCameraId
-    ) {
-
-        result =
-            await apiFetch(
-                "/api/cameras/" +
-                encodeURIComponent(
-                    editingCameraId
-                ),
-                {
-
-                    method:
-                        "PUT",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            name:
-                                name,
-
-                            source:
-                                source,
-
-                            enabled:
-                                enabled
-
-                        })
-
+        function handleRefresh() {
+            loadCameras();
+            if (currentlyViewingId) {
+                viewCamera(currentlyViewingId);
+            }
+        }
+
+        async function loadCameras() {
+            try {
+                const res = await fetch('/api/cameras', { cache: 'no-store' });
+                if (!res.ok) throw new Error('API error');
+                cameras = await res.json();
+                if (!Array.isArray(cameras)) cameras = [];
+
+                renderSummaryStats();
+                populateDropdown();
+                renderCamerasCards();
+
+                if (currentlyViewingId) {
+                    const cur = cameras.find(c => c.camera_id === currentlyViewingId);
+                    if (cur) {
+                        document.getElementById('footerCamPeople').textContent = (cur.status === 'CONNECTED' ? (cur.people ?? 0) : '—');
+                    }
                 }
-            );
+            } catch (err) {
+                console.error('Failed to load cameras:', err);
+                document.getElementById('camerasCardGrid').innerHTML = `
+                    <div style="color:var(--status-critical); font-size:14px; padding:20px;">
+                        Could not load cameras list from backend.
+                    </div>
+                `;
+            }
+        }
 
-    }
+        function renderSummaryStats() {
+            const total = cameras.length;
+            const connected = cameras.filter(c => c.status === 'CONNECTED').length;
+            const disconnected = total - connected;
 
-    else {
+            document.getElementById('statTotalCameras').textContent = total;
+            document.getElementById('statConnectedCameras').textContent = connected;
+            document.getElementById('statDisconnectedCameras').textContent = disconnected;
+            document.getElementById('cameraUnitCountBadge').textContent = `${total} units`;
+        }
 
-        result =
-            await apiFetch(
-                "/api/cameras",
-                {
+        function populateDropdown() {
+            const dd = document.getElementById('cameraSelectDropdown');
+            const prev = dd.value;
+            dd.innerHTML = '<option value="">Select a camera to view...</option>';
 
-                    method:
-                        "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            name:
-                                name,
-
-                            source:
-                                source,
-
-                            enabled:
-                                enabled
-
-                        })
-
+            cameras.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.camera_id;
+                opt.textContent = `${c.name} (${c.source})`;
+                if (c.camera_id === prev || (currentlyViewingId && c.camera_id === currentlyViewingId)) {
+                    opt.selected = true;
                 }
-            );
+                dd.appendChild(opt);
+            });
+        }
 
-    }
-
-    if (!result) {
-        return;
-    }
-
-    showMessage(
-
-        editingCameraId
-            ? "Camera updated"
-            : "Camera added",
-
-        "success"
-
-    );
-
-    closeForm();
-
-    await loadCameras();
-
-}
-
-
-/* ==========================================================
-   CHECK CAMERA
-========================================================== */
-
-async function checkCamera(
-    cameraId
-) {
-
-    showMessage(
-        "Checking camera...",
-        "success"
-    );
-
-    const result =
-        await apiFetch(
-            "/api/cameras/check",
-            {
-                method:
-                    "POST"
-            }
-        );
-
-    if (!result) {
-        return;
-    }
-
-    await loadCameras();
-
-    showMessage(
-        "Camera check completed",
-        "success"
-    );
-
-}
-
-
-/* ==========================================================
-   TOGGLE CAMERA
-========================================================== */
-
-async function toggleCamera(
-    cameraId
-) {
-
-    const camera =
-        cameras.find(
-            item =>
-                getCameraId(item) ===
-                String(cameraId)
-        );
-
-    if (!camera) {
-
-        showMessage(
-            "Camera not found",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const enabled =
-        camera.enabled === false;
-
-    const result =
-        await apiFetch(
-            "/api/cameras/" +
-            encodeURIComponent(
-                cameraId
-            ),
-            {
-
-                method:
-                    "PUT",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify({
-
-                        enabled:
-                            enabled
-
-                    })
-
-            }
-        );
-
-    if (!result) {
-        return;
-    }
-
-    /*
-     * If the currently displayed camera
-     * was disabled, remove only the
-     * browser view.
-     */
-
-    if (
-        !enabled &&
-        String(activeCameraId) ===
-        String(cameraId)
-    ) {
-
-        stopActiveCamera();
-
-    }
-
-    await loadCameras();
-
-    showMessage(
-
-        enabled
-            ? "Camera enabled"
-            : "Camera disabled",
-
-        "success"
-
-    );
-
-}
-
-
-/* ==========================================================
-   DELETE CAMERA
-========================================================== */
-
-async function deleteCamera(
-    cameraId
-) {
-
-    const camera =
-        cameras.find(
-            item =>
-                getCameraId(item) ===
-                String(cameraId)
-        );
-
-    if (!camera) {
-
-        showMessage(
-            "Camera not found",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const confirmed =
-        confirm(
-            "Delete camera \"" +
-            (
-                camera.name ||
-                cameraId
-            ) +
-            "\"?"
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-    /*
-     * Disconnect browser stream first.
-     */
-
-    if (
-        String(activeCameraId) ===
-        String(cameraId)
-    ) {
-
-        stopActiveCamera();
-
-    }
-
-    const result =
-        await apiFetch(
-
-            "/api/cameras/" +
-            encodeURIComponent(
-                cameraId
-            ),
-
-            {
-                method:
-                    "DELETE"
+        function renderCamerasCards() {
+            const container = document.getElementById('camerasCardGrid');
+            if (cameras.length === 0) {
+                container.innerHTML = `
+                    <div style="color:var(--text-muted); font-size:14px; padding:30px; grid-column:1/-1;">
+                        No cameras currently registered. Click "+ Add New Camera" above to get started.
+                    </div>
+                `;
+                return;
             }
 
-        );
+            container.innerHTML = cameras.map(c => {
+                const isViewing = c.camera_id === currentlyViewingId;
+                const status = (c.status || 'STANDBY').toUpperCase();
+                let statusBadgeClass = 'badge-muted';
+                if (status === 'CONNECTED') statusBadgeClass = 'badge-safe';
+                else if (status === 'CONNECTING') statusBadgeClass = 'badge-warning';
+                else if (status === 'DISCONNECTED' || status === 'ERROR') statusBadgeClass = 'badge-critical';
 
-    if (!result) {
-        return;
-    }
+                return `
+                    <div class="camera-card ${isViewing ? 'active-card' : ''}" id="card-${c.camera_id}">
+                        <div>
+                            <div class="camera-card-header">
+                                <div>
+                                    <div class="camera-card-title">${c.name}</div>
+                                    <div class="camera-card-id">ID: ${c.camera_id}</div>
+                                </div>
+                                <span class="badge ${statusBadgeClass}">${status}</span>
+                            </div>
 
-    if (
-        String(
-            activeCameraId
-        ) ===
-        String(cameraId)
-    ) {
+                            <div style="margin-top: 14px;">
+                                <div class="camera-detail-row">
+                                    <span style="color:var(--text-secondary);">Source:</span>
+                                    <span style="font-family:monospace; font-weight:600;">${c.source}</span>
+                                </div>
+                                <div class="camera-detail-row">
+                                    <span style="color:var(--text-secondary);">People Detected:</span>
+                                    <span style="color:var(--accent-emerald); font-weight:700;">${c.status === 'CONNECTED' ? (c.people ?? 0) : '—'}</span>
+                                </div>
+                                <div class="camera-detail-row">
+                                    <span style="color:var(--text-secondary);">Calibration:</span>
+                                    <span>${c.calibrated ? 'Calibrated' : '<span style="color:var(--text-muted);">Uncalibrated</span>'}</span>
+                                </div>
+                                <div class="camera-detail-row">
+                                    <span style="color:var(--text-secondary);">Status:</span>
+                                    <span>${c.enabled !== false ? 'Enabled' : '<span style="color:var(--status-critical);">Disabled</span>'}</span>
+                                </div>
+                            </div>
+                        </div>
 
-        resetViewer();
+                        <div class="camera-card-actions">
+                            <button class="btn ${isViewing ? 'btn-secondary' : 'btn-primary'} btn-sm" onclick="viewCamera('${c.camera_id}')">
+                                ${isViewing ? 'Streaming' : 'View Live'}
+                            </button>
+                            <a href="/calibration" class="btn btn-secondary btn-sm">
+                                Calibrate
+                            </a>
+                            <button class="btn btn-secondary btn-sm" onclick="checkCameraUnit('${c.camera_id}')">
+                                Check
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="openEditModal('${c.camera_id}')">
+                                Edit
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('${c.camera_id}', '${c.name}')">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
-    }
+        // Live Feed Viewer Engine
+        function handleDropdownChange() {
+            const val = document.getElementById('cameraSelectDropdown').value;
+            if (val) {
+                viewCamera(val);
+            }
+        }
 
-    await loadCameras();
+        function startViewingActive() {
+            const val = document.getElementById('cameraSelectDropdown').value;
+            if (val) {
+                viewCamera(val);
+            } else if (cameras.length > 0) {
+                viewCamera(cameras[0].camera_id);
+            }
+        }
 
-    showMessage(
-        "Camera deleted",
-        "success"
-    );
+        async function viewCamera(cameraId) {
+            const camera = cameras.find(c => c.camera_id === cameraId);
+            if (!camera) return;
 
-}
+            currentlyViewingId = cameraId;
+            document.getElementById('cameraSelectDropdown').value = cameraId;
 
+            const streamImg = document.getElementById('cameraStreamImg');
+            const placeholder = document.getElementById('viewerPlaceholder');
+            const pTitle = document.getElementById('placeholderTitle');
+            const pSub = document.getElementById('placeholderSub');
+            const statusPill = document.getElementById('viewerStatusPill');
 
-/* ==========================================================
-   MESSAGE
-========================================================== */
+            // 1. Show Connecting state
+            placeholder.style.display = 'flex';
+            placeholder.innerHTML = `
+                <div class="viewer-spinner"></div>
+                <div style="font-size:15px; font-weight:600;">Connecting to camera pipeline...</div>
+                <div style="font-size:13px; color:var(--text-muted);">Allocating MJPEG stream for ${camera.name}</div>
+            `;
+            streamImg.style.display = 'none';
+            statusPill.style.display = 'none';
 
-function showMessage(
-    text,
-    type
-) {
+            // Update footer info
+            document.getElementById('footerCamName').textContent = camera.name;
+            document.getElementById('footerCamId').textContent = camera.camera_id;
+            document.getElementById('footerCamSource').textContent = camera.source;
+            document.getElementById('footerCamPeople').textContent = (camera.status === 'CONNECTED' ? (camera.people ?? 0) : '—');
 
-    const element =
-        document.getElementById(
-            "message"
-        );
+            renderCamerasCards();
 
-    element.textContent =
-        text;
+            // 2. Clear previous handlers & request stream
+            streamImg.onload = null;
+            streamImg.onerror = null;
+            streamImg.removeAttribute('src');
 
-    element.className =
-        type;
+            const streamUrl = `/api/cameras/${encodeURIComponent(cameraId)}/stream?t=${Date.now()}`;
 
-    element.style.display =
-        "block";
+            streamImg.onload = () => {
+                placeholder.style.display = 'none';
+                streamImg.style.display = 'block';
+                statusPill.style.display = 'flex';
+                document.getElementById('streamStatusBadge').textContent = 'LIVE FEED';
+            };
 
-    setTimeout(
-        function() {
+            streamImg.onerror = () => {
+                placeholder.style.display = 'flex';
+                streamImg.style.display = 'none';
+                statusPill.style.display = 'none';
+                placeholder.innerHTML = `
+                    <div style="font-size:15px; font-weight:700; color:var(--status-critical);">Feed Unavailable</div>
+                    <div style="font-size:13px; color:var(--text-secondary); max-width:360px;">
+                        Could not receive video stream from ${camera.source}. Ensure the camera or stream is online.
+                    </div>
+                    <button class="btn btn-secondary btn-sm" style="margin-top:10px;" onclick="viewCamera('${cameraId}')">
+                        Retry Connection
+                    </button>
+                `;
+            };
 
-            element.style.display =
-                "none";
+            streamImg.src = streamUrl;
 
-        },
-        2500
-    );
+            // Short fallback timeout to show feed once bytes arrive
+            if (streamTimeout) clearTimeout(streamTimeout);
+            streamTimeout = setTimeout(() => {
+                if (streamImg.src.includes(cameraId) && streamImg.style.display !== 'block') {
+                    placeholder.style.display = 'none';
+                    streamImg.style.display = 'block';
+                    statusPill.style.display = 'flex';
+                }
+            }, 1200);
+        }
 
-}
+        function stopViewingStream() {
+            const streamImg = document.getElementById('cameraStreamImg');
+            streamImg.removeAttribute('src');
+            streamImg.style.display = 'none';
+            document.getElementById('viewerStatusPill').style.display = 'none';
+            
+            const placeholder = document.getElementById('viewerPlaceholder');
+            placeholder.style.display = 'flex';
+            placeholder.innerHTML = `
+                <div style="font-size:15px; font-weight:600;">Stream Stopped</div>
+                <div style="font-size:13px; color:var(--text-muted);">Select a camera or click "View Camera" to resume.</div>
+            `;
+            currentlyViewingId = null;
+            renderCamerasCards();
+        }
 
+        function calibrateCurrentCamera() {
+            window.location.href = '/calibration';
+        }
 
-/* ==========================================================
-   DASHBOARD
-========================================================== */
+        // Test Camera Connection
+        async function checkCameraUnit(cameraId) {
+            try {
+                const res = await fetch(`/api/cameras/${encodeURIComponent(cameraId)}/check`, { method: 'POST' });
+                loadCameras();
+            } catch (e) {}
+        }
 
-function goDashboard() {
+        async function checkAllCameras() {
+            try {
+                await fetch('/api/cameras/check', { method: 'POST' });
+                loadCameras();
+            } catch (e) {}
+        }
 
-    window.location.href =
-        "/";
+        // Add / Edit Modal
+        function openAddCameraModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Camera';
+            document.getElementById('editCameraId').value = '';
+            document.getElementById('formCamName').value = '';
+            document.getElementById('formCamSource').value = '';
+            document.getElementById('formCamEnabled').checked = true;
+            document.getElementById('cameraModal').style.display = 'flex';
+        }
 
-}
+        function openEditModal(camId) {
+            const cam = cameras.find(c => c.camera_id === camId);
+            if (!cam) return;
+            document.getElementById('modalTitle').textContent = 'Edit Camera: ' + cam.name;
+            document.getElementById('editCameraId').value = cam.camera_id;
+            document.getElementById('formCamName').value = cam.name;
+            document.getElementById('formCamSource').value = cam.source;
+            document.getElementById('formCamEnabled').checked = cam.enabled !== false;
+            document.getElementById('cameraModal').style.display = 'flex';
+        }
 
+        function closeCameraModal() {
+            document.getElementById('cameraModal').style.display = 'none';
+        }
 
-/* ==========================================================
-   SECURITY HELPERS
-========================================================== */
+        function setSourcePreset(val) {
+            document.getElementById('formCamSource').value = val;
+        }
 
-function escapeHtml(
-    value
-) {
+        async function handleCameraSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editCameraId').value;
+            const payload = {
+                name: document.getElementById('formCamName').value.trim(),
+                source: document.getElementById('formCamSource').value.trim(),
+                enabled: document.getElementById('formCamEnabled').checked
+            };
 
-    return String(
-        value
-    )
+            try {
+                let res;
+                if (editId) {
+                    res = await fetch(`/api/cameras/${encodeURIComponent(editId)}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                } else {
+                    res = await fetch('/api/cameras', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || ('Server returned HTTP ' + res.status));
+                }
+                closeCameraModal();
+                loadCameras();
+            } catch (err) {
+                alert('Failed to save camera: ' + err.message);
+            }
+        }
 
-        .replace(
-            /&/g,
-            "&amp;"
-        )
+        // Delete with Confirmation
+        let pendingDeleteId = null;
 
-        .replace(
-            /</g,
-            "&lt;"
-        )
+        function confirmDelete(camId, name) {
+            pendingDeleteId = camId;
+            document.getElementById('confirmTitle').textContent = 'Delete Camera';
+            document.getElementById('confirmMessage').textContent = `Are you sure you want to permanently delete "${name}" (${camId})?`;
+            document.getElementById('confirmProceedBtn').onclick = executeDelete;
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
 
-        .replace(
-            />/g,
-            "&gt;"
-        )
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+            pendingDeleteId = null;
+        }
 
-        .replace(
-            /"/g,
-            "&quot;"
-        )
+        async function executeDelete() {
+            if (!pendingDeleteId) return;
+            const id = pendingDeleteId;
+            closeConfirmModal();
+            try {
+                await fetch(`/api/cameras/${encodeURIComponent(id)}`, { method: 'DELETE' });
+                if (currentlyViewingId === id) {
+                    stopViewingStream();
+                }
+                loadCameras();
+            } catch (err) {
+                alert('Failed to delete camera: ' + err.message);
+            }
+        }
 
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        // Start
+        loadCameras();
+        // Auto-view first camera if available after 500ms
+        setTimeout(() => {
+            if (cameras.length > 0 && !currentlyViewingId) {
+                viewCamera(cameras[0].camera_id);
+            }
+        }, 600);
 
-}
-
-
-/* ==========================================================
-   START
-========================================================== */
-
-loadCameras();
-
-
-/*
- * Refresh camera status every 5 seconds.
- *
- * This does NOT change or stop the selected
- * camera viewer.
- */
-
-setInterval(
-    loadCameras,
-    5000
-);
-
-</script>
-
+        // Continuous polling for camera status & people count
+        setInterval(loadCameras, 2500);
+    </script>
 </body>
-
 </html>

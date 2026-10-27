@@ -728,6 +728,149 @@ class IncidentManager:
     # INCIDENT FILE
     # =========================================================
 
+# =========================================================
+    # SAVE ALL INCIDENTS
+    # =========================================================
+
+    def _save_all_incidents(self, incidents):
+
+        try:
+
+            with open(
+                INCIDENT_FILE,
+                "w",
+                newline="",
+                encoding="utf-8"
+            ) as file:
+
+                writer = csv.writer(file)
+
+                writer.writerow([
+                    "incident_id",
+                    "alert_id",
+                    "timestamp",
+                    "risk",
+                    "zone_id",
+                    "camera_id",
+                    "people",
+                    "density",
+                    "special_type",
+                    "message",
+                    "snapshot_path",
+                    "status"
+                ])
+
+                for inc in incidents:
+
+                    writer.writerow([
+                        inc.get("incident_id", ""),
+                        inc.get("alert_id", ""),
+                        inc.get("timestamp", ""),
+                        inc.get("risk", ""),
+                        inc.get("zone_id", ""),
+                        inc.get("camera_id", ""),
+                        inc.get("people", 0),
+                        inc.get("density", 0),
+                        inc.get("special_type", ""),
+                        inc.get("message", ""),
+                        inc.get("snapshot_path", ""),
+                        inc.get("status", "OPEN")
+                    ])
+
+            return True
+
+        except Exception as error:
+
+            print(f"Incident save error: {error}")
+
+            return False
+
+    # =========================================================
+    # ACKNOWLEDGE INCIDENT
+    # =========================================================
+
+    def acknowledge_incident(self, incident_id):
+
+        if not incident_id or not os.path.exists(INCIDENT_FILE):
+            return False
+
+        target = str(incident_id).strip().upper()
+
+        incidents = self.get_incidents()
+
+        found = False
+
+        for inc in incidents:
+
+            if str(inc.get("incident_id", "")).strip().upper() == target:
+
+                inc["status"] = "ACKNOWLEDGED"
+
+                found = True
+
+                break
+
+        if found:
+            self._save_all_incidents(incidents)
+
+        return found
+
+    # =========================================================
+    # ACKNOWLEDGE BY ALERT ID
+    # =========================================================
+
+    def acknowledge_by_alert_id(self, alert_id):
+
+        if not alert_id or not os.path.exists(INCIDENT_FILE):
+            return 0
+
+        target = str(alert_id).strip().upper()
+
+        incidents = self.get_incidents()
+
+        count = 0
+
+        for inc in incidents:
+
+            if str(inc.get("alert_id", "")).strip().upper() == target:
+
+                if str(inc.get("status", "")).upper() != "ACKNOWLEDGED":
+
+                    inc["status"] = "ACKNOWLEDGED"
+
+                    count += 1
+
+        if count > 0:
+            self._save_all_incidents(incidents)
+
+        return count
+
+    # =========================================================
+    # ACKNOWLEDGE ALL
+    # =========================================================
+
+    def acknowledge_all(self):
+
+        if not os.path.exists(INCIDENT_FILE):
+            return 0
+
+        incidents = self.get_incidents()
+
+        count = 0
+
+        for inc in incidents:
+
+            if str(inc.get("status", "")).upper() != "ACKNOWLEDGED":
+
+                inc["status"] = "ACKNOWLEDGED"
+
+                count += 1
+
+        if count > 0:
+            self._save_all_incidents(incidents)
+
+        return count
+
     def get_incident_file(self):
 
         return INCIDENT_FILE

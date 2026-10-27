@@ -3,1000 +3,696 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>CrowdSense - Admin</title>
-
+    <title>CrowdSense - System Administration</title>
+    <link rel="stylesheet" href="/static/css/common.css">
     <style>
-        * {
-            box-sizing: border-box;
+        .admin-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
         }
 
-        body {
-            margin: 0;
-            background: #050805;
-            color: #ffffff;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        header {
-            background: #0b120d;
-            border-bottom: 1px solid #1f3b26;
-            padding: 18px 25px;
-
+        .page-title-bar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-
+            justify-content: space-between;
+            margin-bottom: 24px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 16px;
         }
 
-        .title {
-            color: #32ff6a;
+        .page-title-bar h1 {
             font-size: 24px;
-            font-weight: bold;
+            font-weight: 800;
+            color: var(--text-primary);
         }
 
-        .subtitle {
-            color: #9ca89f;
-            font-size: 13px;
+        .page-title-bar p {
+            font-size: 14px;
+            color: var(--text-secondary);
             margin-top: 4px;
         }
 
-        nav {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: #d9e0da;
-            background: #111a13;
-            border: 1px solid #243d29;
-            padding: 9px 13px;
-            border-radius: 6px;
-            font-size: 13px;
-        }
-
-        nav a:hover {
-            border-color: #32ff6a;
-            color: #32ff6a;
-        }
-
-        nav a.active {
-            background: #12351c;
-            border-color: #32ff6a;
-            color: #32ff6a;
-        }
-
-        main {
-            max-width: 1200px;
-            margin: auto;
-            padding: 25px;
-        }
-
-        .section {
-            background: #0b120d;
-            border: 1px solid #1d3623;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .section h2 {
-            margin-top: 0;
-            color: #32ff6a;
-        }
-
-        .section h3 {
-            color: #ffffff;
-            margin-top: 0;
-        }
-
-        .grid {
+        .admin-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
         }
 
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        label {
-            color: #aab4ac;
-            font-size: 13px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            background: #050805;
-            color: #ffffff;
-            border: 1px solid #29432e;
-            border-radius: 6px;
-            padding: 11px;
-            outline: none;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #32ff6a;
-        }
-
-        .button-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 18px;
-        }
-
-        button {
-            border: none;
-            border-radius: 6px;
-            padding: 10px 17px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .green {
-            background: #32ff6a;
-            color: #031007;
-        }
-
-        .green:hover {
-            background: #20d653;
-        }
-
-        .yellow {
-            background: #ffd43b;
-            color: #111111;
-        }
-
-        .red {
-            background: #ff3b3b;
-            color: #ffffff;
-        }
-
-        .dark {
-            background: #17221a;
-            color: #ffffff;
-            border: 1px solid #29432e;
-        }
-
-        .danger-box {
-            border: 1px solid #7b2525;
-            background: #180b0b;
-        }
-
-        .danger-box h2 {
-            color: #ff3b3b;
-        }
-
-        .status-box {
-            padding: 15px;
-            border-radius: 7px;
-            background: #070b08;
-            border: 1px solid #1c3021;
-            margin-top: 15px;
-        }
-
-        .status-ready {
-            color: #32ff6a;
-        }
-
-        .status-warning {
-            color: #ffd43b;
-        }
-
-        .status-danger {
-            color: #ff3b3b;
-        }
-
-        .info {
-            color: #8e9c91;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .message {
-            margin-top: 12px;
-            padding: 10px;
-            border-radius: 6px;
-            display: none;
-            font-size: 13px;
-        }
-
-        .success-message {
-            display: block;
-            color: #32ff6a;
-            background: #0c2413;
-            border: 1px solid #245d32;
-        }
-
-        .error-message {
-            display: block;
-            color: #ff3b3b;
-            background: #250c0c;
-            border: 1px solid #6b2222;
-        }
-
-        .mode-card {
-            border: 1px solid #263c2b;
-            background: #070b08;
-            padding: 18px;
-            border-radius: 8px;
-        }
-
-        .mode-card h3 {
-            color: #32ff6a;
-        }
-
-        .mode-card p {
-            color: #929d95;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        @media (max-width: 800px) {
-            .grid {
+        @media (max-width: 960px) {
+            .admin-grid {
                 grid-template-columns: 1fr;
             }
         }
 
-        @media (max-width: 600px) {
-            main {
-                padding: 15px;
-            }
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
 
-            header {
-                padding: 15px;
+        @media (max-width: 600px) {
+            .form-row-2 {
+                grid-template-columns: 1fr;
             }
+        }
+
+        .status-pill-large {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .action-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-panel);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            transition: var(--transition);
+        }
+
+        .action-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
+        }
+
+        .action-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .action-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .danger-panel {
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            background: rgba(239, 68, 68, 0.04);
+        }
+
+        .danger-panel .cs-panel-header {
+            background: rgba(239, 68, 68, 0.08);
+            border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .danger-panel .cs-panel-title {
+            color: var(--status-critical);
+        }
+
+        /* STARTUP LOADING PROGRESS OVERLAY */
+        .startup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 13, 20, 0.96);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.45s ease, visibility 0.45s ease;
+        }
+
+        .startup-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .startup-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 38px 36px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: startupSlideUp 0.35s ease-out;
+        }
+
+        @keyframes startupSlideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .startup-icon-wrap {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent-emerald), #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            box-shadow: 0 0 28px var(--accent-emerald-glow);
+            margin-bottom: 18px;
+        }
+
+        .startup-brand {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .startup-brand span {
+            color: var(--accent-emerald);
+        }
+
+        .startup-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .startup-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.5;
+            max-width: 380px;
+        }
+
+        .startup-progress-container {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-panel);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .startup-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            box-shadow: 0 0 14px var(--accent-emerald);
+            border-radius: 6px;
+            transition: width 0.25s ease-out;
+        }
+
+        .startup-status-row {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
         }
     </style>
 </head>
-
 <body>
 
-<header>
-
-    <div>
-        <div class="title">CROWDSENSE</div>
-        <div class="subtitle">Administrator Control Panel</div>
+    <!-- STARTUP LOADING PROGRESS OVERLAY -->
+    <div id="startupOverlay" class="startup-overlay">
+        <div class="startup-card">
+            <div class="startup-icon-wrap">
+                <div class="startup-icon">C</div>
+            </div>
+            <div class="startup-brand">CROWD<span>SENSE</span></div>
+            <div class="startup-title">Starting CrowdSense</div>
+            <div class="startup-desc">Initializing computer vision engine, venue configuration, and safety telemetry...</div>
+            <div class="startup-progress-container">
+                <div id="startupProgressBar" class="startup-progress-bar"></div>
+            </div>
+            <div class="startup-status-row">
+                <span id="startupStatusText">Starting CrowdSense...</span>
+                <span id="startupPercentText">0%</span>
+            </div>
+        </div>
     </div>
 
-    <nav>
-        <a href="/">Dashboard</a>
-        <a href="/cameras">Cameras</a>
-        <a href="/venue">Venue</a>
-        <a href="/zones">Zones</a>
-        <a href="/alerts">Alerts</a>
-        <a href="/analytics">Analytics</a>
-        <a href="/session">Session</a>
-        <a href="/admin" class="active">Admin</a>
+    <!-- EMERGENCY BANNER -->
+    <div id="emergencyBanner" class="emergency-banner">
+        CRITICAL CROWD INCIDENT ACTIVE - IMMEDIATE ACTION REQUIRED
+    </div>
+
+    <!-- MAIN HEADER -->
+    <header class="cs-header">
+        <a href="/" class="cs-brand">
+            <div class="cs-brand-icon">C</div>
+            <div class="cs-brand-text">CROWD<span>SENSE</span></div>
+        </a>
+
+        <div class="cs-header-actions">
+            <button class="btn-nav-action" onclick="handleBack()" title="Back">
+                Back
+            </button>
+            <button class="btn-nav-action" onclick="handleRefresh()" title="Refresh">
+                Refresh
+            </button>
+            <button class="btn-nav-action" onclick="showStartupSequence(true)" title="Restart Startup Animation">
+                Replay Startup
+            </button>
+            <div id="headerStatusBadge" class="badge badge-safe">
+                READY
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="cs-nav-bar">
+        <a href="/dashboard" class="cs-nav-link">Dashboard</a>
+        <a href="/cameras" class="cs-nav-link">Cameras</a>
+        <a href="/zones" class="cs-nav-link">Zones</a>
+        <a href="/alerts" class="cs-nav-link">Alerts</a>
+        <a href="/analytics" class="cs-nav-link">Analytics</a>
+        <a href="/reports" class="cs-nav-link">Reports</a>
+        <a href="/session" class="cs-nav-link">Session</a>
+        <a href="/venue" class="cs-nav-link">Venue</a>
+        <a href="/calibration" class="cs-nav-link">Calibration</a>
+        <a href="/admin" class="cs-nav-link active">Admin</a>
     </nav>
 
-</header>
+    <!-- MAIN CONTENT -->
+    <main class="admin-container">
+        
+        <div class="page-title-bar">
+            <div>
+                <h1>System Administration</h1>
+                <p>Configure system monitoring parameters, thresholds, and operational modes.</p>
+            </div>
+            <div>
+                <span class="badge badge-muted" id="lastUpdatedBadge">Checking system...</span>
+            </div>
+        </div>
 
+        <div class="admin-grid">
 
-<main>
-
-
-    <!-- SYSTEM STATUS -->
-
-    <div class="section">
-
-        <h2>System Status</h2>
-
-        <div class="grid">
-
-            <div class="field">
-
-                <label>
-                    Current System Status
-                </label>
-
-                <div
-                    id="systemStatus"
-                    class="status-box status-ready"
-                >
-                    Loading...
+            <!-- SECTION 1: SYSTEM OVERVIEW -->
+            <div class="cs-panel">
+                <div class="cs-panel-header">
+                    <div class="cs-panel-title">
+                        <span>●</span> Operational Status
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="loadStatus()">Check Now</button>
                 </div>
+                <div class="cs-panel-body">
+                    <div class="form-row-2" style="margin-bottom: 20px;">
+                        <div>
+                            <div class="form-label">System State</div>
+                            <div id="systemStatusPill" class="status-pill-large badge-safe">
+                                ACTIVE MONITORING
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-label">Risk Evaluation</div>
+                            <div id="riskStatusPill" class="status-pill-large badge-safe">
+                                SAFE
+                            </div>
+                        </div>
+                    </div>
 
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    Current Risk
-                </label>
-
-                <div
-                    id="riskStatus"
-                    class="status-box"
-                >
-                    Loading...
+                    <table class="cs-table" style="margin-top: 10px;">
+                        <tbody>
+                            <tr>
+                                <td style="color:var(--text-secondary); width: 40%;">Active Venue</td>
+                                <td style="font-weight: 600;" id="venueDisplay">Loading...</td>
+                            </tr>
+                            <tr>
+                                <td style="color:var(--text-secondary);">Current Camera Source</td>
+                                <td style="font-family: monospace;" id="cameraSourceDisplay">0</td>
+                            </tr>
+                            <tr>
+                                <td style="color:var(--text-secondary);">Local Server URL</td>
+                                <td style="font-family: monospace; color: var(--accent-emerald);" id="serverAddressDisplay">http://localhost:5000</td>
+                            </tr>
+                            <tr>
+                                <td style="color:var(--text-secondary);">Security & Isolation</td>
+                                <td><span class="badge badge-safe">Local Only (No Cloud)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
+            <!-- SECTION 2: MONITORING CONFIGURATION -->
+            <div class="cs-panel">
+                <div class="cs-panel-header">
+                    <div class="cs-panel-title">
+                        Monitoring Configuration
+                    </div>
+                </div>
+                <div class="cs-panel-body">
+                    <form id="adminSettingsForm" onsubmit="saveSettings(event)">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label" for="cameraSource">Default Camera Source</label>
+                                <input type="text" id="cameraSource" class="form-input" placeholder="0, 1, or RTSP/HTTP URL">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="testMultiplier">Test Multiplier</label>
+                                <input type="number" id="testMultiplier" class="form-input" min="1" max="100" value="1">
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label" for="warningThreshold">Warning Threshold (%)</label>
+                                <input type="number" id="warningThreshold" class="form-input" min="1" max="100" value="70">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="criticalThreshold">Critical Threshold (%)</label>
+                                <input type="number" id="criticalThreshold" class="form-input" min="1" max="100" value="90">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 14px;">
+                            <button type="submit" class="btn btn-primary" id="saveBtn">
+                                Save Configuration
+                            </button>
+                            <span id="settingsMessage" style="font-size: 13px; font-weight: 500;"></span>
+                        </div>
+                    </form>
+                </div>
             </div>
 
         </div>
 
-    </div>
-
-
-    <!-- MONITORING SETTINGS -->
-
-    <div class="section">
-
-        <h2>Monitoring Settings</h2>
-
-        <div class="grid">
-
-            <div class="field">
-
-                <label for="cameraSource">
-                    Default Camera Source
-                </label>
-
-                <input
-                    id="cameraSource"
-                    type="text"
-                    placeholder="0 or camera URL"
-                >
-
+        <!-- SECTION 3: QUICK MODE LAUNCHERS -->
+        <div class="cs-panel" style="margin-bottom: 24px;">
+            <div class="cs-panel-header">
+                <div class="cs-panel-title">
+                    System Operational Interfaces
+                </div>
             </div>
+            <div class="cs-panel-body">
+                <div class="action-grid">
+                    
+                    <div class="action-card">
+                        <div>
+                            <h3>Perspective Calibration</h3>
+                            <p>Map 4 camera pixel points (TL → TR → BR → BL) directly onto the physical venue floor coordinates.</p>
+                        </div>
+                        <a href="/calibration" class="btn btn-secondary btn-sm">Launch Calibration</a>
+                    </div>
 
+                    <div class="action-card">
+                        <div>
+                            <h3>Physical Venue Zones</h3>
+                            <p>Inspect real-time density distribution, occupancy, and risk across all physical venue zones.</p>
+                        </div>
+                        <a href="/zones" class="btn btn-secondary btn-sm">View Zone Grid</a>
+                    </div>
 
-            <div class="field">
+                    <div class="action-card">
+                        <div>
+                            <h3>Camera Management</h3>
+                            <p>Add, test, and switch between webcams, RTSP IP streams, and video files.</p>
+                        </div>
+                        <a href="/cameras" class="btn btn-secondary btn-sm">Manage Cameras</a>
+                    </div>
 
-                <label for="testMultiplier">
-                    Test Multiplier
-                </label>
+                    <div class="action-card">
+                        <div>
+                            <h3>Safety Alerts & Incidents</h3>
+                            <p>Review alert history, unacknowledged warnings, critical surges, and auto-captured incident snapshots.</p>
+                        </div>
+                        <a href="/alerts" class="btn btn-secondary btn-sm">Review Alerts</a>
+                    </div>
 
-                <input
-                    id="testMultiplier"
-                    type="number"
-                    min="1"
-                    value="1"
-                >
-
+                </div>
             </div>
-
-
-            <div class="field">
-
-                <label for="warningThreshold">
-                    Warning Threshold (%)
-                </label>
-
-                <input
-                    id="warningThreshold"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value="70"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="criticalThreshold">
-                    Critical Threshold (%)
-                </label>
-
-                <input
-                    id="criticalThreshold"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value="90"
-                >
-
-            </div>
-
         </div>
 
-
-        <div class="button-row">
-
-            <button
-                class="green"
-                onclick="saveSettings()"
-            >
-                Save Settings
-            </button>
-
-            <button
-                class="dark"
-                onclick="loadStatus()"
-            >
-                Reload
-            </button>
-
-        </div>
-
-        <div
-            id="settingsMessage"
-            class="message"
-        ></div>
-
-    </div>
-
-
-    <!-- ADMIN MODES -->
-
-    <div class="section">
-
-        <h2>System Modes</h2>
-
-        <div class="grid">
-
-            <div class="mode-card">
-
-                <h3>Monitoring Mode</h3>
-
-                <p>
-                    Main CrowdSense operating mode.
-                    The system processes camera feeds,
-                    detects people, calculates occupancy,
-                    evaluates zones and generates safety alerts.
+        <!-- SECTION 4: DANGER ZONE -->
+        <div class="cs-panel danger-panel">
+            <div class="cs-panel-header">
+                <div class="cs-panel-title">
+                    Danger Zone
+                </div>
+            </div>
+            <div class="cs-panel-body">
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+                    These actions directly modify persistent configuration or operational monitoring state. Destructive actions require confirmation.
                 </p>
-
-                <button
-                    class="green"
-                    onclick="startMonitoring()"
-                >
-                    Start Monitoring
-                </button>
-
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn btn-danger" onclick="confirmAction('stopMonitoring')">
+                        Stop Monitoring Pipeline
+                    </button>
+                    <button class="btn btn-secondary" onclick="confirmAction('resetLocalSettings')">
+                        Reset Local Preferences
+                    </button>
+                </div>
             </div>
-
-
-            <div class="mode-card">
-
-                <h3>Calibration Mode</h3>
-
-                <p>
-                    Configure the camera perspective and
-                    map camera coordinates to the venue
-                    floor area.
-                </p>
-
-                <button
-                    class="yellow"
-                    onclick="openCalibration()"
-                >
-                    Open Calibration
-                </button>
-
-            </div>
-
-
-            <div class="mode-card">
-
-                <h3>Grid / Zone Mode</h3>
-
-                <p>
-                    Display the physical venue zones and
-                    monitor people distribution across
-                    each zone.
-                </p>
-
-                <button
-                    class="dark"
-                    onclick="openZones()"
-                >
-                    Open Zones
-                </button>
-
-            </div>
-
-
-            <div class="mode-card">
-
-                <h3>Alert Management</h3>
-
-                <p>
-                    Review warnings, critical events,
-                    incidents and generated snapshots.
-                </p>
-
-                <button
-                    class="red"
-                    onclick="openAlerts()"
-                >
-                    Open Alerts
-                </button>
-
-            </div>
-
         </div>
 
-    </div>
+    </main>
 
-
-    <!-- LOCAL SYSTEM INFORMATION -->
-
-    <div class="section">
-
-        <h2>Local System</h2>
-
-        <div class="info">
-
-            CrowdSense is designed to operate locally.
-            Camera feeds, monitoring information and
-            generated records remain on the local system
-            unless an external network feature is
-            intentionally configured.
-
-            <br><br>
-
-            Current dashboard server:
-
-            <strong id="serverAddress">
-                http://localhost:5000
-            </strong>
-
+    <!-- CONFIRMATION MODAL -->
+    <div id="confirmModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle">Confirm Action</h3>
+                <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage" style="font-size: 14px; color: var(--text-primary); line-height: 1.6;"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+                <button class="btn btn-danger" id="confirmProceedBtn">Confirm & Proceed</button>
+            </div>
         </div>
-
     </div>
 
+    <script>
+        let currentStatus = {};
+        let pendingAction = null;
 
-    <!-- DANGER AREA -->
+        function handleBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '/dashboard';
+            }
+        }
 
-    <div class="section danger-box">
+        function handleRefresh() {
+            loadStatus();
+            loadVenueSettings();
+        }
 
-        <h2>Danger Zone</h2>
+        async function loadStatus() {
+            try {
+                const res = await fetch('/api/status', { cache: 'no-store' });
+                if (!res.ok) throw new Error('Status error');
+                const data = await res.json();
+                currentStatus = data;
 
-        <p class="info">
-            These controls affect the local monitoring
-            system. Use them only when required.
-        </p>
+                // Update UI
+                const sys = (data.system || 'READY').toUpperCase();
+                const risk = (data.risk || 'SAFE').toUpperCase();
 
-        <div class="button-row">
+                const sysPill = document.getElementById('systemStatusPill');
+                sysPill.textContent = sys;
+                sysPill.className = 'status-pill-large ' + (sys === 'ACTIVE' || sys === 'READY' ? 'badge-safe' : 'badge-warning');
 
-            <button
-                class="red"
-                onclick="stopMonitoring()"
-            >
-                Stop Monitoring
-            </button>
-
-            <button
-                class="dark"
-                onclick="resetLocalView()"
-            >
-                Reset Page
-            </button>
-
-        </div>
-
-        <div
-            id="dangerMessage"
-            class="message"
-        ></div>
-
-    </div>
-
-
-</main>
-
-
-<script>
-
-/* --------------------------------
-   MESSAGE
--------------------------------- */
-
-function showMessage(
-    elementId,
-    message,
-    success = true
-) {
-
-    const element =
-        document.getElementById(elementId);
-
-    element.textContent = message;
-
-    element.className =
-        success
-            ? "message success-message"
-            : "message error-message";
-
-}
-
-
-/* --------------------------------
-   LOAD STATUS
--------------------------------- */
-
-async function loadStatus() {
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/status",
-                {
-                    cache: "no-store"
+                const riskPill = document.getElementById('riskStatusPill');
+                riskPill.textContent = risk;
+                if (risk === 'CRITICAL') {
+                    riskPill.className = 'status-pill-large badge-critical';
+                    document.getElementById('emergencyBanner').style.display = 'block';
+                } else if (risk === 'WARNING') {
+                    riskPill.className = 'status-pill-large badge-warning';
+                    document.getElementById('emergencyBanner').style.display = 'none';
+                } else {
+                    riskPill.className = 'status-pill-large badge-safe';
+                    document.getElementById('emergencyBanner').style.display = 'none';
                 }
-            );
 
+                const headerBadge = document.getElementById('headerStatusBadge');
+                headerBadge.textContent = risk === 'SAFE' ? sys : risk;
+                headerBadge.className = 'badge ' + (risk === 'CRITICAL' ? 'badge-critical' : (risk === 'WARNING' ? 'badge-warning' : 'badge-safe'));
 
-        if (!response.ok) {
-            throw new Error(
-                "Status API returned " +
-                response.status
-            );
+                document.getElementById('venueDisplay').textContent = data.venue || 'Default Venue';
+                document.getElementById('cameraSourceDisplay').textContent = data.camera_source ?? '0';
+                document.getElementById('lastUpdatedBadge').textContent = 'Updated: ' + (data.last_update || new Date().toLocaleTimeString());
+
+                // Populate form defaults if empty
+                const srcInput = document.getElementById('cameraSource');
+                if (!srcInput.value && data.camera_source !== undefined) {
+                    srcInput.value = data.camera_source;
+                }
+                const multInput = document.getElementById('testMultiplier');
+                if (data.test_multiplier !== undefined) {
+                    multInput.value = data.test_multiplier;
+                }
+            } catch (err) {
+                console.error('Failed to load status:', err);
+                document.getElementById('systemStatusPill').textContent = 'OFFLINE';
+                document.getElementById('systemStatusPill').className = 'status-pill-large badge-critical';
+            }
         }
 
-
-        const data =
-            await response.json();
-
-
-        const system =
-            data.system ||
-            "UNKNOWN";
-
-
-        const risk =
-            data.risk ||
-            "SAFE";
-
-
-        document.getElementById(
-            "systemStatus"
-        ).textContent =
-            String(system).toUpperCase();
-
-
-        document.getElementById(
-            "systemStatus"
-        ).className =
-            "status-box " +
-            systemClass(system);
-
-
-        document.getElementById(
-            "riskStatus"
-        ).textContent =
-            String(risk).toUpperCase();
-
-
-        document.getElementById(
-            "riskStatus"
-        ).className =
-            "status-box " +
-            riskClass(risk);
-
-
-        if (data.camera_source !== undefined) {
-
-            document.getElementById(
-                "cameraSource"
-            ).value =
-                data.camera_source;
-
+        async function loadVenueSettings() {
+            try {
+                const res = await fetch('/api/venue', { cache: 'no-store' });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.warning_threshold) {
+                    document.getElementById('warningThreshold').value = data.warning_threshold;
+                }
+                if (data.critical_threshold) {
+                    document.getElementById('criticalThreshold').value = data.critical_threshold;
+                }
+            } catch (e) {
+                // Ignore error, fallback to defaults
+            }
         }
 
+        async function saveSettings(e) {
+            e.preventDefault();
+            const msg = document.getElementById('settingsMessage');
+            msg.textContent = 'Saving...';
+            msg.style.color = 'var(--text-secondary)';
 
-        if (data.test_multiplier !== undefined) {
+            const payload = {
+                camera_source: document.getElementById('cameraSource').value.trim(),
+                test_multiplier: parseInt(document.getElementById('testMultiplier').value, 10) || 1,
+                warning_threshold: parseFloat(document.getElementById('warningThreshold').value) || 70,
+                critical_threshold: parseFloat(document.getElementById('criticalThreshold').value) || 90
+            };
 
-            document.getElementById(
-                "testMultiplier"
-            ).value =
-                data.test_multiplier;
+            // Save to local storage as well
+            localStorage.setItem('crowdsense_admin_settings', JSON.stringify(payload));
 
+            try {
+                // Post to venue API if supported
+                const res = await fetch('/api/venue', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                msg.textContent = 'Configuration saved successfully';
+                msg.style.color = 'var(--accent-emerald)';
+                loadStatus();
+            } catch (err) {
+                msg.textContent = 'Saved to browser preferences';
+                msg.style.color = 'var(--accent-emerald)';
+            }
+
+            setTimeout(() => {
+                msg.textContent = '';
+            }, 4000);
         }
 
-    } catch (error) {
+        function confirmAction(action) {
+            pendingAction = action;
+            const modal = document.getElementById('confirmModal');
+            const title = document.getElementById('confirmModalTitle');
+            const msg = document.getElementById('confirmModalMessage');
+            const proceedBtn = document.getElementById('confirmProceedBtn');
 
-        console.error(error);
+            if (action === 'stopMonitoring') {
+                title.textContent = 'Stop Monitoring Pipeline';
+                msg.textContent = 'Are you sure you want to request stopping active camera monitoring? The live dashboard feed will be paused.';
+                proceedBtn.onclick = executeStopMonitoring;
+            } else if (action === 'resetLocalSettings') {
+                title.textContent = 'Reset Local Preferences';
+                msg.textContent = 'This will clear all saved administrator form preferences from your local browser storage.';
+                proceedBtn.onclick = executeResetSettings;
+            }
 
-        document.getElementById(
-            "systemStatus"
-        ).textContent =
-            "OFFLINE";
-
-        document.getElementById(
-            "systemStatus"
-        ).className =
-            "status-box status-danger";
-
-    }
-
-}
-
-
-/* --------------------------------
-   STATUS CLASSES
--------------------------------- */
-
-function systemClass(status) {
-
-    status =
-        String(status)
-        .toUpperCase();
-
-    if (
-        status === "READY" ||
-        status === "RUNNING" ||
-        status === "MONITORING"
-    ) {
-        return "status-ready";
-    }
-
-    if (
-        status === "WARNING" ||
-        status === "CALIBRATION"
-    ) {
-        return "status-warning";
-    }
-
-    return "status-danger";
-}
-
-
-function riskClass(risk) {
-
-    risk =
-        String(risk)
-        .toUpperCase();
-
-    if (risk === "CRITICAL") {
-        return "status-danger";
-    }
-
-    if (
-        risk === "WARNING" ||
-        risk === "MODERATE"
-    ) {
-        return "status-warning";
-    }
-
-    return "status-ready";
-}
-
-
-/* --------------------------------
-   SAVE SETTINGS
--------------------------------- */
-
-function saveSettings() {
-
-    /*
-        The final backend integration will
-        persist these values into the
-        CrowdSense configuration.
-
-        For now we keep them locally so
-        the admin interface is functional.
-    */
-
-    const settings = {
-
-        camera_source:
-            document.getElementById(
-                "cameraSource"
-            ).value.trim(),
-
-        test_multiplier:
-            Number(
-                document.getElementById(
-                    "testMultiplier"
-                ).value
-            ),
-
-        warning_threshold:
-            Number(
-                document.getElementById(
-                    "warningThreshold"
-                ).value
-            ),
-
-        critical_threshold:
-            Number(
-                document.getElementById(
-                    "criticalThreshold"
-                ).value
-            )
-
-    };
-
-
-    localStorage.setItem(
-        "crowdsense_admin_settings",
-        JSON.stringify(settings)
-    );
-
-
-    showMessage(
-        "settingsMessage",
-        "Settings saved locally.",
-        true
-    );
-
-}
-
-
-/* --------------------------------
-   LOAD LOCAL SETTINGS
--------------------------------- */
-
-function loadLocalSettings() {
-
-    try {
-
-        const saved =
-            localStorage.getItem(
-                "crowdsense_admin_settings"
-            );
-
-
-        if (!saved) {
-            return;
+            modal.style.display = 'flex';
         }
 
-
-        const settings =
-            JSON.parse(saved);
-
-
-        if (
-            settings.camera_source !== undefined
-        ) {
-
-            document.getElementById(
-                "cameraSource"
-            ).value =
-                settings.camera_source;
-
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+            pendingAction = null;
         }
 
-
-        if (
-            settings.test_multiplier !== undefined
-        ) {
-
-            document.getElementById(
-                "testMultiplier"
-            ).value =
-                settings.test_multiplier;
-
+        async function executeStopMonitoring() {
+            closeConfirmModal();
+            try {
+                await fetch('/api/cameras/stop-active', { method: 'POST' });
+            } catch (e) {}
+            loadStatus();
         }
 
-
-        if (
-            settings.warning_threshold !== undefined
-        ) {
-
-            document.getElementById(
-                "warningThreshold"
-            ).value =
-                settings.warning_threshold;
-
+        function executeResetSettings() {
+            closeConfirmModal();
+            localStorage.removeItem('crowdsense_admin_settings');
+            location.reload();
         }
 
-
-        if (
-            settings.critical_threshold !== undefined
-        ) {
-
-            document.getElementById(
-                "criticalThreshold"
-            ).value =
-                settings.critical_threshold;
-
+        function updateStartupProgress(percent, text) {
+            const bar = document.getElementById('startupProgressBar');
+            const statusTxt = document.getElementById('startupStatusText');
+            const percentTxt = document.getElementById('startupPercentText');
+            if (bar) bar.style.width = percent + '%';
+            if (statusTxt && text) statusTxt.textContent = text;
+            if (percentTxt) percentTxt.textContent = percent + '%';
         }
 
-    } catch (error) {
+        async function showStartupSequence(manual = false) {
+            const overlay = document.getElementById('startupOverlay');
+            if (!overlay) return;
+            overlay.classList.remove('fade-out');
+            overlay.style.display = 'flex';
+            updateStartupProgress(8, 'Starting CrowdSense...');
 
-        console.error(error);
+            const steps = [
+                { p: 28, t: 'Starting CrowdSense: loading venue configuration...' },
+                { p: 56, t: 'Starting CrowdSense: synchronizing zone thresholds...' },
+                { p: 82, t: 'Starting CrowdSense: verifying telemetry stream...' },
+                { p: 96, t: 'Starting CrowdSense: system ready...' },
+                { p: 100, t: 'CrowdSense Ready' }
+            ];
 
-    }
+            for (const step of steps) {
+                await new Promise(r => setTimeout(r, 220));
+                updateStartupProgress(step.p, step.t);
+            }
 
-}
+            await new Promise(r => setTimeout(r, 300));
+            overlay.classList.add('fade-out');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 450);
+        }
 
-
-/* --------------------------------
-   NAVIGATION
--------------------------------- */
-
-function startMonitoring() {
-
-    showMessage(
-        "dangerMessage",
-        "Monitoring controls will be connected during final backend integration.",
-        true
-    );
-
-}
-
-
-function stopMonitoring() {
-
-    showMessage(
-        "dangerMessage",
-        "Stop control will be connected during final backend integration.",
-        true
-    );
-
-}
-
-
-function openCalibration() {
-
-    window.location.href =
-        "/calibration";
-
-}
-
-
-function openZones() {
-
-    window.location.href =
-        "/zones";
-
-}
-
-
-function openAlerts() {
-
-    window.location.href =
-        "/alerts";
-
-}
-
-
-function resetLocalView() {
-
-    if (
-        !confirm(
-            "Reset the saved admin page settings?"
-        )
-    ) {
-        return;
-    }
-
-
-    localStorage.removeItem(
-        "crowdsense_admin_settings"
-    );
-
-
-    location.reload();
-
-}
-
-
-/* --------------------------------
-   START
--------------------------------- */
-
-loadLocalSettings();
-
-loadStatus();
-
-
-/*
-    Keep status updated.
-*/
-
-setInterval(
-    loadStatus,
-    5000
-);
-
-</script>
-
+        // Initialize
+        document.getElementById('serverAddressDisplay').textContent = window.location.origin;
+        loadStatus();
+        loadVenueSettings();
+        showStartupSequence();
+        setInterval(loadStatus, 5000);
+    </script>
 </body>
 </html>

@@ -1,5 +1,7 @@
 import csv
+import io
 import os
+import re
 import time
 from datetime import datetime
 
@@ -16,7 +18,9 @@ class AlertManager:
 
     def __init__(
         self,
-        cooldown_seconds=8
+        cooldown_seconds=8,
+        venue_config=None,
+        telegram_service=None
     ):
 
         self.cooldown_seconds = (
@@ -24,6 +28,16 @@ class AlertManager:
         )
 
         self.last_alert_time = {}
+        self.venue_config = venue_config
+
+        if telegram_service is None:
+            try:
+                from telegram_service import get_telegram_notifier
+                self.telegram_service = get_telegram_notifier()
+            except Exception:
+                self.telegram_service = None
+        else:
+            self.telegram_service = telegram_service
 
         os.makedirs(
             ALERT_FOLDER,
@@ -31,6 +45,25 @@ class AlertManager:
         )
 
         self._create_file()
+
+    def set_telegram_service(self, telegram_service):
+        self.telegram_service = telegram_service
+
+    def set_venue_config(self, venue_config):
+        self.venue_config = venue_config
+
+    def _get_venue_name(self):
+        if self.venue_config and hasattr(self.venue_config, "name") and self.venue_config.name:
+            return str(self.venue_config.name)
+        try:
+            cfg_file = "data/venue_config.json"
+            if os.path.isfile(cfg_file):
+                import json
+                with open(cfg_file, "r", encoding="utf-8") as f:
+                    return json.load(f).get("name") or "CrowdSense Venue"
+        except Exception:
+            pass
+        return "CrowdSense Venue" 
 
     # =========================================================
     # CREATE ALERT FILE
@@ -112,7 +145,7 @@ class AlertManager:
                 migrate=False
             )
 
-        existing_ids = set()
+        max_num = 0
 
         for alert in alerts:
 
@@ -125,20 +158,22 @@ class AlertManager:
 
             if alert_id:
 
-                existing_ids.add(
-                    alert_id
-                )
+                match = re.search(r'\d+', alert_id)
 
-        number = 1
+                if match:
 
-        while (
-            f"ALERT{number}"
-            in existing_ids
-        ):
+                    try:
 
-            number += 1
+                        num = int(match.group())
 
-        return f"ALERT{number}"
+                        if num > max_num:
+
+                            max_num = num
+
+                    except Exception:
+                        pass
+
+        return f"ALERT{max_num + 1}"
 
     # =========================================================
     # MIGRATE OLD ALERT FILE
@@ -463,6 +498,25 @@ class AlertManager:
             f"{people} people"
         )
 
+        # -----------------------------------------------------
+        # TELEGRAM REAL-TIME EMERGENCY NOTIFICATION
+        # -----------------------------------------------------
+        if self.telegram_service is not None and risk == "CRITICAL":
+            try:
+                venue_name = self._get_venue_name()
+                self.telegram_service.notify_critical_transition(
+                    zone_id=zone_id,
+                    risk=risk,
+                    people=people,
+                    density=density,
+                    venue_name=venue_name,
+                    message=message,
+                    special_type=special_type,
+                    timestamp=timestamp
+                )
+            except Exception as tg_err:
+                print(f"[AlertManager] Telegram notification error: {tg_err}")
+
         # IMPORTANT:
         # Do NOT create an incident here.
         #
@@ -499,6 +553,16 @@ class AlertManager:
                     "SAFE"
                 )
             ).upper()
+
+            # Track non-critical zone status for rising-edge transition detection
+            if self.telegram_service is not None and risk != "CRITICAL":
+                try:
+                    self.telegram_service.update_zone_status(
+                        zone.get("id", "UNKNOWN"),
+                        risk
+                    )
+                except Exception:
+                    pass
 
             if risk not in [
                 "WARNING",
@@ -542,6 +606,7 @@ class AlertManager:
         return alerts
 
     # =========================================================
+    # =========================================================
     # READ ALERT HISTORY
     # =========================================================
 
@@ -566,56 +631,59 @@ class AlertManager:
 
             with open(
                 ALERT_FILE,
-                "r",
-                newline="",
-                encoding="utf-8"
-            ) as file:
+                "rb"
+            ) as binary_file:
 
-                reader = csv.DictReader(
-                    file
-                )
+                raw_bytes = binary_file.read().replace(b"\x00", b"")
+                raw_text = raw_bytes.decode("utf-8", errors="ignore")
 
-                for row in reader:
+            reader = csv.DictReader(
+                io.StringIO(raw_text)
+            )
 
-                    try:
+            for row in reader:
 
-                        row["people"] = int(
-                            float(
-                                row.get(
-                                    "people",
-                                    0
-                                )
-                            )
-                        )
+                try:
 
-                    except Exception:
-
-                        row["people"] = 0
-
-                    try:
-
-                        row["density"] = float(
+                    row["people"] = int(
+                        float(
                             row.get(
-                                "density",
+                                "people",
                                 0
                             )
                         )
-
-                    except Exception:
-
-                        row["density"] = 0.0
-
-                    if not row.get(
-                        "status"
-                    ):
-
-                        row["status"] = (
-                            "OPEN"
-                        )
-
-                    alerts.append(
-                        row
                     )
+
+                except Exception:
+
+                    row["people"] = 0
+
+                try:
+
+                    row["density"] = float(
+                        row.get(
+                            "density",
+                            0
+                        )
+                    )
+
+                except Exception:
+
+                    row["density"] = 0.0
+
+                status = str(
+                    row.get("status", "OPEN") or "OPEN"
+                ).strip().upper()
+
+                row["status"] = (
+                    status
+                    if status in ("OPEN", "ACKNOWLEDGED")
+                    else "OPEN"
+                )
+
+                alerts.append(
+                    row
+                )
 
         except Exception as error:
 
@@ -641,20 +709,22 @@ class AlertManager:
 
             return False
 
+        target_id = str(alert_id).strip().upper()
+
         alerts = self.get_alerts()
 
         found = False
 
         for alert in alerts:
 
-            if str(
+            cur_id = str(
                 alert.get(
                     "alert_id",
                     ""
                 )
-            ) == str(
-                alert_id
-            ):
+            ).strip().upper()
+
+            if cur_id == target_id:
 
                 alert["status"] = (
                     "ACKNOWLEDGED"
@@ -662,11 +732,45 @@ class AlertManager:
 
                 found = True
 
-                break
-
         if not found:
 
             return False
+
+        return self._save_all_alerts(alerts)
+
+    # =========================================================
+    # ACKNOWLEDGE ALL ALERTS
+    # =========================================================
+
+    def acknowledge_all(self):
+
+        alerts = self.get_alerts()
+
+        count = 0
+
+        for alert in alerts:
+
+            status = str(
+                alert.get("status", "OPEN")
+            ).strip().upper()
+
+            if status == "OPEN":
+
+                alert["status"] = "ACKNOWLEDGED"
+
+                count += 1
+
+        if count > 0:
+
+            self._save_all_alerts(alerts)
+
+        return count
+
+    # =========================================================
+    # SAVE ALL ALERTS HELPER
+    # =========================================================
+
+    def _save_all_alerts(self, alerts):
 
         try:
 
@@ -749,17 +853,18 @@ class AlertManager:
                         )
                     ])
 
-            print(
-                f"Alert acknowledged: "
-                f"{alert_id}"
-            )
+                file.flush()
+                try:
+                    os.fsync(file.fileno())
+                except Exception:
+                    pass
 
             return True
 
         except Exception as error:
 
             print(
-                f"Alert acknowledgement error: "
+                f"Alert save error: "
                 f"{error}"
             )
 

@@ -1,0 +1,742 @@
+/* ==========================================================================
+   CrowdSense Design System - Shared Common Stylesheet
+   Palette:
+     Main background: #0a0d14
+     Card background: #131926
+     Elevated panels: #182030
+     Primary text:    #f1f5f9
+     Secondary text:  #94a3b8
+     Primary accent:  #10b981
+     Warning:         #f59e0b
+     Critical:        #ef4444
+     Surge:           #a855f7
+     Borders:         #1e293b / rgba(255, 255, 255, 0.08)
+   ========================================================================== */
+
+:root {
+    --bg-main: #0a0d14;
+    --bg-card: #131926;
+    --bg-elevated: #182030;
+    --bg-input: #0e1422;
+    --bg-hover: #1e293b;
+    
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    --accent-emerald: #10b981;
+    --accent-emerald-glow: rgba(16, 185, 129, 0.15);
+    --accent-emerald-border: rgba(16, 185, 129, 0.35);
+    
+    --status-warning: #f59e0b;
+    --status-warning-glow: rgba(245, 158, 11, 0.15);
+    --status-warning-border: rgba(245, 158, 11, 0.35);
+    
+    --status-critical: #ef4444;
+    --status-critical-glow: rgba(239, 68, 68, 0.15);
+    --status-critical-border: rgba(239, 68, 68, 0.35);
+    
+    --status-surge: #a855f7;
+    --status-surge-glow: rgba(168, 85, 247, 0.15);
+    
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-light: rgba(255, 255, 255, 0.14);
+    --border-panel: #1e293b;
+    
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+    --shadow-elevated: 0 8px 30px rgba(0, 0, 0, 0.5);
+    --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Header & Navigation
+   ========================================================================== */
+header.cs-header {
+    background: #0d121c;
+    border-bottom: 1px solid var(--border-panel);
+    padding: 0 28px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.cs-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.cs-brand-icon {
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0a0d14;
+    font-weight: 800;
+    font-size: 18px;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+}
+
+.cs-brand-text {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+}
+
+.cs-brand-text span {
+    color: var(--accent-emerald);
+}
+
+.cs-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cs-nav-bar {
+    background: #0f1523;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 6px;
+    height: 48px;
+    position: sticky;
+    top: 64px;
+    z-index: 99;
+}
+
+.cs-nav-bar::-webkit-scrollbar {
+    display: none;
+}
+
+.cs-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: var(--transition);
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+
+.cs-nav-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.cs-nav-link.active {
+    color: var(--accent-emerald);
+    background: var(--accent-emerald-glow);
+    border-color: var(--accent-emerald-border);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid transparent;
+    text-decoration: none;
+    font-family: inherit;
+    line-height: 1;
+}
+
+.btn-primary {
+    background: var(--accent-emerald);
+    color: #0a0d14;
+    border-color: var(--accent-emerald);
+}
+
+.btn-primary:hover {
+    background: #059669;
+    border-color: #059669;
+}
+
+.btn-secondary {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-panel);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-light);
+}
+
+.btn-warning {
+    background: var(--status-warning-glow);
+    color: var(--status-warning);
+    border-color: var(--status-warning-border);
+}
+
+.btn-warning:hover {
+    background: var(--status-warning);
+    color: #0a0d14;
+}
+
+.btn-danger {
+    background: var(--status-critical-glow);
+    color: var(--status-critical);
+    border-color: var(--status-critical-border);
+}
+
+.btn-danger:hover {
+    background: var(--status-critical);
+    color: #ffffff;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* Back and Refresh Buttons */
+.btn-nav-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-panel);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.btn-nav-action:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    border-color: var(--border-light);
+}
+
+/* ==========================================================================
+   Badges
+   ========================================================================== */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.badge-safe {
+    background: var(--accent-emerald-glow);
+    color: var(--accent-emerald);
+    border: 1px solid var(--accent-emerald-border);
+}
+
+.badge-warning {
+    background: var(--status-warning-glow);
+    color: var(--status-warning);
+    border: 1px solid var(--status-warning-border);
+}
+
+.badge-critical {
+    background: var(--status-critical-glow);
+    color: var(--status-critical);
+    border: 1px solid var(--status-critical-border);
+}
+
+.badge-surge {
+    background: var(--status-surge-glow);
+    color: var(--status-surge);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+.badge-muted {
+    background: rgba(148, 163, 184, 0.1);
+    color: var(--text-secondary);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* ==========================================================================
+   Cards and Panels
+   ========================================================================== */
+.cs-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+    transition: var(--transition);
+}
+
+.cs-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+}
+
+.cs-panel-header {
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cs-panel-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cs-panel-body {
+    padding: 20px;
+}
+
+/* ==========================================================================
+   Form Controls
+   ========================================================================== */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border-panel);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    padding: 9px 13px;
+    font-size: 13px;
+    font-family: inherit;
+    transition: var(--transition);
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: var(--accent-emerald);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+/* ==========================================================================
+   Emergency Banner
+   ========================================================================== */
+.emergency-banner {
+    display: none;
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.35) 50%, rgba(239, 68, 68, 0.2) 100%);
+    border-bottom: 1px solid var(--status-critical);
+    color: #fca5a5;
+    padding: 12px 28px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    animation: bannerPulse 2s infinite ease-in-out;
+}
+
+@keyframes bannerPulse {
+    0%, 100% { opacity: 0.9; }
+    50% { opacity: 1; }
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+.cs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.cs-table th {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-align: left;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border-panel);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cs-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+}
+
+.cs-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* ==========================================================================
+   Modals
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 13, 20, 0.85);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border-panel);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 520px;
+    box-shadow: var(--shadow-elevated);
+    overflow: hidden;
+}
+
+.modal-header {
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 22px;
+}
+
+.modal-footer {
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--border-subtle);
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+
+
+/* ==========================================================================
+   EXTENDED UTILITY CLASSES  (appended by Stage-6 redesign)
+   Used by all redesigned pages. Complement the cs-* classes above.
+   ========================================================================== */
+
+/* Alias shorthand variable names used in new pages */
+:root {
+    --accent-warning:  var(--status-warning);
+    --accent-critical: var(--status-critical);
+    --accent-surge:    var(--status-surge);
+    --border-color:    var(--border-panel);
+}
+
+/* .app-header ---------------------------------------------------------------- */
+.app-header {
+    background: #0d121c;
+    border-bottom: 1px solid var(--border-panel);
+    padding: 0 28px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    gap: 16px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0a0d14;
+    font-weight: 800;
+    font-size: 18px;
+    box-shadow: 0 2px 10px rgba(16,185,129,0.3);
+}
+
+.logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+}
+
+.logo-text span { color: var(--accent-emerald); }
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* .app-nav ------------------------------------------------------------------- */
+.app-nav {
+    background: #0f1523;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 4px;
+    height: 48px;
+    position: sticky;
+    top: 64px;
+    z-index: 99;
+}
+.app-nav::-webkit-scrollbar { display: none; }
+.app-nav a {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: var(--transition);
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+.app-nav a:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+.app-nav a.active {
+    color: var(--accent-emerald);
+    background: var(--accent-emerald-glow);
+    border-color: var(--accent-emerald-border);
+    font-weight: 600;
+}
+
+/* Page container */
+.page-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 28px 28px 40px;
+}
+
+/* Page header row */
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+.page-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+}
+.page-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Generic .card ------------------------------------------------------------ */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-panel);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+.card .card-header {
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.card .card-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.card .card-value {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--accent-emerald);
+    margin-bottom: 2px;
+    line-height: 1.1;
+}
+.card .card-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* KPI grid cards get inner padding */
+.kpi-grid > .card { padding: 18px 20px; }
+
+/* KPI grid ----------------------------------------------------------------- */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+@media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px)  { .kpi-grid { grid-template-columns: 1fr; } }
+
+/* Value colour helpers */
+.value-emerald  { color: var(--accent-emerald)  !important; }
+.value-warning  { color: var(--accent-warning)  !important; }
+.value-critical { color: var(--accent-critical) !important; }
+.value-surge    { color: var(--accent-surge)    !important; }
+
+/* Extra badge variants */
+.badge-emerald {
+    background: var(--accent-emerald-glow);
+    color: var(--accent-emerald);
+    border: 1px solid var(--accent-emerald-border);
+}
+.badge-neutral {
+    background: rgba(100, 116, 139, 0.15);
+    color: var(--text-secondary);
+    border: 1px solid rgba(100, 116, 139, 0.25);
+}
+
+/* Data tables -------------------------------------------------------------- */
+.table-responsive { overflow-x: auto; }
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.data-table th {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-align: left;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border-panel);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+}
+.data-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+}
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Spacing / text helpers */
+.mb-3 { margin-bottom: 16px; }
+.mb-4 { margin-bottom: 24px; }
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted);     }
+
+/* Fade-in animation (shared by toast & modals) */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0);   }
+}

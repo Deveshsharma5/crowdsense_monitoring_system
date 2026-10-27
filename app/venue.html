@@ -1,1843 +1,595 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CrowdSense - Venue Configuration</title>
-
-
+    <link rel="stylesheet" href="/static/css/common.css">
     <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        .venue-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
         }
-
-
-        body {
-
-            background: #050505;
-
-            color: white;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            min-height: 100vh;
+        @media (max-width: 1024px) {
+            .venue-layout {
+                grid-template-columns: 1fr;
+            }
         }
-
-
-        header {
-
-            height: 72px;
-
-            background: #080808;
-
-            border-bottom:
-                1px solid #202020;
-
+        .shape-selector {
             display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            padding: 0 28px;
-        }
-
-
-        .logo {
-
-            display: flex;
-
-            align-items: center;
-
             gap: 12px;
+            margin-bottom: 20px;
         }
-
-
-        .logo-icon {
-
-            width: 38px;
-
-            height: 38px;
-
-            background: #00ff66;
-
-            color: #000;
-
-            border-radius: 8px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 20px;
-
-            font-weight: bold;
-        }
-
-
-        .logo-text {
-
-            font-size: 22px;
-
-            font-weight: 800;
-
-            letter-spacing: 1px;
-        }
-
-
-        .logo-text span {
-
-            color: #00ff66;
-        }
-
-
-        .back-button {
-
-            background: #111;
-
-            color: #aaa;
-
-            border: 1px solid #333;
-
-            padding: 9px 15px;
-
-            border-radius: 6px;
-
-            cursor: pointer;
-
-            font-size: 12px;
-        }
-
-
-        .back-button:hover {
-
-            color: white;
-
-            border-color: #00ff66;
-        }
-
-
-        main {
-
-            max-width: 1200px;
-
-            margin: auto;
-
-            padding: 28px;
-        }
-
-
-        .page-header {
-
-            margin-bottom: 22px;
-        }
-
-
-        .page-header h1 {
-
-            font-size: 27px;
-
-            margin-bottom: 5px;
-        }
-
-
-        .page-header p {
-
-            color: #777;
-
-            font-size: 13px;
-        }
-
-
-        .panel {
-
-            background: #0b0b0b;
-
-            border: 1px solid #202020;
-
-            border-radius: 9px;
-
-            padding: 22px;
-
-            margin-bottom: 18px;
-        }
-
-
-        .panel-title {
-
-            font-size: 16px;
-
-            font-weight: bold;
-
-            margin-bottom: 18px;
-
-            color: #00ff66;
-        }
-
-
-        .form-grid {
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, 1fr);
-
-            gap: 16px;
-        }
-
-
-        .form-group {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 7px;
-        }
-
-
-        .full {
-
-            grid-column: 1 / -1;
-        }
-
-
-        label {
-
-            color: #888;
-
-            font-size: 11px;
-
-            text-transform: uppercase;
-
-            letter-spacing: .5px;
-        }
-
-
-        input,
-        select {
-
-            width: 100%;
-
-            background: #050505;
-
-            color: white;
-
-            border: 1px solid #333;
-
-            border-radius: 5px;
-
-            padding: 11px;
-
-            outline: none;
-        }
-
-
-        input:focus,
-        select:focus {
-
-            border-color: #00ff66;
-        }
-
-
-        .shape-options {
-
-            display: flex;
-
-            gap: 10px;
-        }
-
-
-        .shape-button {
-
+        .shape-btn {
             flex: 1;
-
-            padding: 12px;
-
-            background: #111;
-
-            color: #888;
-
-            border: 1px solid #333;
-
-            border-radius: 6px;
-
-            cursor: pointer;
-
-            font-weight: bold;
-        }
-
-
-        .shape-button.active {
-
-            color: #00ff66;
-
-            border-color: #00ff66;
-
-            background: #102518;
-        }
-
-
-        .circle-fields {
-
-            display: none;
-        }
-
-
-        .circle-fields.active {
-
+            padding: 12px 16px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 13px;
             display: flex;
-
-            flex-direction: column;
-
-            gap: 7px;
-        }
-
-
-        .rectangle-fields {
-
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 16px;
-        }
-
-
-        .threshold-info {
-
-            color: #666;
-
-            font-size: 11px;
-
-            line-height: 1.6;
-
-            margin-top: 5px;
-        }
-
-
-        /* ====================================================
-           SPECIAL AREA
-        ===================================================== */
-
-        .special-area {
-
-            display: grid;
-
-            grid-template-columns:
-                1.2fr
-                1fr
-                1fr
-                1fr
-                1fr
-                auto;
-
-            gap: 8px;
-
-            margin-bottom: 9px;
-
-            align-items: stretch;
-        }
-
-
-        .special-area input {
-
-            min-width: 0;
-        }
-
-
-        .remove-area {
-
-            background: #250909;
-
-            color: #ff3333;
-
-            border: 1px solid #551515;
-
-            border-radius: 5px;
-
-            cursor: pointer;
-
-            padding: 0 12px;
-        }
-
-
-        .remove-area:hover {
-
-            background: #3a0d0d;
-
-            border-color: #ff3333;
-        }
-
-
-        .add-area {
-
-            background: #151515;
-
-            color: #aaa;
-
-            border: 1px solid #333;
-
-            padding: 9px 14px;
-
-            border-radius: 5px;
-
-            cursor: pointer;
-        }
-
-
-        .add-area:hover {
-
-            border-color: #00ff66;
-
-            color: white;
-        }
-
-
-        .floorplan-box {
-
-            border: 1px dashed #444;
-
-            padding: 20px;
-
-            border-radius: 7px;
-
-            text-align: center;
-
-            color: #777;
-        }
-
-
-        .floorplan-box input {
-
-            margin-top: 12px;
-
-            border: none;
-
-            padding: 0;
-        }
-
-
-        .buttons {
-
-            display: flex;
-
+            align-items: center;
+            justify-content: center;
             gap: 10px;
-
-            margin-top: 20px;
-        }
-
-
-        .primary {
-
-            background: #00ff66;
-
-            color: #000;
-
-            border: none;
-
-            padding: 11px 20px;
-
-            border-radius: 6px;
-
             cursor: pointer;
-
-            font-weight: bold;
+            transition: all 0.15s ease;
         }
-
-
-        .secondary {
-
-            background: #151515;
-
-            color: white;
-
-            border: 1px solid #333;
-
-            padding: 11px 20px;
-
-            border-radius: 6px;
-
-            cursor: pointer;
+        .shape-btn:hover {
+            border-color: var(--accent-emerald);
+            color: var(--text-primary);
         }
-
-
-        .danger {
-
-            background: #250909;
-
-            color: #ff3333;
-
-            border: 1px solid #551515;
-
-            padding: 9px 14px;
-
-            border-radius: 5px;
-
-            cursor: pointer;
+        .shape-btn.active {
+            border-color: var(--accent-emerald);
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--accent-emerald);
         }
-
-
-        #message {
-
+        .blueprint-container {
+            width: 100%;
+            height: 380px;
+            background: #080c14;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #blueprintSvg {
+            width: 100%;
+            height: 100%;
+        }
+        .special-area-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+            background: var(--bg-elevated);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+        .toast-notify {
             position: fixed;
-
-            right: 25px;
-
-            bottom: 25px;
-
-            background: #111;
-
-            border: 1px solid #333;
-
-            padding: 13px 17px;
-
-            border-radius: 6px;
-
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 1000;
             display: none;
-
-            font-size: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            animation: fadeIn 0.2s ease;
         }
-
-
-        #message.success {
-
-            border-color: #00ff66;
-
-            color: #00ff66;
+        .toast-notify.success {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-emerald);
+            color: var(--accent-emerald);
         }
-
-
-        #message.error {
-
-            border-color: #ff3333;
-
-            color: #ff3333;
+        .toast-notify.error {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-critical);
+            color: var(--accent-critical);
         }
-
-
-        @media(max-width: 900px) {
-
-            .special-area {
-
-                grid-template-columns:
-                    1fr 1fr 1fr;
-
-            }
-
-            .remove-area {
-
-                padding: 10px;
-
-            }
-
-        }
-
-
-        @media(max-width: 700px) {
-
-            main {
-
-                padding: 18px 14px;
-            }
-
-
-            .form-grid {
-
-                grid-template-columns: 1fr;
-            }
-
-
-            .full {
-
-                grid-column: auto;
-            }
-
-
-            .rectangle-fields {
-
-                grid-template-columns: 1fr;
-            }
-
-
-            .special-area {
-
-                grid-template-columns: 1fr;
-            }
-
-        }
-
     </style>
-
 </head>
-
-
 <body>
 
-
-<header>
-
-    <div class="logo">
-
-        <div class="logo-icon">
-            C
+    <header class="app-header">
+        <div class="logo">
+            <div class="logo-icon">C</div>
+            <div class="logo-text">Crowd<span>Sense</span></div>
         </div>
-
-        <div class="logo-text">
-            CROWD<span>SENSE</span>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="goBack()">Back</button>
+            <button class="btn btn-secondary" onclick="refreshPage()">Refresh</button>
         </div>
-
-    </div>
-
-
-    <button
-        class="back-button"
-        onclick="goDashboard()"
-    >
-        ← Dashboard
-    </button>
-
-</header>
-
-
-<main>
-
-
-    <div class="page-header">
-
-        <h1>Venue Configuration</h1>
-
-        <p>
-            Configure the physical venue and crowd safety limits.
-        </p>
-
-    </div>
-
-
-    <!-- ====================================================
-         BASIC VENUE
-    ===================================================== -->
-
-    <section class="panel">
-
-        <div class="panel-title">
-            Venue Details
-        </div>
-
-
-        <div class="form-grid">
-
-
-            <div class="form-group full">
-
-                <label>
-                    Venue Name
-                </label>
-
-                <input
-                    id="venueName"
-                    type="text"
-                    placeholder="Main Stadium"
-                >
-
-            </div>
-
-
-            <div class="form-group full">
-
-                <label>
-                    Venue Shape
-                </label>
-
-
-                <div class="shape-options">
-
-                    <button
-                        id="rectangleButton"
-                        class="shape-button active"
-                        onclick="selectShape('rectangle')"
-                    >
-                        Rectangle
-                    </button>
-
-
-                    <button
-                        id="circleButton"
-                        class="shape-button"
-                        onclick="selectShape('circle')"
-                    >
-                        Circle
-                    </button>
-
-                </div>
-
-            </div>
-
-
-        </div>
-
-    </section>
-
-
-    <!-- ====================================================
-         DIMENSIONS
-    ===================================================== -->
-
-    <section class="panel">
-
-        <div class="panel-title">
-            Venue Dimensions
-        </div>
-
-
-        <div
-            id="rectangleFields"
-            class="rectangle-fields"
-        >
-
-            <div class="form-group">
-
-                <label>
-                    Length (meters)
-                </label>
-
-                <input
-                    id="length"
-                    type="number"
-                    min="0.1"
-                    step="0.1"
-                    value="20"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Width (meters)
-                </label>
-
-                <input
-                    id="width"
-                    type="number"
-                    min="0.1"
-                    step="0.1"
-                    value="10"
-                >
-
-            </div>
-
-        </div>
-
-
-        <div
-            id="circleFields"
-            class="circle-fields"
-        >
-
-            <div class="form-group">
-
-                <label>
-                    Diameter (meters)
-                </label>
-
-                <input
-                    id="diameter"
-                    type="number"
-                    min="0.1"
-                    step="0.1"
-                    value="20"
-                >
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ====================================================
-         CAPACITY
-    ===================================================== -->
-
-    <section class="panel">
-
-        <div class="panel-title">
-            Crowd Safety Limits
-        </div>
-
-
-        <div class="form-grid">
-
-
-            <div class="form-group">
-
-                <label>
-                    Maximum Venue Capacity
-                </label>
-
-                <input
-                    id="capacity"
-                    type="number"
-                    min="1"
-                    step="1"
-                    value="100"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Grid Size (meters)
-                </label>
-
-                <input
-                    id="gridSize"
-                    type="number"
-                    min="0.1"
-                    step="0.1"
-                    value="5"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Warning Threshold (%)
-                </label>
-
-                <input
-                    id="warningThreshold"
-                    type="number"
-                    min="1"
-                    max="100"
-                    step="1"
-                    value="70"
-                >
-
-                <div class="threshold-info">
-                    Zone becomes WARNING when its calculated
-                    occupancy reaches this percentage.
-                </div>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    Critical Threshold (%)
-                </label>
-
-                <input
-                    id="criticalThreshold"
-                    type="number"
-                    min="1"
-                    max="100"
-                    step="1"
-                    value="90"
-                >
-
-                <div class="threshold-info">
-                    Zone becomes CRITICAL when its calculated
-                    occupancy reaches this percentage.
-                </div>
-
-            </div>
-
-
-        </div>
-
-    </section>
-
-
-    <!-- ====================================================
-         SPECIAL AREAS
-    ===================================================== -->
-
-    <section class="panel">
-
-        <div class="panel-title">
-            Special Areas
-        </div>
-
-
-        <div
-            id="specialAreas"
-        ></div>
-
-
-        <button
-            class="add-area"
-            onclick="addSpecialArea()"
-        >
-            + Add Special Area
-        </button>
-
-
-        <div
-            class="threshold-info"
-            style="margin-top:12px;"
-        >
-            Define areas such as entrances, exits, stages,
-            restricted areas or other important locations.
-        </div>
-
-    </section>
-
-
-    <!-- ====================================================
-         FLOOR PLAN
-    ===================================================== -->
-
-    <section class="panel">
-
-        <div class="panel-title">
-            Floor Plan
-        </div>
-
-
-        <div class="floorplan-box">
-
+    </header>
+
+    <nav class="app-nav">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/cameras">Cameras</a>
+        <a href="/zones">Zones</a>
+        <a href="/alerts">Alerts</a>
+        <a href="/analytics">Analytics</a>
+        <a href="/reports">Reports</a>
+        <a href="/session">Sessions</a>
+        <a href="/venue" class="active">Venue</a>
+        <a href="/calibration">Calibration</a>
+        <a href="/admin">Admin</a>
+    </nav>
+
+    <main class="page-container">
+
+        <div class="page-header">
             <div>
-                Select a local floor-plan image.
+                <h1 class="page-title">Venue Configuration</h1>
+                <p class="page-subtitle">Define physical dimensions, geometry, safety thresholds and live blueprint layout</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="loadVenue()">Reload Settings</button>
+                <button class="btn btn-primary" onclick="saveVenue()">Save Venue</button>
+            </div>
+        </div>
+
+        <div class="venue-layout">
+
+            <!-- LEFT: Configuration Form -->
+            <div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2 class="card-title" style="font-size:15px; color:var(--text-primary); font-weight:600;">General Venue Parameters</h2>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Venue Name</label>
+                        <input type="text" id="venueName" class="form-input" placeholder="e.g. Main Exhibition Hall" value="Arena One" oninput="updateBlueprint()">
+                    </div>
+
+                    <label class="form-label">Venue Geometry</label>
+                    <div class="shape-selector">
+                        <div class="shape-btn active" id="rectangleButton" onclick="selectShape('rectangle')">
+                            Rectangular Arena
+                        </div>
+                        <div class="shape-btn" id="circleButton" onclick="selectShape('circle')">
+                            Circular Arena
+                        </div>
+                    </div>
+
+                    <!-- Rectangular Dimensions -->
+                    <div id="rectangleFields" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;" class="mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Length (meters)</label>
+                            <input type="number" id="length" class="form-input" min="1" step="0.5" value="20" oninput="updateBlueprint()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Width (meters)</label>
+                            <input type="number" id="width" class="form-input" min="1" step="0.5" value="10" oninput="updateBlueprint()">
+                        </div>
+                    </div>
+
+                    <!-- Circular Dimensions -->
+                    <div id="circleFields" style="display:none;" class="mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Diameter (meters)</label>
+                            <input type="number" id="diameter" class="form-input" min="1" step="0.5" value="20" oninput="updateBlueprint()">
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;" class="mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Maximum Capacity (People)</label>
+                            <input type="number" id="capacity" class="form-input" min="1" value="100" oninput="updateBlueprint()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Grid Partition Size (meters)</label>
+                            <input type="number" id="gridSize" class="form-input" min="1" step="0.5" value="5" oninput="updateBlueprint()">
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;" class="mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Warning Threshold (%)</label>
+                            <input type="number" id="warningThreshold" class="form-input" min="1" max="100" value="70">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Critical Threshold (%)</label>
+                            <input type="number" id="criticalThreshold" class="form-input" min="1" max="100" value="90">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Architectural Blueprint File (Optional)</label>
+                        <input type="file" id="floorplan" class="form-input" accept=".jpg,.png,.jpeg,.svg,.pdf">
+                    </div>
+                </div>
+
+                <!-- Special Areas Card -->
+                <div class="card">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2 class="card-title" style="font-size:15px; color:var(--text-primary); font-weight:600;">Special Areas (Gates, Exits, Stages)</h2>
+                        <button class="btn btn-secondary" onclick="addSpecialArea()" style="padding:5px 12px; font-size:12px;">+ Add Area</button>
+                    </div>
+
+                    <div id="specialAreas" style="margin-top:12px;">
+                        <!-- Special area items injected here -->
+                    </div>
+                </div>
             </div>
 
-            <div
-                style="
-                    font-size:11px;
-                    margin-top:6px;
-                "
-            >
-                PNG, JPG or JPEG
+            <!-- RIGHT: Live Blueprint Preview -->
+            <div>
+                <div class="card" style="position:sticky; top:120px;">
+                    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h2 class="card-title" style="font-size:15px; color:var(--text-primary); font-weight:600;">Live Blueprint Preview</h2>
+                            <div style="font-size:12px; color:var(--text-secondary);" id="blueprintStats">Scale & Grid Visualization</div>
+                        </div>
+                        <span class="badge badge-emerald" id="shapeBadge">Rectangle</span>
+                    </div>
+
+                    <div class="blueprint-container">
+                        <svg id="blueprintSvg" viewBox="0 0 500 350"></svg>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:18px;">
+                        <div class="card" style="padding:12px; background:var(--bg-elevated);">
+                            <div class="card-title" style="font-size:11px;">Venue Area</div>
+                            <div style="font-size:18px; font-weight:700; color:var(--text-primary);" id="statArea">200 m²</div>
+                        </div>
+                        <div class="card" style="padding:12px; background:var(--bg-elevated);">
+                            <div class="card-title" style="font-size:11px;">Allowed Density</div>
+                            <div style="font-size:18px; font-weight:700; color:var(--accent-emerald);" id="statDensity">0.50 p/m²</div>
+                        </div>
+                        <div class="card" style="padding:12px; background:var(--bg-elevated);">
+                            <div class="card-title" style="font-size:11px;">Grid Cells</div>
+                            <div style="font-size:18px; font-weight:700; color:var(--text-secondary);" id="statGrid">8 Zones</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-
-            <input
-                id="floorplan"
-                type="file"
-                accept=".png,.jpg,.jpeg"
-            >
 
         </div>
 
-    </section>
-
-
-    <!-- ====================================================
-         BUTTONS
-    ===================================================== -->
-
-    <div class="buttons">
-
-        <button
-            class="primary"
-            onclick="saveVenue()"
-        >
-            Save Venue
-        </button>
-
-
-        <button
-            class="secondary"
-            onclick="loadVenue()"
-        >
-            Reload Saved Configuration
-        </button>
-
-    </div>
-
-
-</main>
-
-
-<div id="message"></div>
-
-
-<script>
-
-
-let selectedShape = "rectangle";
-
-
-/* ==========================================================
-   SHAPE
-========================================================== */
-
-function selectShape(
-    shape
-) {
-
-    selectedShape = shape;
-
-
-    const rectangleButton =
-        document.getElementById(
-            "rectangleButton"
-        );
-
-
-    const circleButton =
-        document.getElementById(
-            "circleButton"
-        );
-
-
-    const rectangleFields =
-        document.getElementById(
-            "rectangleFields"
-        );
-
-
-    const circleFields =
-        document.getElementById(
-            "circleFields"
-        );
-
-
-    rectangleButton.classList.remove(
-        "active"
-    );
-
-
-    circleButton.classList.remove(
-        "active"
-    );
-
-
-    if (shape === "rectangle") {
-
-        rectangleButton.classList.add(
-            "active"
-        );
-
-
-        rectangleFields.style.display =
-            "grid";
-
-
-        circleFields.classList.remove(
-            "active"
-        );
-
-    }
-
-    else {
-
-        circleButton.classList.add(
-            "active"
-        );
-
-
-        rectangleFields.style.display =
-            "none";
-
-
-        circleFields.classList.add(
-            "active"
-        );
-
-    }
-
-}
-
-
-/* ==========================================================
-   SPECIAL AREA
-========================================================== */
-
-function addSpecialArea(
-    area = {}
-) {
-
-    const container =
-        document.getElementById(
-            "specialAreas"
-        );
-
-
-    const row =
-        document.createElement(
-            "div"
-        );
-
-
-    row.className =
-        "special-area";
-
-
-    row.innerHTML = `
-
-        <input
-            class="area-type"
-            type="text"
-            placeholder="Type"
-            value="${escapeHtml(
-                area.type || ""
-            )}"
-        >
-
-
-        <input
-            class="area-x"
-            type="number"
-            step="0.1"
-            placeholder="X"
-            value="${area.x ?? 0}"
-        >
-
-
-        <input
-            class="area-y"
-            type="number"
-            step="0.1"
-            placeholder="Y"
-            value="${area.y ?? 0}"
-        >
-
-
-        <input
-            class="area-width"
-            type="number"
-            min="0.1"
-            step="0.1"
-            placeholder="Width"
-            value="${area.width ?? 1}"
-        >
-
-
-        <input
-            class="area-height"
-            type="number"
-            min="0.1"
-            step="0.1"
-            placeholder="Height"
-            value="${area.height ?? 1}"
-        >
-
-
-        <button
-            class="remove-area"
-            onclick="this.parentElement.remove()"
-        >
-            Remove
-        </button>
-
-    `;
-
-
-    container.appendChild(
-        row
-    );
-
-}
-
-
-/* ==========================================================
-   GET SPECIAL AREAS
-========================================================== */
-
-function getSpecialAreas() {
-
-    const rows =
-        document.querySelectorAll(
-            ".special-area"
-        );
-
-
-    const areas = [];
-
-
-    rows.forEach(
-        row => {
-
-            const type =
-                row.querySelector(
-                    ".area-type"
-                ).value.trim();
-
-
-            const x =
-                Number(
-                    row.querySelector(
-                        ".area-x"
-                    ).value || 0
-                );
-
-
-            const y =
-                Number(
-                    row.querySelector(
-                        ".area-y"
-                    ).value || 0
-                );
-
-
-            const width =
-                Number(
-                    row.querySelector(
-                        ".area-width"
-                    ).value || 0
-                );
-
-
-            const height =
-                Number(
-                    row.querySelector(
-                        ".area-height"
-                    ).value || 0
-                );
-
-
-            if (type) {
-
-                areas.push({
-
-                    type: type,
-
-                    x: x,
-
-                    y: y,
-
-                    width: width,
-
-                    height: height
-
+    </main>
+
+    <div id="toastMessage" class="toast-notify"></div>
+
+    <script>
+        let selectedShape = "rectangle";
+
+        function goBack() {
+            if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+                window.history.back();
+            } else {
+                window.location.href = "/dashboard";
+            }
+        }
+
+        function refreshPage() {
+            loadVenue();
+        }
+
+        function selectShape(shape) {
+            selectedShape = shape;
+            const rectBtn = document.getElementById("rectangleButton");
+            const circBtn = document.getElementById("circleButton");
+            const rectFields = document.getElementById("rectangleFields");
+            const circFields = document.getElementById("circleFields");
+            const shapeBadge = document.getElementById("shapeBadge");
+
+            if (shape === "rectangle") {
+                rectBtn.classList.add("active");
+                circBtn.classList.remove("active");
+                rectFields.style.display = "grid";
+                circFields.style.display = "none";
+                shapeBadge.textContent = "Rectangle";
+                shapeBadge.className = "badge badge-emerald";
+            } else {
+                circBtn.classList.add("active");
+                rectBtn.classList.remove("active");
+                rectFields.style.display = "none";
+                circFields.style.display = "block";
+                shapeBadge.textContent = "Circle";
+                shapeBadge.className = "badge badge-warning";
+            }
+            updateBlueprint();
+        }
+
+        function addSpecialArea(area = {}) {
+            const container = document.getElementById("specialAreas");
+            const row = document.createElement("div");
+            row.className = "special-area-row";
+            row.innerHTML = `
+                <input class="form-input area-type" type="text" placeholder="Type (e.g. Exit A)" value="${escapeHtml(area.type || '')}" style="padding:6px 10px; font-size:12px;" oninput="updateBlueprint()">
+                <input class="form-input area-x" type="number" step="0.5" placeholder="X" value="${area.x ?? 0}" style="padding:6px 8px; font-size:12px;" oninput="updateBlueprint()">
+                <input class="form-input area-y" type="number" step="0.5" placeholder="Y" value="${area.y ?? 0}" style="padding:6px 8px; font-size:12px;" oninput="updateBlueprint()">
+                <input class="form-input area-width" type="number" min="0.1" step="0.5" placeholder="W" value="${area.width ?? 2}" style="padding:6px 8px; font-size:12px;" oninput="updateBlueprint()">
+                <input class="form-input area-height" type="number" min="0.1" step="0.5" placeholder="H" value="${area.height ?? 2}" style="padding:6px 8px; font-size:12px;" oninput="updateBlueprint()">
+                <button class="btn btn-secondary" onclick="this.parentElement.remove(); updateBlueprint();" style="padding:6px 10px; font-size:12px; color:var(--accent-critical); border-color:rgba(239,68,68,0.3);">&times;</button>
+            `;
+            container.appendChild(row);
+            updateBlueprint();
+        }
+
+        function getSpecialAreas() {
+            const rows = document.querySelectorAll(".special-area-row");
+            const areas = [];
+            rows.forEach(r => {
+                const type = r.querySelector(".area-type").value.trim();
+                const x = Number(r.querySelector(".area-x").value || 0);
+                const y = Number(r.querySelector(".area-y").value || 0);
+                const width = Number(r.querySelector(".area-width").value || 0);
+                const height = Number(r.querySelector(".area-height").value || 0);
+                if (type) {
+                    areas.push({ type, x, y, width, height });
+                }
+            });
+            return areas;
+        }
+
+        function updateBlueprint() {
+            const svg = document.getElementById("blueprintSvg");
+            const length = Math.max(1, Number(document.getElementById("length").value || 20));
+            const width = Math.max(1, Number(document.getElementById("width").value || 10));
+            const diameter = Math.max(1, Number(document.getElementById("diameter").value || 20));
+            const capacity = Math.max(1, Number(document.getElementById("capacity").value || 100));
+            const gridSize = Math.max(0.5, Number(document.getElementById("gridSize").value || 5));
+
+            let areaM2 = 0;
+            let gridCount = 0;
+
+            const svgWidth = 500;
+            const svgHeight = 350;
+            const pad = 35;
+            const drawW = svgWidth - pad * 2;
+            const drawH = svgHeight - pad * 2;
+
+            let markup = `
+                <defs>
+                    <pattern id="gridPattern" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                    </pattern>
+                </defs>
+                <rect width="${svgWidth}" height="${svgHeight}" fill="#080c14" />
+                <rect width="${svgWidth}" height="${svgHeight}" fill="url(#gridPattern)" />
+            `;
+
+            if (selectedShape === "rectangle") {
+                areaM2 = length * width;
+                const scale = Math.min(drawW / length, drawH / width);
+                const rw = length * scale;
+                const rh = width * scale;
+                const rx = pad + (drawW - rw) / 2;
+                const ry = pad + (drawH - rh) / 2;
+
+                const cols = Math.max(1, Math.ceil(length / gridSize));
+                const rows = Math.max(1, Math.ceil(width / gridSize));
+                gridCount = cols * rows;
+
+                // Main Arena Box
+                markup += `
+                    <rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" fill="rgba(16, 185, 129, 0.05)" stroke="var(--accent-emerald)" stroke-width="2" rx="4"/>
+                `;
+
+                // Grid divisions
+                const cellW = (gridSize / length) * rw;
+                const cellH = (gridSize / width) * rh;
+                for (let c = 1; c < cols; c++) {
+                    const gx = rx + c * cellW;
+                    if (gx < rx + rw) {
+                        markup += `<line x1="${gx}" y1="${ry}" x2="${gx}" y2="${ry + rh}" stroke="rgba(16,185,129,0.2)" stroke-dasharray="3,3" stroke-width="1"/>`;
+                    }
+                }
+                for (let r = 1; r < rows; r++) {
+                    const gy = ry + r * cellH;
+                    if (gy < ry + rh) {
+                        markup += `<line x1="${rx}" y1="${gy}" x2="${rx + rw}" y2="${gy}" stroke="rgba(16,185,129,0.2)" stroke-dasharray="3,3" stroke-width="1"/>`;
+                    }
+                }
+
+                // Dimension annotations
+                markup += `
+                    <text x="${rx + rw/2}" y="${ry - 10}" fill="var(--text-secondary)" font-size="11" font-weight="600" text-anchor="middle">${length}m</text>
+                    <text x="${rx - 10}" y="${ry + rh/2}" fill="var(--text-secondary)" font-size="11" font-weight="600" text-anchor="middle" transform="rotate(-90 ${rx - 10} ${ry + rh/2})">${width}m</text>
+                `;
+
+                // Special Areas
+                const areas = getSpecialAreas();
+                areas.forEach(a => {
+                    const ax = rx + (a.x / length) * rw;
+                    const ay = ry + (a.y / width) * rh;
+                    const aw = (a.width / length) * rw;
+                    const ah = (a.height / width) * rh;
+                    markup += `
+                        <rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" fill="rgba(245, 158, 11, 0.25)" stroke="var(--accent-warning)" stroke-width="1.5" rx="2"/>
+                        <text x="${ax + aw/2}" y="${ay + ah/2 + 4}" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">${escapeHtml(a.type)}</text>
+                    `;
                 });
 
+            } else {
+                // Circle Arena
+                areaM2 = Math.PI * Math.pow(diameter / 2, 2);
+                const radius = Math.min(drawW, drawH) / 2;
+                const cx = svgWidth / 2;
+                const cy = svgHeight / 2;
+                gridCount = Math.max(1, Math.ceil(diameter / gridSize) * 2);
+
+                markup += `
+                    <circle cx="${cx}" cy="${cy}" r="${radius}" fill="rgba(245, 158, 11, 0.05)" stroke="var(--accent-warning)" stroke-width="2"/>
+                    <circle cx="${cx}" cy="${cy}" r="${radius * 0.5}" fill="none" stroke="rgba(245,158,11,0.2)" stroke-dasharray="4,4" stroke-width="1"/>
+                    <line x1="${cx - radius}" y1="${cy}" x2="${cx + radius}" y2="${cy}" stroke="rgba(245,158,11,0.2)" stroke-dasharray="4,4" stroke-width="1"/>
+                    <line x1="${cx}" y1="${cy - radius}" x2="${cx}" y2="${cy + radius}" stroke="rgba(245,158,11,0.2)" stroke-dasharray="4,4" stroke-width="1"/>
+                    <text x="${cx}" y="${cy - radius - 10}" fill="var(--text-secondary)" font-size="11" font-weight="600" text-anchor="middle">&Oslash; ${diameter}m</text>
+                `;
+
+                // Special Areas in circular venue
+                const areas = getSpecialAreas();
+                const scale = (radius * 2) / diameter;
+                areas.forEach(a => {
+                    const ax = (cx - radius) + a.x * scale;
+                    const ay = (cy - radius) + a.y * scale;
+                    const aw = a.width * scale;
+                    const ah = a.height * scale;
+                    markup += `
+                        <rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" fill="rgba(168, 85, 247, 0.3)" stroke="var(--accent-surge)" stroke-width="1.5" rx="2"/>
+                        <text x="${ax + aw/2}" y="${ay + ah/2 + 4}" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">${escapeHtml(a.type)}</text>
+                    `;
+                });
             }
 
-        }
-    );
-
-
-    return areas;
-
-}
-
-
-/* ==========================================================
-   SAVE
-========================================================== */
-
-async function saveVenue() {
-
-    const name =
-        document.getElementById(
-            "venueName"
-        ).value.trim();
-
-
-    const length =
-        Number(
-            document.getElementById(
-                "length"
-            ).value
-        );
-
-
-    const width =
-        Number(
-            document.getElementById(
-                "width"
-            ).value
-        );
-
-
-    const diameter =
-        Number(
-            document.getElementById(
-                "diameter"
-            ).value
-        );
-
-
-    const capacity =
-        Number(
-            document.getElementById(
-                "capacity"
-            ).value
-        );
-
-
-    const warning =
-        Number(
-            document.getElementById(
-                "warningThreshold"
-            ).value
-        );
-
-
-    const critical =
-        Number(
-            document.getElementById(
-                "criticalThreshold"
-            ).value
-        );
-
-
-    const gridSize =
-        Number(
-            document.getElementById(
-                "gridSize"
-            ).value
-        );
-
-
-    if (!name) {
-
-        showMessage(
-            "Enter a venue name",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (capacity <= 0) {
-
-        showMessage(
-            "Capacity must be greater than zero",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        warning <= 0 ||
-        warning > 100 ||
-        critical <= 0 ||
-        critical > 100
-    ) {
-
-        showMessage(
-            "Thresholds must be between 1 and 100",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (warning >= critical) {
-
-        showMessage(
-            "Warning threshold must be lower than critical threshold",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (gridSize <= 0) {
-
-        showMessage(
-            "Grid size must be greater than zero",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        selectedShape === "rectangle" &&
-        (
-            length <= 0 ||
-            width <= 0
-        )
-    ) {
-
-        showMessage(
-            "Enter valid venue dimensions",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        selectedShape === "circle" &&
-        diameter <= 0
-    ) {
-
-        showMessage(
-            "Enter a valid diameter",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    /*
-     * Validate special areas.
-     */
-
-    const specialAreas =
-        getSpecialAreas();
-
-
-    for (
-        const area of specialAreas
-    ) {
-
-        if (
-            area.width <= 0 ||
-            area.height <= 0
-        ) {
-
-            showMessage(
-                "Special area width and height must be greater than zero",
-                "error"
-            );
-
-            return;
-
+            svg.innerHTML = markup;
+
+            // Stats
+            document.getElementById("statArea").textContent = Math.round(areaM2) + " m²";
+            document.getElementById("statDensity").textContent = (capacity / Math.max(1, areaM2)).toFixed(2) + " p/m²";
+            document.getElementById("statGrid").textContent = gridCount + " Cells";
         }
 
-    }
+        async function saveVenue() {
+            const name = document.getElementById("venueName").value.trim();
+            const length = Number(document.getElementById("length").value);
+            const width = Number(document.getElementById("width").value);
+            const diameter = Number(document.getElementById("diameter").value);
+            const capacity = Number(document.getElementById("capacity").value);
+            const warning = Number(document.getElementById("warningThreshold").value);
+            const critical = Number(document.getElementById("criticalThreshold").value);
+            const gridSize = Number(document.getElementById("gridSize").value);
 
+            if (!name) {
+                showToast("Enter a valid venue name", "error");
+                return;
+            }
+            if (capacity <= 0) {
+                showToast("Capacity must be greater than zero", "error");
+                return;
+            }
+            if (warning <= 0 || warning > 100 || critical <= 0 || critical > 100) {
+                showToast("Thresholds must be between 1 and 100%", "error");
+                return;
+            }
+            if (warning >= critical) {
+                showToast("Warning threshold must be strictly lower than critical threshold", "error");
+                return;
+            }
+            if (gridSize <= 0) {
+                showToast("Grid partition size must be greater than zero", "error");
+                return;
+            }
 
-    /*
-     * Store venue configuration.
-     */
+            const specialAreas = getSpecialAreas();
+            for (const area of specialAreas) {
+                if (area.width <= 0 || area.height <= 0) {
+                    showToast("Special area width & height must be greater than 0", "error");
+                    return;
+                }
+            }
 
-    const venue = {
+            const venue = {
+                name,
+                shape: selectedShape,
+                length,
+                width,
+                diameter,
+                capacity,
+                warning_threshold: warning,
+                critical_threshold: critical,
+                grid_size: gridSize,
+                zones: [],
+                special_areas: specialAreas,
+                floorplan: null
+            };
 
-        name: name,
+            const fpInput = document.getElementById("floorplan").files[0];
+            if (fpInput) {
+                venue.floorplan = fpInput.name;
+            }
 
-        shape: selectedShape,
-
-        length: length,
-
-        width: width,
-
-        diameter: diameter,
-
-        capacity: capacity,
-
-        warning_threshold: warning,
-
-        critical_threshold: critical,
-
-        grid_size: gridSize,
-
-        zones: [],
-
-        special_areas:
-            specialAreas,
-
-        floorplan: null
-
-    };
-
-
-    const floorplan =
-        document.getElementById(
-            "floorplan"
-        ).files[0];
-
-
-    if (floorplan) {
-
-        venue.floorplan =
-            floorplan.name;
-
-    }
-
-
-    /*
-     * Save through the local API.
-     */
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/venue",
-                {
+            try {
+                const response = await fetch("/api/venue", {
                     method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(
-                            venue
-                        )
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(venue)
+                });
+                if (response.ok) {
+                    showToast("Venue configuration saved successfully", "success");
+                    localStorage.setItem("crowdsense_venue", JSON.stringify(venue));
+                    return;
                 }
-            );
+            } catch (err) {
+                console.warn("Backend venue API POST failed, caching locally:", err);
+            }
 
-
-        if (response.ok) {
-
-            showMessage(
-                "Venue configuration saved",
-                "success"
-            );
-
-            return;
-
+            localStorage.setItem("crowdsense_venue", JSON.stringify(venue));
+            showToast("Venue saved to local configuration", "success");
         }
 
-    }
-
-    catch(error) {
-
-        console.log(
-            "Venue API not connected:",
-            error
-        );
-
-    }
-
-
-    /*
-     * Temporary local browser copy.
-     */
-
-    localStorage.setItem(
-        "crowdsense_venue",
-        JSON.stringify(
-            venue
-        )
-    );
-
-
-    showMessage(
-        "Venue saved locally",
-        "success"
-    );
-
-}
-
-
-/* ==========================================================
-   LOAD
-========================================================== */
-
-async function loadVenue() {
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/venue",
-                {
-                    cache:
-                        "no-store"
+        async function loadVenue() {
+            try {
+                const response = await fetch("/api/venue", { cache: "no-store" });
+                if (response.ok) {
+                    const data = await response.json();
+                    applyVenue(data.venue || data.data || data);
+                    showToast("Venue configuration loaded", "success");
+                    return;
                 }
-            );
+            } catch (err) {
+                console.warn("Venue API unavailable, falling back to local storage:", err);
+            }
 
-
-        if (response.ok) {
-
-            const data =
-                await response.json();
-
-
-            applyVenue(
-                data.venue ||
-                data.data ||
-                data
-            );
-
-
-            showMessage(
-                "Venue configuration loaded",
-                "success"
-            );
-
-
-            return;
-
+            const stored = localStorage.getItem("crowdsense_venue");
+            if (stored) {
+                try {
+                    applyVenue(JSON.parse(stored));
+                    showToast("Loaded local venue configuration", "success");
+                } catch (e) {
+                    showToast("Failed to parse local venue settings", "error");
+                }
+            }
         }
 
-    }
-
-    catch(error) {
-
-        console.log(
-            "Venue API unavailable"
-        );
-
-    }
-
-
-    const stored =
-        localStorage.getItem(
-            "crowdsense_venue"
-        );
-
-
-    if (!stored) {
-
-        showMessage(
-            "No saved venue configuration",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        applyVenue(
-            JSON.parse(
-                stored
-            )
-        );
-
-
-        showMessage(
-            "Local venue configuration loaded",
-            "success"
-        );
-
-    }
-
-    catch(error) {
-
-        showMessage(
-            "Could not load venue configuration",
-            "error"
-        );
-
-    }
-
-}
-
-
-/* ==========================================================
-   APPLY VENUE
-========================================================== */
-
-function applyVenue(
-    venue
-) {
-
-    if (!venue) {
-
-        return;
-
-    }
-
-
-    document.getElementById(
-        "venueName"
-    ).value =
-        venue.name ||
-        "";
-
-
-    document.getElementById(
-        "length"
-    ).value =
-        venue.length ??
-        20;
-
-
-    document.getElementById(
-        "width"
-    ).value =
-        venue.width ??
-        10;
-
-
-    document.getElementById(
-        "diameter"
-    ).value =
-        venue.diameter ??
-        20;
-
-
-    document.getElementById(
-        "capacity"
-    ).value =
-        venue.capacity ??
-        100;
-
-
-    document.getElementById(
-        "warningThreshold"
-    ).value =
-        venue.warning_threshold ??
-        70;
-
-
-    document.getElementById(
-        "criticalThreshold"
-    ).value =
-        venue.critical_threshold ??
-        90;
-
-
-    document.getElementById(
-        "gridSize"
-    ).value =
-        venue.grid_size ??
-        5;
-
-
-    selectShape(
-        venue.shape ||
-        "rectangle"
-    );
-
-
-    document.getElementById(
-        "specialAreas"
-    ).innerHTML =
-        "";
-
-
-    (
-        venue.special_areas ||
-        []
-    ).forEach(
-        area =>
-            addSpecialArea(area)
-    );
-
-}
-
-
-/* ==========================================================
-   DASHBOARD
-========================================================== */
-
-function goDashboard() {
-
-    window.location.href = "/";
-
-}
-
-
-/* ==========================================================
-   MESSAGE
-========================================================== */
-
-function showMessage(
-    text,
-    type
-) {
-
-    const message =
-        document.getElementById(
-            "message"
-        );
-
-
-    message.textContent =
-        text;
-
-
-    message.className =
-        type;
-
-
-    message.style.display =
-        "block";
-
-
-    setTimeout(
-        () => {
-
-            message.style.display =
-                "none";
-
-        },
-        2500
-    );
-
-}
-
-
-/* ==========================================================
-   SECURITY
-========================================================== */
-
-function escapeHtml(
-    value
-) {
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-/* ==========================================================
-   START
-========================================================== */
-
-loadVenue();
-
-</script>
-
-
+        function applyVenue(venue) {
+            if (!venue) return;
+            document.getElementById("venueName").value = venue.name || "Arena One";
+            document.getElementById("length").value = venue.length ?? 20;
+            document.getElementById("width").value = venue.width ?? 10;
+            document.getElementById("diameter").value = venue.diameter ?? 20;
+            document.getElementById("capacity").value = venue.capacity ?? 100;
+            document.getElementById("warningThreshold").value = venue.warning_threshold ?? 70;
+            document.getElementById("criticalThreshold").value = venue.critical_threshold ?? 90;
+            document.getElementById("gridSize").value = venue.grid_size ?? 5;
+
+            selectShape(venue.shape || "rectangle");
+
+            document.getElementById("specialAreas").innerHTML = "";
+            (venue.special_areas || []).forEach(a => addSpecialArea(a));
+
+            updateBlueprint();
+        }
+
+        function showToast(text, type) {
+            const toast = document.getElementById("toastMessage");
+            toast.textContent = text;
+            toast.className = "toast-notify " + type;
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 3000);
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        loadVenue();
+    </script>
 </body>
-
 </html>

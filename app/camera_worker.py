@@ -198,8 +198,12 @@ class CameraWorker:
             # Open the camera
             # ------------------------------------------------
 
-            self.cap = cv2.VideoCapture(
-                self.source
+            from stream_capture import LowLatencyVideoCapture
+
+            self.cap = LowLatencyVideoCapture(
+                self.source,
+                width=self.width,
+                height=self.height
             )
 
             if not self.cap.isOpened():
@@ -221,7 +225,7 @@ class CameraWorker:
                 return False
 
             # ------------------------------------------------
-            # Resolution
+            # Resolution & Buffering
             # ------------------------------------------------
 
             self.cap.set(
@@ -233,6 +237,14 @@ class CameraWorker:
                 cv2.CAP_PROP_FRAME_HEIGHT,
                 self.height
             )
+
+            try:
+                self.cap.set(
+                    cv2.CAP_PROP_BUFFERSIZE,
+                    1
+                )
+            except Exception:
+                pass
 
             self.last_error = None
 
@@ -389,6 +401,29 @@ class CameraWorker:
                                 4
                             )
                     })
+
+            for item in detections:
+                bx1, by1, bx2, by2 = item["box"]
+                tid = item["id"]
+                conf = item.get("confidence", 0)
+                cv2.rectangle(
+                    frame,
+                    (bx1, by1),
+                    (bx2, by2),
+                    (129, 185, 16),
+                    2,
+                    cv2.LINE_AA
+                )
+                cv2.putText(
+                    frame,
+                    f"#{tid} ({int(conf * 100)}%)",
+                    (bx1, max(20, by1 - 6)),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.42,
+                    (255, 255, 255),
+                    1,
+                    cv2.LINE_AA
+                )
 
             return (
                 frame,

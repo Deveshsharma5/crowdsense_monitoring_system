@@ -105,11 +105,54 @@ def set_display_frame_provider(provider):
     display_frame_provider = provider
 
 
+def _get_active_stream_status():
+    with status_lock:
+        active_src = str(status_data.get("camera_source", "0")).strip()
+        people = int(status_data.get("total_people", 0) or 0)
+        sys_state = str(status_data.get("system", "")).strip().upper()
+
+    frame_ready = False
+    if display_frame_provider is not None:
+        try:
+            frame_ready = display_frame_provider() is not None
+        except Exception:
+            frame_ready = False
+
+    active_cam_id = None
+    if camera_manager_reference is not None:
+        active_cam_id = getattr(camera_manager_reference, "active_camera_id", None)
+
+    return {
+        "camera_source": active_src,
+        "total_people": people,
+        "is_active": (sys_state == "ACTIVE" or frame_ready),
+        "active_camera_id": active_cam_id
+    }
+
+
 def set_camera_manager(camera_manager):
 
     global camera_manager_reference
 
     camera_manager_reference = camera_manager
+
+    if camera_manager is not None and hasattr(
+        camera_manager,
+        "set_active_stream_status_provider"
+    ):
+        camera_manager.set_active_stream_status_provider(
+            _get_active_stream_status
+        )
+
+
+camera_switch_callback = None
+
+
+def set_camera_switch_callback(callback):
+
+    global camera_switch_callback
+
+    camera_switch_callback = callback
 
 
 # ============================================================
@@ -217,6 +260,34 @@ def api_status():
         return jsonify(
             dict(status_data)
         )
+@app.route(
+    "/api/state",
+    methods=["GET"]
+)
+def api_state():
+    with status_lock:
+        return jsonify(dict(status_data))
+
+@app.route(
+    "/api/zones",
+    methods=["GET"]
+)
+def api_zones():
+    with status_lock:
+        zones = status_data.get("zones", [])
+        if not zones and _api_instance is not None and getattr(_api_instance, "zone_manager", None) is not None:
+            zones = _api_instance.zone_manager.get_zones()
+        elif not zones:
+            try:
+                from zones import PhysicalZoneManager
+                from venue import VenueConfig
+                _vc = VenueConfig.load()
+                zm = PhysicalZoneManager(_vc)
+                zones = zm.get_zones()
+            except Exception:
+                pass
+        return jsonify(zones if zones is not None else [])
+
 
 
 # ============================================================
@@ -283,6 +354,12 @@ def switch_camera(camera_id):
                     ""
                 )
             )
+
+            if camera_switch_callback is not None:
+                try:
+                    camera_switch_callback(camera)
+                except Exception as cb_err:
+                    print(f"Camera switch callback error: {cb_err}")
 
         return jsonify(
             result
@@ -454,25 +531,52 @@ def camera_stream(camera_id):
         )
 
     # --------------------------------------------------------
-    # MJPEG GENERATOR
+    # MJPEG GENERATOR (with cached JPEG and active fallback)
     # --------------------------------------------------------
 
     def generate():
+        last_cam_frame_bytes = None
 
         try:
 
             while True:
 
-                frame = (
-                    camera_manager.get_stream_frame(
-                        camera_id
+                frame_bytes = None
+
+                # 1. Try camera_manager worker frame
+                if camera_manager is not None:
+                    try:
+                        frame_bytes = camera_manager.get_stream_frame(
+                            camera_id
+                        )
+                    except Exception:
+                        frame_bytes = None
+
+                # 2. If camera_manager didn't yield a frame, or if this camera
+                # matches the active camera source, reuse the processed display frame.
+                if frame_bytes is None:
+                    cam_src = str(camera.get("source", "0")).strip()
+                    with status_lock:
+                        active_src = str(status_data.get("camera_source", "0")).strip()
+                    active_cam_id = getattr(camera_manager, "active_camera_id", None) if camera_manager else None
+
+                    is_active_cam = (
+                        cam_src == active_src
+                        or (cam_src.isdigit() and active_src.isdigit() and int(cam_src) == int(active_src))
+                        or (active_cam_id and camera_id == str(active_cam_id))
                     )
-                )
+                    if is_active_cam:
+                        frame_bytes = get_encoded_display_frame()
 
-                if frame is None:
-
-                    time.sleep(0.05)
+                if frame_bytes is None:
+                    time.sleep(0.03)
                     continue
+
+                if frame_bytes is last_cam_frame_bytes:
+                    time.sleep(0.012)
+                    continue
+
+                last_cam_frame_bytes = frame_bytes
 
                 yield (
                     b"--frame\r\n"
@@ -480,17 +584,13 @@ def camera_stream(camera_id):
                     b"Cache-Control: no-cache\r\n"
                     b"Pragma: no-cache\r\n"
                     b"\r\n"
-                    + frame
+                    + frame_bytes
                     + b"\r\n"
                 )
 
-                time.sleep(0.03)
+                time.sleep(0.01)
 
         except GeneratorExit:
-
-            # Browser closed the stream.
-            # The camera itself is NOT stopped here because
-            # another CrowdSense page may still be using it.
             return
 
         except Exception as error:
@@ -499,6 +599,7 @@ def camera_stream(camera_id):
                 f"Camera stream error "
                 f"{camera_id}: {error}"
             )
+            time.sleep(0.05)
 
     return Response(
         generate(),
@@ -507,10 +608,68 @@ def camera_stream(camera_id):
             "boundary=frame"
         ),
         headers={
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache"
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+            "X-Accel-Buffering": "no"
         }
     )
+
+
+# ============================================================
+# CACHED PROCESSED FRAME ENCODER
+# ============================================================
+
+_cached_encoded_display_frame = None
+_cached_frame_obj_id = None
+_cached_encode_lock = threading.Lock()
+
+
+def get_encoded_display_frame():
+
+    global _cached_encoded_display_frame
+    global _cached_frame_obj_id
+
+    if display_frame_provider is None:
+        return None
+
+    try:
+        frame = display_frame_provider()
+    except Exception:
+        return None
+
+    if frame is None:
+        return None
+
+    with _cached_encode_lock:
+
+        fid = id(frame)
+
+        if (
+            _cached_frame_obj_id == fid
+            and _cached_encoded_display_frame is not None
+        ):
+            return _cached_encoded_display_frame
+
+        try:
+            success, encoded = cv2.imencode(
+                ".jpg",
+                frame,
+                [
+                    int(cv2.IMWRITE_JPEG_QUALITY),
+                    75
+                ]
+            )
+
+            if success:
+                _cached_encoded_display_frame = encoded.tobytes()
+                _cached_frame_obj_id = fid
+                return _cached_encoded_display_frame
+
+        except Exception as error:
+            print(f"JPEG encode error: {error}")
+
+        return None
 
 
 # ============================================================
@@ -524,39 +683,23 @@ def camera_stream(camera_id):
 def dashboard_stream():
 
     def generate():
+        last_frame_bytes = None
 
         while True:
 
             try:
 
-                if display_frame_provider is None:
+                frame_bytes = get_encoded_display_frame()
 
-                    time.sleep(0.1)
+                if frame_bytes is None:
+                    time.sleep(0.03)
                     continue
 
-                frame = display_frame_provider()
-
-                if frame is None:
-
-                    time.sleep(0.05)
+                if frame_bytes is last_frame_bytes:
+                    time.sleep(0.012)
                     continue
 
-                # Frame is already processed by main.py:
-                # Camera → YOLO → Calibration → Zones → Risk
-
-                success, encoded = cv2.imencode(
-                    ".jpg",
-                    frame,
-                    [
-                        int(cv2.IMWRITE_JPEG_QUALITY),
-                        85
-                    ]
-                )
-
-                if not success:
-
-                    time.sleep(0.05)
-                    continue
+                last_frame_bytes = frame_bytes
 
                 yield (
                     b"--frame\r\n"
@@ -564,14 +707,13 @@ def dashboard_stream():
                     b"Cache-Control: no-cache\r\n"
                     b"Pragma: no-cache\r\n"
                     b"\r\n"
-                    + encoded.tobytes()
+                    + frame_bytes
                     + b"\r\n"
                 )
 
-                time.sleep(0.03)
+                time.sleep(0.01)
 
             except GeneratorExit:
-
                 return
 
             except Exception as error:
@@ -580,7 +722,7 @@ def dashboard_stream():
                     f"Dashboard stream error: {error}"
                 )
 
-                time.sleep(0.1)
+                time.sleep(0.05)
 
     return Response(
         generate(),
@@ -845,11 +987,37 @@ def data_file(filename):
 
 
 # ============================================================
+# STATIC FILES
+# ============================================================
+
+@app.route(
+    "/static/<path:filename>",
+    methods=["GET"]
+)
+def static_file(filename):
+
+    static_dir = os.path.join(
+        APP_FOLDER,
+        "static"
+    )
+
+    if not os.path.isdir(static_dir):
+        return ("Static folder not found.", 404)
+
+    return send_from_directory(
+        static_dir,
+        filename
+    )
+
+
+# ============================================================
 # API REGISTRATION
 # ============================================================
 
 _api_registered = False
 
+
+_api_instance = None
 
 def register_api(
     camera_manager=None,
@@ -863,53 +1031,108 @@ def register_api(
     calibration=None,
     camera_calibration_manager=None,
     report_manager=None,
-    report_exporter=None
+    report_exporter=None,
+    zone_manager=None
 ):
 
-    global _api_registered
+    global _api_registered, _api_instance
 
-    if _api_registered:
+    if venue_config is None and (_api_instance is None or _api_instance.venue_config is None):
+        try:
+            from venue import VenueConfig
+            venue_config = VenueConfig.load()
+        except Exception:
+            pass
+
+    if camera_manager is None and (_api_instance is None or _api_instance.camera_manager is None):
+        try:
+            from camera_manager import CameraManager
+            camera_manager = CameraManager()
+        except Exception:
+            pass
+
+    if alert_manager is None and (_api_instance is None or _api_instance.alert_manager is None):
+        try:
+            from alert_manager import AlertManager
+            alert_manager = AlertManager()
+        except Exception:
+            pass
+
+    if incident_manager is None and (_api_instance is None or _api_instance.incident_manager is None):
+        try:
+            from incident_manager import IncidentManager
+            incident_manager = IncidentManager()
+        except Exception:
+            pass
+
+    if session_manager is None and (_api_instance is None or _api_instance.session_manager is None):
+        try:
+            from session_manager import SessionManager
+            session_manager = SessionManager()
+        except Exception:
+            pass
+
+    if analytics_manager is None and (_api_instance is None or _api_instance.analytics_manager is None):
+        try:
+            from analytics_manager import AnalyticsManager
+            analytics_manager = AnalyticsManager()
+        except Exception:
+            pass
+
+    if report_manager is None and (_api_instance is None or _api_instance.report_manager is None):
+        try:
+            from report_manager import ReportManager
+            report_manager = ReportManager()
+        except Exception:
+            pass
+
+    if report_exporter is None and (_api_instance is None or _api_instance.report_exporter is None):
+        try:
+            from report_exporter import ReportExporter
+            report_exporter = ReportExporter()
+        except Exception:
+            pass
+
+    if camera_manager is not None:
+        set_camera_manager(camera_manager)
+
+    if _api_instance is not None:
+        _api_instance.update_managers(
+            camera_manager=camera_manager,
+            alert_manager=alert_manager,
+            incident_manager=incident_manager,
+            snapshot_manager=snapshot_manager,
+            session_manager=session_manager,
+            analytics_manager=analytics_manager,
+            graph_manager=graph_manager,
+            venue_config=venue_config,
+            calibration=calibration,
+            camera_calibration_manager=camera_calibration_manager,
+            report_manager=report_manager,
+            report_exporter=report_exporter,
+            zone_manager=zone_manager
+        )
         return
 
-    set_camera_manager(
-        camera_manager
-    )
-
-    CrowdSenseAPI(
+    _api_instance = CrowdSenseAPI(
         app=app,
-
         camera_manager=camera_manager,
-
         alert_manager=alert_manager,
-
         incident_manager=incident_manager,
-
         snapshot_manager=snapshot_manager,
-
         session_manager=session_manager,
-
         analytics_manager=analytics_manager,
-
         graph_manager=graph_manager,
-
         venue_config=venue_config,
-
         calibration=calibration,
-
-        camera_calibration_manager=(
-            camera_calibration_manager
-        ),
-
+        camera_calibration_manager=camera_calibration_manager,
         report_manager=report_manager,
-
-        report_exporter=report_exporter
+        report_exporter=report_exporter,
+        zone_manager=zone_manager
     )
 
     _api_registered = True
-
-    print(
-        "CrowdSense API registered."
-    )
+    print("CrowdSense API registered.")
 
 
 # ============================================================
@@ -1043,3 +1266,8 @@ def start_server(
         use_reloader=False,
         threaded=True
     )
+# Auto-register API endpoints so server routes are immediately ready
+try:
+    register_api()
+except Exception as _e:
+    print(f"Initial API auto-register deferred: {_e}")

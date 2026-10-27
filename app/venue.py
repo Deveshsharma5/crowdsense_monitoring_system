@@ -20,7 +20,8 @@ class VenueConfig:
         grid_size=5,
         zones=None,
         special_areas=None,
-        floorplan=None
+        floorplan=None,
+        zone_thresholds=None
     ):
 
         self.name = name
@@ -47,6 +48,10 @@ class VenueConfig:
         self.special_areas = special_areas or []
 
         self.floorplan = floorplan
+
+        self.zone_thresholds = (
+            zone_thresholds if isinstance(zone_thresholds, dict) else {}
+        )
 
 
     # ========================================================
@@ -98,6 +103,8 @@ class VenueConfig:
             "grid_size": self.grid_size,
 
             "zones": self.zones,
+
+            "zone_thresholds": self.zone_thresholds,
 
             "special_areas":
                 self.special_areas,
@@ -202,6 +209,11 @@ class VenueConfig:
                 floorplan=data.get(
                     "floorplan",
                     None
+                ),
+
+                zone_thresholds=data.get(
+                    "zone_thresholds",
+                    {}
                 )
             )
 

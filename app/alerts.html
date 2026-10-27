@@ -1,2314 +1,714 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CrowdSense - Alerts & Incidents</title>
-
+    <link rel="stylesheet" href="/static/css/common.css">
     <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background: #050505;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-            min-height: 100vh;
-        }
-
-        header {
-            height: 72px;
-            background: #080808;
-            border-bottom: 1px solid #202020;
+        .filter-bar {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 28px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            width: 38px;
-            height: 38px;
-            background: #00ff66;
-            color: #000;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .logo-text {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        .logo-text span {
-            color: #00ff66;
-        }
-
-        .back-button {
-            background: #111;
-            color: #aaa;
-            border: 1px solid #333;
-            padding: 9px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .back-button:hover {
-            color: white;
-            border-color: #00ff66;
-        }
-
-        main {
-            max-width: 1550px;
-            margin: auto;
-            padding: 28px;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 22px;
-        }
-
-        .page-title h1 {
-            font-size: 27px;
-            margin-bottom: 5px;
-        }
-
-        .page-title p {
-            color: #777;
-            font-size: 13px;
-        }
-
-        .summary {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .summary-card {
-            background: #0b0b0b;
-            border: 1px solid #202020;
-            border-radius: 9px;
-            padding: 18px;
-        }
-
-        .summary-label {
-            color: #777;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .summary-value {
-            font-size: 30px;
-            font-weight: bold;
-            margin-top: 8px;
-        }
-
-        .green {
-            color: #00ff66;
-        }
-
-        .yellow {
-            color: #ffd400;
-        }
-
-        .red {
-            color: #ff3333;
-        }
-
-        .filter-panel {
-            background: #0b0b0b;
-            border: 1px solid #202020;
-            border-radius: 9px;
-            padding: 17px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
             flex-wrap: wrap;
-        }
-
-        .filter-label {
-            color: #777;
-            font-size: 11px;
-            text-transform: uppercase;
-            margin-right: 4px;
-        }
-
-        select,
-        input {
-            background: #050505;
-            color: white;
-            border: 1px solid #333;
-            border-radius: 5px;
-            padding: 9px 11px;
-            outline: none;
-            font-family: inherit;
-        }
-
-        select:focus,
-        input:focus {
-            border-color: #00ff66;
-        }
-
-        .refresh-button {
-            background: #151515;
-            color: #aaa;
-            border: 1px solid #333;
-            padding: 9px 14px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .refresh-button:hover {
-            color: white;
-            border-color: #00ff66;
-        }
-
-        .panel {
-            background: #0b0b0b;
-            border: 1px solid #202020;
-            border-radius: 9px;
-            overflow: hidden;
             margin-bottom: 20px;
+            padding: 14px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
         }
-
-        .panel-header {
-            min-height: 56px;
-            padding: 12px 18px;
-            border-bottom: 1px solid #202020;
+        .filter-pills {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .filter-pill {
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+        }
+        .filter-pill:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-emerald);
+        }
+        .filter-pill.active {
+            background: rgba(16, 185, 129, 0.18);
+            border-color: var(--accent-emerald);
+            color: var(--accent-emerald);
+        }
+        .filter-pill.active.pill-critical {
+            background: rgba(239, 68, 68, 0.18);
+            border-color: var(--accent-critical);
+            color: var(--accent-critical);
+        }
+        .filter-pill.active.pill-surge {
+            background: rgba(168, 85, 247, 0.18);
+            border-color: var(--accent-surge);
+            color: var(--accent-surge);
+        }
+        .filter-pill.active.pill-warning {
+            background: rgba(245, 158, 11, 0.18);
+            border-color: var(--accent-warning);
+            color: var(--accent-warning);
+        }
+        .filter-input {
+            margin-left: auto;
+            width: 200px;
+            padding: 7px 12px;
+            font-size: 12px;
+        }
+        .alert-card-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-warning);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1.5fr auto;
+            gap: 20px;
+            align-items: center;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+        .alert-card-item:hover {
+            transform: translateY(-1px);
+        }
+        .alert-card-item.critical {
+            border-left-color: var(--accent-critical);
+            box-shadow: 0 0 16px rgba(239, 68, 68, 0.08);
+        }
+        .alert-card-item.warning {
+            border-left-color: var(--accent-warning);
+        }
+        .alert-card-item.surge {
+            border-left-color: var(--accent-surge);
+            box-shadow: 0 0 16px rgba(168, 85, 247, 0.08);
+        }
+        .alert-card-item.safe, .alert-card-item.normal {
+            border-left-color: var(--accent-emerald);
+        }
+        .alert-zone-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 4px;
         }
-
-        .panel-header h2 {
-            font-size: 15px;
-        }
-
-        .panel-header span {
-            color: #666;
+        .alert-id-tag {
             font-size: 11px;
-        }
-
-        .alert-list {
-            padding: 15px;
-        }
-
-        .alert-item {
-            background: #111;
-            border: 1px solid #252525;
-            border-left: 4px solid #ffd400;
-            border-radius: 7px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr auto;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .alert-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .alert-item.critical {
-            border-left-color: #ff3333;
-        }
-
-        .alert-item.warning {
-            border-left-color: #ffd400;
-        }
-
-        .alert-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 6px;
-        }
-
-        .alert-id {
-            color: #555;
-            font-size: 9px;
-            margin-top: 5px;
+            color: var(--text-secondary);
             font-weight: normal;
         }
-
-        .alert-meta {
-            color: #777;
-            font-size: 11px;
-            line-height: 1.7;
-        }
-
-        .risk-badge {
-            display: inline-block;
-            padding: 5px 8px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: bold;
-        }
-
-        .risk-badge.critical {
-            background: #3a0d0d;
-            color: #ff3333;
-        }
-
-        .risk-badge.warning {
-            background: #332b0c;
-            color: #ffd400;
-        }
-
-        .action-button {
-            background: #181818;
-            color: #aaa;
-            border: 1px solid #333;
-            padding: 8px 11px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 10px;
-        }
-
-        .action-button:hover {
-            color: white;
-            border-color: #00ff66;
-        }
-
-        .action-button.acknowledged {
-            color: #ffd400;
-            border-color: #665800;
-            cursor: default;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            color: #666;
-            font-size: 10px;
-            text-transform: uppercase;
-            text-align: left;
-            padding: 13px 12px;
-            border-bottom: 1px solid #222;
-        }
-
-        td {
-            color: #aaa;
-            font-size: 11px;
-            padding: 13px 12px;
-            border-bottom: 1px solid #1b1b1b;
-        }
-
-        tr:hover td {
-            background: #111;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 5px 8px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: bold;
-        }
-
-        .status-open {
-            background: #3a0d0d;
-            color: #ff3333;
-        }
-
-        .status-acknowledged {
-            background: #332b0c;
-            color: #ffd400;
-        }
-
-        .status-closed {
-            background: #10351e;
-            color: #00ff66;
-        }
-
-        .snapshot {
-            color: #00ff66;
-            cursor: pointer;
-            text-decoration: underline;
-            font-weight: bold;
-        }
-
-        .snapshot:hover {
-            color: white;
-        }
-
-        .no-snapshot {
-            color: #555;
-        }
-
-        .empty {
-            padding: 45px 20px;
-            text-align: center;
-            color: #555;
-            font-size: 13px;
-        }
-
-        #message {
-            position: fixed;
-            right: 25px;
-            bottom: 25px;
-            background: #111;
-            border: 1px solid #333;
-            padding: 13px 17px;
-            border-radius: 6px;
+        .alert-meta-text {
             font-size: 12px;
-            display: none;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .alert-meta-text strong {
+            color: var(--text-primary);
+        }
+        .toast-notify {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
             z-index: 1000;
+            display: none;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            animation: fadeIn 0.2s ease;
         }
-
-        #message.success {
-            border-color: #00ff66;
-            color: #00ff66;
+        .toast-notify.success {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-emerald);
+            color: var(--accent-emerald);
         }
-
-        #message.error {
-            border-color: #ff3333;
-            color: #ff3333;
+        .toast-notify.error {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-critical);
+            color: var(--accent-critical);
         }
-
-        @media(max-width: 1000px) {
-
-            .summary {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .alert-item {
-                grid-template-columns: 1fr 1fr;
-            }
-
+        .badge-surge {
+            background: rgba(168, 85, 247, 0.18);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: var(--accent-surge);
         }
-
-        @media(max-width: 650px) {
-
-            header {
-                padding: 0 15px;
-            }
-
-            main {
-                padding: 18px 14px;
-            }
-
-            .summary {
-                grid-template-columns: 1fr;
-            }
-
-            .alert-item {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
     </style>
-
 </head>
-
-
 <body>
 
-
-<header>
-
-    <div class="logo">
-
-        <div class="logo-icon">
-            C
+    <header class="app-header">
+        <div class="logo">
+            <div class="logo-icon">C</div>
+            <div class="logo-text">Crowd<span>Sense</span></div>
         </div>
-
-        <div class="logo-text">
-            CROWD<span>SENSE</span>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="goBack()">Back</button>
+            <button class="btn btn-secondary" onclick="refreshPage()">Refresh</button>
         </div>
+    </header>
 
-    </div>
+    <nav class="app-nav">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/cameras">Cameras</a>
+        <a href="/zones">Zones</a>
+        <a href="/alerts" class="active">Alerts</a>
+        <a href="/analytics">Analytics</a>
+        <a href="/reports">Reports</a>
+        <a href="/session">Sessions</a>
+        <a href="/venue">Venue</a>
+        <a href="/calibration">Calibration</a>
+        <a href="/admin">Admin</a>
+    </nav>
 
+    <main class="page-container">
 
-    <button
-        class="back-button"
-        onclick="goDashboard()"
-    >
-        ← Dashboard
-    </button>
-
-</header>
-
-
-<main>
-
-
-    <div class="page-header">
-
-        <div class="page-title">
-
-            <h1>Alerts & Incidents</h1>
-
-            <p>
-                Crowd safety alerts, incidents and snapshots
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <!-- ====================================================
-         SUMMARY
-    ===================================================== -->
-
-    <section class="summary">
-
-        <div class="summary-card">
-
-            <div class="summary-label">
-                Total Alerts
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Alerts & Incidents</h1>
+                <p class="page-subtitle">Real-time anomaly monitoring, automated threshold alerts and historical incident records</p>
             </div>
-
-            <div
-                class="summary-value"
-                id="totalAlerts"
-            >
-                0
+            <div>
+                <span class="badge badge-emerald" id="livePill">Live Monitoring</span>
             </div>
-
         </div>
 
-
-        <div class="summary-card">
-
-            <div class="summary-label">
-                Warnings
+        <div class="kpi-grid">
+            <div class="card">
+                <div class="card-title">Total Active Alerts</div>
+                <div class="card-value" id="totalAlerts">0</div>
+                <div class="card-hint">Open alerts in system</div>
             </div>
-
-            <div
-                class="summary-value yellow"
-                id="warningAlerts"
-            >
-                0
+            <div class="card">
+                <div class="card-title">Critical Alerts</div>
+                <div class="card-value value-critical" id="criticalAlerts">0</div>
+                <div class="card-hint">Immediate action required</div>
             </div>
-
+            <div class="card">
+                <div class="card-title">Warning Alerts</div>
+                <div class="card-value value-warning" id="warningAlerts">0</div>
+                <div class="card-hint">Approaching critical capacity</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Recorded Incidents</div>
+                <div class="card-value" id="totalIncidents" style="color:var(--accent-surge)">0</div>
+                <div class="card-hint">Logged event entries</div>
+            </div>
         </div>
 
-
-        <div class="summary-card">
-
-            <div class="summary-label">
-                Critical
+        <div class="filter-bar">
+            <span style="font-size:12px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">Filter:</span>
+            <div class="filter-pills">
+                <div class="filter-pill active" data-filter="ALL" onclick="setRiskFilter('ALL')">All Alerts</div>
+                <div class="filter-pill pill-critical" data-filter="CRITICAL" onclick="setRiskFilter('CRITICAL')">Critical</div>
+                <div class="filter-pill pill-surge" data-filter="SURGE" onclick="setRiskFilter('SURGE')">Surge</div>
+                <div class="filter-pill pill-warning" data-filter="WARNING" onclick="setRiskFilter('WARNING')">Warning</div>
+                <div class="filter-pill" data-filter="UNACKNOWLEDGED" onclick="setRiskFilter('UNACKNOWLEDGED')">Unacknowledged</div>
             </div>
+            <input type="text" id="zoneFilter" class="filter-input" placeholder="Search zone ID..." oninput="renderAlerts()">
+            <button class="btn btn-secondary" onclick="refreshAll()" style="padding:6px 14px; font-size:12px;">Reload</button>
+            <button class="btn btn-primary" onclick="acknowledgeAllAlerts()" style="padding:6px 14px; font-size:12px;">Acknowledge All</button>
+        </div>
 
-            <div
-                class="summary-value red"
-                id="criticalAlerts"
-            >
-                0
+        <div class="card mb-4">
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h2 class="card-title" style="font-size:15px; color:var(--text-primary); font-weight:600;">Active Alerts Feed</h2>
+                    <div style="font-size:12px; color:var(--text-secondary);" id="alertCount">0 alerts</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="acknowledgeAllAlerts()">Acknowledge All Open Alerts</button>
             </div>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <div class="summary-label">
-                Incidents
+            <div id="alertList" style="padding:16px;">
+                <div class="text-secondary" style="text-align:center; padding:30px;">Loading alerts...</div>
             </div>
+        </div>
 
-            <div
-                class="summary-value"
-                id="totalIncidents"
-            >
-                0
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title" style="font-size:15px; color:var(--text-primary); font-weight:600;">Incident History Log</h2>
+                    <div style="font-size:12px; color:var(--text-secondary);" id="incidentCount">0 incidents</div>
+                </div>
             </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ====================================================
-         FILTERS
-    ===================================================== -->
-
-    <section class="filter-panel">
-
-        <span class="filter-label">
-            Risk
-        </span>
-
-
-        <select id="riskFilter">
-
-            <option value="ALL">
-                All
-            </option>
-
-            <option value="WARNING">
-                Warning
-            </option>
-
-            <option value="CRITICAL">
-                Critical
-            </option>
-
-        </select>
-
-
-        <span class="filter-label">
-            Zone
-        </span>
-
-
-        <input
-            id="zoneFilter"
-            type="text"
-            placeholder="Zone ID"
-        >
-
-
-        <button
-            class="refresh-button"
-            onclick="refreshAll()"
-        >
-            Refresh
-        </button>
-
-    </section>
-
-
-    <!-- ====================================================
-         ALERTS
-    ===================================================== -->
-
-    <section class="panel">
-
-        <div class="panel-header">
-
-            <h2>
-                Recent Alerts
-            </h2>
-
-            <span id="alertCount">
-                0 alerts
-            </span>
-
-        </div>
-
-
-        <div
-            class="alert-list"
-            id="alertList"
-        >
-
-            <div class="empty">
-                Loading alerts...
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Incident ID</th>
+                            <th>Alert ID</th>
+                            <th>Timestamp</th>
+                            <th>Severity</th>
+                            <th>Zone</th>
+                            <th>Camera</th>
+                            <th>Status</th>
+                            <th>Snapshot</th>
+                        </tr>
+                    </thead>
+                    <tbody id="incidentTable">
+                        <tr>
+                            <td colspan="8" class="text-secondary" style="text-align:center; padding:24px;">Loading incident logs...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-
         </div>
 
-    </section>
+    </main>
 
+    <div id="toastMessage" class="toast-notify"></div>
 
-    <!-- ====================================================
-         INCIDENTS
-    ===================================================== -->
+    <script>
+        let alerts = [];
+        let incidents = [];
+        let snapshots = [];
+        let currentFilter = "ALL";
 
-    <section class="panel">
+        function goBack() {
+            if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+                window.history.back();
+            } else {
+                window.location.href = "/dashboard";
+            }
+        }
 
-        <div class="panel-header">
+        function refreshPage() {
+            refreshAll();
+        }
 
-            <h2>
-                Incident History
-            </h2>
+        function setRiskFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll(".filter-pill").forEach(p => {
+                p.classList.toggle("active", p.getAttribute("data-filter") === filter);
+            });
+            renderAlerts();
+        }
 
-            <span id="incidentCount">
-                0 incidents
-            </span>
+        async function apiFetch(url, options = {}) {
+            try {
+                const res = await fetch(url + (url.includes("?") ? "&" : "?") + "_=" + Date.now(), options);
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                return await res.json();
+            } catch (err) {
+                console.warn("API request failed:", url, err);
+                return null;
+            }
+        }
 
-        </div>
+        function getTimestamp(value) {
+            if (!value) return 0;
+            const t = new Date(value).getTime();
+            return isNaN(t) ? 0 : t;
+        }
 
+        async function loadAlerts() {
+            const data = await apiFetch("/api/alerts");
+            if (!data) return;
+            alerts = Array.isArray(data) ? data : (data.alerts || data.data || []);
+            alerts.sort((a, b) => getTimestamp(b.timestamp) - getTimestamp(a.timestamp));
+            updateAlertSummary();
+            renderAlerts();
+        }
 
-        <div class="table-container">
+        async function loadSnapshots() {
+            const data = await apiFetch("/api/snapshots");
+            if (!data) { snapshots = []; return; }
+            snapshots = Array.isArray(data) ? data : (data.snapshots || data.data || []);
+            snapshots.sort((a, b) => getTimestamp(b.timestamp) - getTimestamp(a.timestamp));
+        }
 
-            <table>
+        async function loadIncidents() {
+            const data = await apiFetch("/api/incidents");
+            if (!data) return;
+            incidents = Array.isArray(data) ? data : (data.incidents || data.data || []);
+            incidents.sort((a, b) => {
+                const td = getTimestamp(b.timestamp) - getTimestamp(a.timestamp);
+                if (td !== 0) return td;
+                const aId = parseInt(String(a.incident_id || a.id || "").replace(/\D/g, ""), 10) || 0;
+                const bId = parseInt(String(b.incident_id || b.id || "").replace(/\D/g, ""), 10) || 0;
+                return bId - aId;
+            });
+            document.getElementById("totalIncidents").textContent = incidents.length;
+            document.getElementById("incidentCount").textContent = incidents.length + (incidents.length === 1 ? " incident" : " incidents");
+            renderIncidents();
+        }
 
-                <thead>
+        function updateAlertSummary() {
+            const warnings = alerts.filter(a => String(a.risk || "").toUpperCase() === "WARNING").length;
+            const critical = alerts.filter(a => String(a.risk || "").toUpperCase() === "CRITICAL").length;
+            document.getElementById("totalAlerts").textContent = alerts.length;
+            document.getElementById("warningAlerts").textContent = warnings;
+            document.getElementById("criticalAlerts").textContent = critical;
+            document.getElementById("alertCount").textContent = alerts.length + (alerts.length === 1 ? " alert" : " alerts");
+        }
 
-                    <tr>
+        function getFilteredAlerts() {
+            const zoneQuery = document.getElementById("zoneFilter").value.trim().toLowerCase();
+            return alerts.filter(alert => {
+                const r = String(alert.risk || "").toUpperCase();
+                const s = String(alert.status || "OPEN").toUpperCase();
 
-                        <th>Incident</th>
-                        <th>Alert</th>
-                        <th>Time</th>
-                        <th>Risk</th>
-                        <th>Zone</th>
-                        <th>Camera</th>
-                        <th>Status</th>
-                        <th>Snapshot</th>
+                if (currentFilter === "CRITICAL" && r !== "CRITICAL") return false;
+                if (currentFilter === "WARNING" && r !== "WARNING") return false;
+                if (currentFilter === "SURGE" && r !== "SURGE" && !String(alert.message || "").toLowerCase().includes("surge")) return false;
+                if (currentFilter === "UNACKNOWLEDGED" && s === "ACKNOWLEDGED") return false;
 
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="incidentTable">
-
-                    <tr>
-
-                        <td
-                            colspan="8"
-                            class="empty"
-                        >
-                            Loading incidents...
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </section>
-
-
-</main>
-
-
-<div id="message"></div>
-
-
-<script>
-
-
-/* ==========================================================
-   STATE
-========================================================== */
-
-let alerts = [];
-
-let incidents = [];
-
-let snapshots = [];
-
-
-/* ==========================================================
-   API FETCH
-========================================================== */
-
-async function apiFetch(
-    url,
-    options = {}
-) {
-
-    try {
-
-        const response =
-            await fetch(
-                url,
-                {
-                    cache: "no-store",
-                    ...options
+                if (zoneQuery && String(alert.zone_id || "").toLowerCase().indexOf(zoneQuery) === -1) {
+                    return false;
                 }
-            );
+                return true;
+            });
+        }
 
+        function renderAlerts() {
+            const container = document.getElementById("alertList");
+            const filtered = getFilteredAlerts();
 
-        if (!response.ok) {
+            if (!filtered.length) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:35px 20px; color:var(--text-secondary);">
+                        <div style="font-weight:600; font-size:14px; margin-bottom:4px; color:var(--accent-emerald);">All Clear</div>
+                        <div>No alerts matching the selected filters.</div>
+                    </div>
+                `;
+                return;
+            }
 
-            let errorText = "";
+            container.innerHTML = "";
+            filtered.slice(0, 50).forEach(alert => {
+                const risk = String(alert.risk || "WARNING").toUpperCase();
+                const alertId = alert.alert_id || alert.id || "";
+                const status = String(alert.status || "OPEN").toUpperCase();
+                const isSurge = risk === "SURGE" || String(alert.message || "").toLowerCase().includes("surge");
+
+                let riskBadgeClass = "badge-emerald";
+                let cardClass = "safe";
+                if (risk === "CRITICAL") {
+                    riskBadgeClass = "badge-critical";
+                    cardClass = "critical";
+                } else if (risk === "WARNING") {
+                    riskBadgeClass = "badge-warning";
+                    cardClass = "warning";
+                } else if (isSurge) {
+                    riskBadgeClass = "badge-surge";
+                    cardClass = "surge";
+                }
+
+                const el = document.createElement("div");
+                el.className = `alert-card-item ${cardClass}`;
+                el.innerHTML = `
+                    <div>
+                        <div class="alert-zone-title">
+                            <span>Zone ${escapeHtml(alert.zone_id || "UNKNOWN")}</span>
+                            <span class="alert-id-tag">#${escapeHtml(alertId || "-")}</span>
+                        </div>
+                        <div class="alert-meta-text">
+                            Time: <strong>${escapeHtml(alert.timestamp || "-")}</strong><br>
+                            Camera: <strong>${escapeHtml(alert.camera_id || "-")}</strong>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="badge ${riskBadgeClass}">${escapeHtml(risk)}</span>
+                        <div class="alert-meta-text" style="margin-top:8px;">
+                            People: <strong>${alert.people ?? 0}</strong> &bull; Density: <strong>${Number(alert.density || 0).toFixed(2)}</strong>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="alert-meta-text" style="color:var(--text-primary); font-weight:500;">
+                            ${alert.special_type ? `[Area: ${escapeHtml(alert.special_type)}] ` : ""}${escapeHtml(alert.message || "Crowd density threshold exceeded.")}
+                        </div>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; justify-content:center; align-items:flex-end;">
+                        ${status === "ACKNOWLEDGED" ? `
+                            <button class="btn btn-secondary" disabled style="opacity:0.6; cursor:default; font-size:12px; width:100%;">Acknowledged</button>
+                        ` : `
+                            <button class="btn btn-primary" onclick="acknowledgeAlert('${escapeJs(alertId)}')" style="font-size:12px; width:100%;">Acknowledge</button>
+                        `}
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function extractSnapshotFilename(value) {
+            if (value === null || value === undefined) return null;
+            const text = String(value).replace(/\\/g, "/").trim();
+            if (!text) return null;
+            const fn = text.split("/").pop().trim();
+            if (!fn) return null;
+            const lower = fn.toLowerCase();
+            if (lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png")) {
+                return fn;
+            }
+            return null;
+        }
+
+        function findSnapshotForIncident(incident) {
+            const directFields = [
+                incident.snapshot_path,
+                incident.snapshot,
+                incident.snapshot_file,
+                incident.snapshot_filename,
+                incident.file_path,
+                incident.filename
+            ];
+            for (const field of directFields) {
+                const fn = extractSnapshotFilename(field);
+                if (fn) return { filename: fn, timestamp: incident.timestamp || "" };
+            }
+
+            const statusSnapshot = extractSnapshotFilename(incident.status);
+            if (statusSnapshot) {
+                return { filename: statusSnapshot, timestamp: incident.timestamp || "" };
+            }
+
+            if (!snapshots.length) return null;
+            const zone = String(incident.zone_id || "").trim().toUpperCase();
+            const risk = String(incident.risk || "").trim().toUpperCase();
+            if (!zone || !risk) return null;
+
+            const candidates = snapshots.filter(s => {
+                const fn = String(s.filename || "").toUpperCase();
+                return fn.includes("ZONE_" + zone + "_") && (fn.endsWith("_" + risk + ".JPG") || fn.endsWith("_" + risk + ".JPEG") || fn.endsWith("_" + risk + ".PNG"));
+            });
+
+            if (!candidates.length) return null;
+            const incidentTime = getTimestamp(incident.timestamp);
+            if (!incidentTime) return candidates[0];
+
+            let bestSnapshot = null;
+            let bestDiff = Infinity;
+            candidates.forEach(c => {
+                const st = getTimestamp(c.timestamp);
+                if (!st) return;
+                const diff = Math.abs(st - incidentTime);
+                if (diff < bestDiff) {
+                    bestDiff = diff;
+                    bestSnapshot = c;
+                }
+            });
+
+            if (!bestSnapshot) return candidates[0];
+            if (bestDiff > 10 * 60 * 1000) return null;
+            return bestSnapshot;
+        }
+
+        function getIncidentStatus(incident) {
+            const raw = String(incident.status || "").trim();
+            if (extractSnapshotFilename(raw)) return "OPEN";
+            const norm = raw.toUpperCase();
+            if (norm === "OPEN" || norm === "ACKNOWLEDGED" || norm === "CLOSED") return norm;
+            return "OPEN";
+        }
+
+        function renderIncidents() {
+            const table = document.getElementById("incidentTable");
+            if (!incidents.length) {
+                table.innerHTML = `<tr><td colspan="8" class="text-secondary" style="text-align:center; padding:24px;">No incident records available.</td></tr>`;
+                return;
+            }
+
+            table.innerHTML = "";
+            incidents.slice(0, 100).forEach(incident => {
+                const risk = String(incident.risk || "WARNING").toUpperCase();
+                const status = getIncidentStatus(incident);
+                const snapshot = findSnapshotForIncident(incident);
+
+                let badgeClass = "badge-warning";
+                if (risk === "CRITICAL") badgeClass = "badge-critical";
+                else if (risk === "SAFE") badgeClass = "badge-emerald";
+                else if (risk === "SURGE") badgeClass = "badge-surge";
+
+                let statusBadgeClass = "badge-warning";
+                if (status === "ACKNOWLEDGED") statusBadgeClass = "badge-emerald";
+                else if (status === "CLOSED") statusBadgeClass = "badge-neutral";
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(incident.incident_id || incident.id || "-")}</strong></td>
+                    <td class="text-secondary">${escapeHtml(incident.alert_id || "-")}</td>
+                    <td>${escapeHtml(incident.timestamp || "-")}</td>
+                    <td><span class="badge ${badgeClass}">${escapeHtml(risk)}</span></td>
+                    <td>Zone ${escapeHtml(incident.zone_id || "-")}</td>
+                    <td>${escapeHtml(incident.camera_id || "-")}</td>
+                    <td><span class="badge ${statusBadgeClass}">${escapeHtml(status)}</span></td>
+                    <td>
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            ${snapshot ? `
+                                <button class="btn btn-secondary" onclick="showSnapshot('${escapeJs(snapshot.filename)}')" style="padding:4px 10px; font-size:11px;">View Snapshot</button>
+                            ` : `<span class="text-secondary" style="font-size:12px;">None</span>`}
+                            ${status === "OPEN" && (incident.incident_id || incident.id) ? `
+                                <button class="btn btn-secondary" onclick="acknowledgeIncident('${escapeJs(incident.incident_id || incident.id)}')" style="padding:4px 8px; font-size:11px;">Acknowledge</button>
+                            ` : ``}
+                        </div>
+                    </td>
+                `;
+                table.appendChild(tr);
+            });
+        }
+
+        async function acknowledgeAlert(alertId) {
+            if (!alertId) {
+                showToast("Alert ID missing", "error");
+                return;
+            }
+            // Immediate optimistic UI update
+            const alertObj = alerts.find(a => String(a.alert_id || a.id || "").toUpperCase() === String(alertId).toUpperCase());
+            if (alertObj) {
+                alertObj.status = "ACKNOWLEDGED";
+                renderAlerts();
+            }
 
             try {
+                const res = await fetch("/api/alerts/" + encodeURIComponent(alertId) + "/acknowledge", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                });
+                const data = await res.json().catch(() => null);
 
-                errorText =
-                    await response.text();
+                if (!res.ok || !data || data.success === false) {
+                    // Revert if failed
+                    if (alertObj) {
+                        alertObj.status = "OPEN";
+                        renderAlerts();
+                    }
+                    showToast(data ? (data.error || "Acknowledgement failed") : "Server returned error", "error");
+                    return;
+                }
 
-            } catch(error) {
-
-                errorText = "";
-
+                showToast("Alert " + alertId + " acknowledged", "success");
+                await refreshAll();
+            } catch (err) {
+                if (alertObj) {
+                    alertObj.status = "OPEN";
+                    renderAlerts();
+                }
+                showToast("Network error acknowledging alert", "error");
             }
-
-            throw new Error(
-                "HTTP " +
-                response.status +
-                (
-                    errorText
-                        ? " - " + errorText
-                        : ""
-                )
-            );
-
         }
 
-
-        return await response.json();
-
-    }
-
-    catch(error) {
-
-        console.error(
-            "API error:",
-            error
-        );
-
-        return null;
-
-    }
-
-}
-
-
-/* ==========================================================
-   DATE PARSER
-========================================================== */
-
-function getTimestamp(
-    value
-) {
-
-    if (!value) {
-        return 0;
-    }
-
-
-    const text =
-        String(value)
-            .trim()
-            .replace(
-                " ",
-                "T"
-            );
-
-
-    const timestamp =
-        new Date(text).getTime();
-
-
-    if (
-        Number.isNaN(
-            timestamp
-        )
-    ) {
-
-        return 0;
-
-    }
-
-
-    return timestamp;
-
-}
-
-
-/* ==========================================================
-   LOAD ALERTS
-========================================================== */
-
-async function loadAlerts() {
-
-    const data =
-        await apiFetch(
-            "/api/alerts"
-        );
-
-
-    if (!data) {
-
-        document.getElementById(
-            "alertList"
-        ).innerHTML = `
-
-            <div class="empty">
-                Alert API unavailable
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    alerts =
-        Array.isArray(data)
-            ? data
-            : (
-                data.alerts ||
-                data.data ||
-                []
-            );
-
-
-    alerts.sort(
-        (a, b) =>
-            getTimestamp(
-                b.timestamp
-            )
-            -
-            getTimestamp(
-                a.timestamp
-            )
-    );
-
-
-    updateAlertSummary();
-
-    renderAlerts();
-
-}
-
-
-/* ==========================================================
-   LOAD SNAPSHOTS
-========================================================== */
-
-async function loadSnapshots() {
-
-    /*
-     * Snapshot listing is only a fallback for old incidents.
-     *
-     * New incidents use the exact snapshot path stored
-     * inside the incident itself.
-     */
-
-    const data =
-        await apiFetch(
-            "/api/snapshots"
-        );
-
-
-    if (!data) {
-
-        snapshots = [];
-
-        return;
-
-    }
-
-
-    snapshots =
-        Array.isArray(data)
-            ? data
-            : (
-                data.snapshots ||
-                data.data ||
-                []
-            );
-
-
-    snapshots.sort(
-        (a, b) =>
-            getTimestamp(
-                b.timestamp
-            )
-            -
-            getTimestamp(
-                a.timestamp
-            )
-    );
-
-}
-
-
-/* ==========================================================
-   ALERT SUMMARY
-========================================================== */
-
-function updateAlertSummary() {
-
-    const warnings =
-        alerts.filter(
-            alert =>
-                String(
-                    alert.risk || ""
-                ).toUpperCase()
-                === "WARNING"
-        ).length;
-
-
-    const critical =
-        alerts.filter(
-            alert =>
-                String(
-                    alert.risk || ""
-                ).toUpperCase()
-                === "CRITICAL"
-        ).length;
-
-
-    document.getElementById(
-        "totalAlerts"
-    ).textContent =
-        alerts.length;
-
-
-    document.getElementById(
-        "warningAlerts"
-    ).textContent =
-        warnings;
-
-
-    document.getElementById(
-        "criticalAlerts"
-    ).textContent =
-        critical;
-
-
-    document.getElementById(
-        "alertCount"
-    ).textContent =
-        alerts.length +
-        (
-            alerts.length === 1
-                ? " alert"
-                : " alerts"
-        );
-
-}
-
-
-/* ==========================================================
-   FILTER
-========================================================== */
-
-function getFilteredAlerts() {
-
-    const risk =
-        document.getElementById(
-            "riskFilter"
-        ).value;
-
-
-    const zone =
-        document.getElementById(
-            "zoneFilter"
-        ).value
-        .trim()
-        .toLowerCase();
-
-
-    return alerts.filter(
-        alert => {
-
-            const alertRisk =
-                String(
-                    alert.risk || ""
-                ).toUpperCase();
-
-
-            if (
-                risk !== "ALL" &&
-                alertRisk !== risk
-            ) {
-
-                return false;
-
-            }
-
-
-            if (
-                zone &&
-                String(
-                    alert.zone_id || ""
-                )
-                .toLowerCase()
-                .indexOf(zone) === -1
-            ) {
-
-                return false;
-
-            }
-
-
-            return true;
-
-        }
-    );
-
-}
-
-
-/* ==========================================================
-   RENDER ALERTS
-========================================================== */
-
-function renderAlerts() {
-
-    const container =
-        document.getElementById(
-            "alertList"
-        );
-
-
-    const filtered =
-        getFilteredAlerts();
-
-
-    if (!filtered.length) {
-
-        container.innerHTML = `
-
-            <div class="empty">
-                No alerts match the selected filters.
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    container.innerHTML = "";
-
-
-    filtered
-        .slice(0, 50)
-        .forEach(
-            alert => {
-
-                const risk =
-                    String(
-                        alert.risk ||
-                        "WARNING"
-                    ).toUpperCase();
-
-
-                const alertId =
-                    alert.alert_id ||
-                    alert.id ||
-                    "";
-
-
-                const status =
-                    String(
-                        alert.status ||
-                        "OPEN"
-                    ).toUpperCase();
-
-
-                const element =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                element.className =
-                    "alert-item " +
-                    risk.toLowerCase();
-
-
-                element.innerHTML = `
-
-                    <div>
-
-                        <div class="alert-title">
-
-                            Zone
-                            ${escapeHtml(
-                                alert.zone_id ||
-                                "UNKNOWN"
-                            )}
-
-                            <div class="alert-id">
-
-                                Alert ID:
-                                ${escapeHtml(
-                                    alertId ||
-                                    "-"
-                                )}
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="alert-meta">
-
-                            Time:
-                            ${escapeHtml(
-                                alert.timestamp ||
-                                "-"
-                            )}
-
-                            <br>
-
-                            Camera:
-                            ${escapeHtml(
-                                alert.camera_id ||
-                                "-"
-                            )}
-
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        <span
-                            class="
-                                risk-badge
-                                ${risk.toLowerCase()}
-                            "
-                        >
-                            ${escapeHtml(
-                                risk
-                            )}
-                        </span>
-
-
-                        <div
-                            class="alert-meta"
-                            style="margin-top:7px;"
-                        >
-
-                            People:
-                            ${alert.people ?? 0}
-
-                            <br>
-
-                            Density:
-                            ${Number(
-                                alert.density || 0
-                            ).toFixed(2)}
-
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        <div class="alert-meta">
-
-                            ${
-                                alert.special_type
-                                    ? `
-                                        Special area:
-                                        ${escapeHtml(
-                                            alert.special_type
-                                        )}
-                                      `
-                                    : "Normal zone"
-                            }
-
-                        </div>
-
-
-                        <div
-                            class="alert-meta"
-                            style="margin-top:5px;"
-                        >
-
-                            ${
-                                alert.message
-                                    ? escapeHtml(
-                                        alert.message
-                                    )
-                                    : "Crowd density threshold exceeded."
-                            }
-
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        ${
-                            status === "ACKNOWLEDGED"
-                                ? `
-                                    <button
-                                        class="
-                                            action-button
-                                            acknowledged
-                                        "
-                                        disabled
-                                    >
-                                        Acknowledged
-                                    </button>
-                                  `
-                                : `
-                                    <button
-                                        class="action-button"
-                                        onclick="
-                                            acknowledgeAlert(
-                                                '${escapeJs(
-                                                    alertId
-                                                )}'
-                                            )
-                                        "
-                                    >
-                                        Acknowledge
-                                    </button>
-                                  `
-                        }
-
-                    </div>
-
-                `;
-
-
-                container.appendChild(
-                    element
-                );
-
-            }
-        );
-
-}
-
-
-/* ==========================================================
-   LOAD INCIDENTS
-========================================================== */
-
-async function loadIncidents() {
-
-    const data =
-        await apiFetch(
-            "/api/incidents"
-        );
-
-
-    if (!data) {
-
-        document.getElementById(
-            "incidentTable"
-        ).innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="8"
-                    class="empty"
-                >
-                    Incident API unavailable
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-
-    incidents =
-        Array.isArray(data)
-            ? data
-            : (
-                data.incidents ||
-                data.data ||
-                []
-            );
-
-
-    incidents.sort(
-        (a, b) => {
-
-            const timeDifference =
-                getTimestamp(
-                    b.timestamp
-                )
-                -
-                getTimestamp(
-                    a.timestamp
-                );
-
-
-            if (
-                timeDifference !== 0
-            ) {
-
-                return timeDifference;
-
-            }
-
-
-            const aId =
-                parseInt(
-                    String(
-                        a.incident_id ||
-                        a.id ||
-                        ""
-                    ).replace(
-                        /\D/g,
-                        ""
-                    ),
-                    10
-                ) || 0;
-
-
-            const bId =
-                parseInt(
-                    String(
-                        b.incident_id ||
-                        b.id ||
-                        ""
-                    ).replace(
-                        /\D/g,
-                        ""
-                    ),
-                    10
-                ) || 0;
-
-
-            return bId - aId;
-
-        }
-    );
-
-
-    document.getElementById(
-        "totalIncidents"
-    ).textContent =
-        incidents.length;
-
-
-    document.getElementById(
-        "incidentCount"
-    ).textContent =
-        incidents.length +
-        (
-            incidents.length === 1
-                ? " incident"
-                : " incidents"
-        );
-
-
-    renderIncidents();
-
-}
-
-
-/* ==========================================================
-   EXTRACT SNAPSHOT FILENAME
-========================================================== */
-
-function extractSnapshotFilename(
-    value
-) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return null;
-
-    }
-
-
-    const text =
-        String(value)
-            .replace(
-                /\\/g,
-                "/"
-            )
-            .trim();
-
-
-    if (!text) {
-
-        return null;
-
-    }
-
-
-    const filename =
-        text
-            .split("/")
-            .pop()
-            .trim();
-
-
-    if (!filename) {
-
-        return null;
-
-    }
-
-
-    const lower =
-        filename.toLowerCase();
-
-
-    if (
-        lower.endsWith(".jpg") ||
-        lower.endsWith(".jpeg") ||
-        lower.endsWith(".png")
-    ) {
-
-        return filename;
-
-    }
-
-
-    return null;
-
-}
-
-
-/* ==========================================================
-   FIND SNAPSHOT FOR INCIDENT
-========================================================== */
-
-function findSnapshotForIncident(
-    incident
-) {
-
-    /*
-     * ======================================================
-     * DIRECT METHOD
-     *
-     * Use the exact snapshot filename already stored
-     * with the incident.
-     * ======================================================
-     */
-
-    const directFields = [
-
-        incident.snapshot_path,
-
-        incident.snapshot,
-
-        incident.snapshot_file,
-
-        incident.snapshot_filename,
-
-        incident.file_path,
-
-        incident.filename
-
-    ];
-
-
-    for (
-        const field of directFields
-    ) {
-
-        const filename =
-            extractSnapshotFilename(
-                field
-            );
-
-
-        if (filename) {
-
-            return {
-
-                filename:
-                    filename,
-
-                timestamp:
-                    incident.timestamp || ""
-
-            };
-
-        }
-
-    }
-
-
-    /*
-     * ======================================================
-     * FALLBACK
-     *
-     * Some current incident records are showing the
-     * snapshot path in the status field.
-     *
-     * If status contains a JPG/JPEG/PNG path, use it as
-     * the snapshot but do NOT treat it as the status.
-     * ======================================================
-     */
-
-    const statusSnapshot =
-        extractSnapshotFilename(
-            incident.status
-        );
-
-
-    if (statusSnapshot) {
-
-        return {
-
-            filename:
-                statusSnapshot,
-
-            timestamp:
-                incident.timestamp || ""
-
-        };
-
-    }
-
-
-    /*
-     * ======================================================
-     * OLD INCIDENT FALLBACK
-     * ======================================================
-     */
-
-    if (!snapshots.length) {
-
-        return null;
-
-    }
-
-
-    const zone =
-        String(
-            incident.zone_id ||
-            ""
-        )
-        .trim()
-        .toUpperCase();
-
-
-    const risk =
-        String(
-            incident.risk ||
-            ""
-        )
-        .trim()
-        .toUpperCase();
-
-
-    if (!zone || !risk) {
-
-        return null;
-
-    }
-
-
-    const candidates =
-        snapshots.filter(
-            snapshot => {
-
-                const filename =
-                    String(
-                        snapshot.filename ||
-                        ""
-                    )
-                    .toUpperCase();
-
-
-                const zoneMatch =
-                    filename.includes(
-                        "ZONE_" +
-                        zone +
-                        "_"
-                    );
-
-
-                const riskMatch =
-                    filename.endsWith(
-                        "_" +
-                        risk +
-                        ".JPG"
-                    )
-                    ||
-                    filename.endsWith(
-                        "_" +
-                        risk +
-                        ".JPEG"
-                    )
-                    ||
-                    filename.endsWith(
-                        "_" +
-                        risk +
-                        ".PNG"
-                    );
-
-
-                return (
-                    zoneMatch &&
-                    riskMatch
-                );
-
-            }
-        );
-
-
-    if (!candidates.length) {
-
-        return null;
-
-    }
-
-
-    const incidentTime =
-        getTimestamp(
-            incident.timestamp
-        );
-
-
-    if (!incidentTime) {
-
-        return candidates[0];
-
-    }
-
-
-    let bestSnapshot = null;
-
-    let bestDifference = Infinity;
-
-
-    candidates.forEach(
-        candidate => {
-
-            const snapshotTime =
-                getTimestamp(
-                    candidate.timestamp
-                );
-
-
-            if (!snapshotTime) {
-
+        async function acknowledgeAllAlerts() {
+            // Optimistic update
+            let openCount = 0;
+            alerts.forEach(a => {
+                if (String(a.status || "OPEN").toUpperCase() === "OPEN") {
+                    a.status = "ACKNOWLEDGED";
+                    openCount++;
+                }
+            });
+
+            if (openCount === 0) {
+                showToast("No active alerts to acknowledge", "success");
                 return;
-
             }
 
+            incidents.forEach(inc => {
+                if (String(inc.status || "OPEN").toUpperCase() === "OPEN") {
+                    inc.status = "ACKNOWLEDGED";
+                }
+            });
+            renderAlerts();
+            renderIncidents();
 
-            const difference =
-                Math.abs(
-                    snapshotTime -
-                    incidentTime
-                );
+            try {
+                const [res] = await Promise.all([
+                    fetch("/api/alerts/acknowledge_all", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" }
+                    }),
+                    fetch("/api/incidents/acknowledge_all", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" }
+                    })
+                ]);
+                const data = await res.json().catch(() => null);
 
+                if (!res.ok || !data || data.success === false) {
+                    showToast(data ? (data.error || "Bulk acknowledgement failed") : "Server error", "error");
+                    await refreshAll();
+                    return;
+                }
 
-            if (
-                difference <
-                bestDifference
-            ) {
-
-                bestDifference =
-                    difference;
-
-                bestSnapshot =
-                    candidate;
-
+                const ackCount = data.acknowledged !== undefined ? data.acknowledged : openCount;
+                showToast("Acknowledged " + ackCount + " alert(s)", "success");
+                await refreshAll();
+            } catch (err) {
+                showToast("Network error acknowledging alerts", "error");
+                await refreshAll();
             }
-
         }
-    );
 
-
-    if (!bestSnapshot) {
-
-        return candidates[0];
-
-    }
-
-
-    if (
-        bestDifference >
-        10 * 60 * 1000
-    ) {
-
-        return null;
-
-    }
-
-
-    return bestSnapshot;
-
-}
-
-
-/* ==========================================================
-   GET REAL INCIDENT STATUS
-========================================================== */
-
-function getIncidentStatus(
-    incident
-) {
-
-    const rawStatus =
-        String(
-            incident.status ||
-            ""
-        )
-        .trim();
-
-
-    /*
-     * If the status field contains the snapshot filename,
-     * then that value is NOT the real incident status.
-     *
-     * Use OPEN as the display status.
-     */
-
-    const statusSnapshot =
-        extractSnapshotFilename(
-            rawStatus
-        );
-
-
-    if (statusSnapshot) {
-
-        return "OPEN";
-
-    }
-
-
-    const normalized =
-        rawStatus.toUpperCase();
-
-
-    if (
-        normalized === "OPEN" ||
-        normalized === "ACKNOWLEDGED" ||
-        normalized === "CLOSED"
-    ) {
-
-        return normalized;
-
-    }
-
-
-    return "OPEN";
-
-}
-
-
-/* ==========================================================
-   RENDER INCIDENTS
-========================================================== */
-
-function renderIncidents() {
-
-    const table =
-        document.getElementById(
-            "incidentTable"
-        );
-
-
-    if (!incidents.length) {
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="8"
-                    class="empty"
-                >
-                    No incidents recorded.
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-
-    table.innerHTML = "";
-
-
-    incidents
-        .slice(0, 100)
-        .forEach(
-            incident => {
-
-                const risk =
-                    String(
-                        incident.risk ||
-                        "WARNING"
-                    ).toUpperCase();
-
-
-                const status =
-                    getIncidentStatus(
-                        incident
-                    );
-
-
-                const realSnapshot =
-                    findSnapshotForIncident(
-                        incident
-                    );
-
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-
-                        ${escapeHtml(
-                            incident.incident_id ||
-                            incident.id ||
-                            "-"
-                        )}
-
-                    </td>
-
-
-                    <td>
-
-                        ${escapeHtml(
-                            incident.alert_id ||
-                            "-"
-                        )}
-
-                    </td>
-
-
-                    <td>
-
-                        ${escapeHtml(
-                            incident.timestamp ||
-                            "-"
-                        )}
-
-                    </td>
-
-
-                    <td>
-
-                        <span
-                            class="
-                                risk-badge
-                                ${risk.toLowerCase()}
-                            "
-                        >
-
-                            ${escapeHtml(
-                                risk
-                            )}
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        ${escapeHtml(
-                            incident.zone_id ||
-                            "-"
-                        )}
-
-                    </td>
-
-
-                    <td>
-
-                        ${escapeHtml(
-                            incident.camera_id ||
-                            "-"
-                        )}
-
-                    </td>
-
-
-                    <td>
-
-                        <span
-                            class="
-                                status-badge
-                                status-${status.toLowerCase()}
-                            "
-                        >
-
-                            ${escapeHtml(
-                                status
-                            )}
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        ${
-                            realSnapshot
-                                ? `
-                                    <span
-                                        class="snapshot"
-                                        onclick="
-                                            showSnapshot(
-                                                '${escapeJs(
-                                                    realSnapshot.filename
-                                                )}'
-                                            )
-                                        "
-                                    >
-                                        View
-                                    </span>
-                                  `
-                                : `
-                                    <span class="no-snapshot">
-                                        No snapshot
-                                    </span>
-                                  `
-                        }
-
-                    </td>
-
-                `;
-
-
-                table.appendChild(
-                    row
-                );
-
+        async function acknowledgeIncident(incidentId) {
+            if (!incidentId) return;
+            const inc = incidents.find(i => String(i.incident_id || i.id || "").toUpperCase() === String(incidentId).toUpperCase());
+            if (inc) {
+                inc.status = "ACKNOWLEDGED";
+                renderIncidents();
             }
-        );
-
-}
-
-
-/* ==========================================================
-   ACKNOWLEDGE ALERT
-========================================================== */
-
-async function acknowledgeAlert(
-    alertId
-) {
-
-    if (!alertId) {
-
-        showMessage(
-            "Alert ID not available",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const result =
-        await apiFetch(
-            "/api/alerts/" +
-            encodeURIComponent(
-                alertId
-            ) +
-            "/acknowledge",
-            {
-                method: "POST"
+            try {
+                await fetch("/api/incidents/" + encodeURIComponent(incidentId) + "/acknowledge", { method: "POST" });
+                showToast("Incident " + incidentId + " acknowledged", "success");
+                await refreshAll();
+            } catch (e) {
+                showToast("Network error acknowledging incident", "error");
             }
-        );
-
-
-    if (!result) {
-
-        showMessage(
-            "Alert acknowledgement failed",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        result.success === false
-    ) {
-
-        showMessage(
-            result.error ||
-            "Alert acknowledgement failed",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    showMessage(
-        "Alert " +
-        alertId +
-        " acknowledged",
-        "success"
-    );
-
-
-    await refreshAll();
-
-}
-
-
-/* ==========================================================
-   SHOW SNAPSHOT
-========================================================== */
-
-function showSnapshot(
-    filename
-) {
-
-    if (!filename) {
-
-        showMessage(
-            "Snapshot not available",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const cleanFilename =
-        extractSnapshotFilename(
-            filename
-        );
-
-
-    if (!cleanFilename) {
-
-        showMessage(
-            "Invalid snapshot filename",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const url =
-        "/snapshots/" +
-        encodeURIComponent(
-            cleanFilename
-        );
-
-
-    const imageWindow =
-        window.open(
-            url,
-            "_blank"
-        );
-
-
-    if (!imageWindow) {
-
-        showMessage(
-            "Browser blocked the snapshot window. Allow pop-ups for CrowdSense.",
-            "error"
-        );
-
-    }
-
-}
-
-
-/* ==========================================================
-   REFRESH ALL
-========================================================== */
-
-async function refreshAll() {
-
-    await Promise.all(
-        [
-            loadAlerts(),
-            loadSnapshots(),
-            loadIncidents()
-        ]
-    );
-
-
-    renderIncidents();
-
-}
-
-
-/* ==========================================================
-   DASHBOARD
-========================================================== */
-
-function goDashboard() {
-
-    window.location.href = "/";
-
-}
-
-
-/* ==========================================================
-   FILTER EVENTS
-========================================================== */
-
-document.getElementById(
-    "riskFilter"
-).addEventListener(
-    "change",
-    renderAlerts
-);
-
-
-document.getElementById(
-    "zoneFilter"
-).addEventListener(
-    "input",
-    renderAlerts
-);
-
-
-/* ==========================================================
-   MESSAGE
-========================================================== */
-
-function showMessage(
-    text,
-    type
-) {
-
-    const element =
-        document.getElementById(
-            "message"
-        );
-
-
-    element.textContent =
-        text;
-
-
-    element.className =
-        type;
-
-
-    element.style.display =
-        "block";
-
-
-    setTimeout(
-        function() {
-
-            element.style.display =
-                "none";
-
-        },
-        2500
-    );
-
-}
-
-
-/* ==========================================================
-   SECURITY HELPERS
-========================================================== */
-
-function escapeHtml(
-    value
-) {
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-function escapeJs(
-    value
-) {
-
-    return String(value)
-
-        .replace(
-            /\\/g,
-            "\\\\"
-        )
-
-        .replace(
-            /'/g,
-            "\\'"
-        );
-
-}
-
-
-/* ==========================================================
-   START
-========================================================== */
-
-refreshAll();
-
-
-/*
- * Automatically refresh alerts and incidents.
- */
-
-setInterval(
-    refreshAll,
-    3000
-);
-
-
-</script>
-
-
+        }
+
+        function showSnapshot(filename) {
+            if (!filename) {
+                showToast("Snapshot not available", "error");
+                return;
+            }
+            const clean = extractSnapshotFilename(filename);
+            if (!clean) {
+                showToast("Invalid snapshot filename", "error");
+                return;
+            }
+            const url = "/snapshots/" + encodeURIComponent(clean);
+            window.open(url, "_blank");
+        }
+
+        function showToast(text, type) {
+            const toast = document.getElementById("toastMessage");
+            toast.textContent = text;
+            toast.className = "toast-notify " + type;
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 3000);
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function escapeJs(value) {
+            return String(value ?? "")
+                .replace(/\\/g, "\\\\")
+                .replace(/'/g, "\\'");
+        }
+
+        async function refreshAll() {
+            await Promise.all([loadAlerts(), loadSnapshots(), loadIncidents()]);
+        }
+
+        refreshAll();
+        setInterval(refreshAll, 3000);
+    </script>
 </body>
-
 </html>

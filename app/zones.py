@@ -72,7 +72,10 @@ class PhysicalZoneManager:
                         "special_type": None,
 
                         "zone_capacity": 0.0,
-                        "occupancy": 0.0
+                        "occupancy": 0.0,
+                        "warning_threshold": float(getattr(self.venue, "warning_threshold", 70.0)),
+                        "critical_threshold": float(getattr(self.venue, "critical_threshold", 90.0)),
+                        "has_custom_threshold": False
                     }
 
                     self.zones.append(zone)
@@ -84,6 +87,8 @@ class PhysicalZoneManager:
         self.apply_special_areas()
 
         self.update_zone_capacities()
+
+        self.apply_zone_thresholds()
 
     # =========================================================
     # CIRCLE GRID
@@ -185,7 +190,10 @@ class PhysicalZoneManager:
                     "special_type": None,
 
                     "zone_capacity": 0.0,
-                    "occupancy": 0.0
+                    "occupancy": 0.0,
+                    "warning_threshold": float(getattr(self.venue, "warning_threshold", 70.0)),
+                    "critical_threshold": float(getattr(self.venue, "critical_threshold", 90.0)),
+                    "has_custom_threshold": False
                 }
 
                 self.zones.append(zone)
@@ -803,11 +811,17 @@ class PhysicalZoneManager:
         ) * 100
 
         warning = float(
-            self.venue.warning_threshold
+            zone.get(
+                "warning_threshold",
+                getattr(self.venue, "warning_threshold", 70.0)
+            )
         )
 
         critical = float(
-            self.venue.critical_threshold
+            zone.get(
+                "critical_threshold",
+                getattr(self.venue, "critical_threshold", 90.0)
+            )
         )
 
         # -----------------------------------------------------
@@ -844,3 +858,84 @@ class PhysicalZoneManager:
     def get_zones(self):
 
         return self.zones
+    # =========================================================
+    # APPLY ZONE THRESHOLDS
+    # =========================================================
+
+    def apply_zone_thresholds(self):
+
+        thresholds_map = getattr(self.venue, "zone_thresholds", {}) or {}
+        default_warn = float(getattr(self.venue, "warning_threshold", 70.0))
+        default_crit = float(getattr(self.venue, "critical_threshold", 90.0))
+
+        for zone in self.zones:
+
+            zone_id = zone.get("id")
+
+            if zone_id and zone_id in thresholds_map:
+
+                cfg = thresholds_map[zone_id] or {}
+                zone["warning_threshold"] = float(cfg.get("warning_threshold", default_warn))
+                zone["critical_threshold"] = float(cfg.get("critical_threshold", default_crit))
+                zone["has_custom_threshold"] = True
+
+            else:
+
+                zone["warning_threshold"] = default_warn
+                zone["critical_threshold"] = default_crit
+                zone["has_custom_threshold"] = False
+
+            if int(zone.get("people", 0)) > 0:
+                zone["risk"] = self.calculate_risk(zone)
+
+    # =========================================================
+    # SET ZONE THRESHOLD
+    # =========================================================
+
+    def set_zone_threshold(
+        self,
+        zone_id,
+        warning_threshold=None,
+        critical_threshold=None,
+        reset=False
+    ):
+
+        if not self.zones:
+            raise ValueError(
+                "All venue zones must be created before editing thresholds."
+            )
+
+        target_zone = None
+        for z in self.zones:
+            if z.get("id") == zone_id:
+                target_zone = z
+                break
+
+        if target_zone is None:
+            raise ValueError(
+                f"Zone '{zone_id}' not found among created zones."
+            )
+
+        if not hasattr(self.venue, "zone_thresholds") or not isinstance(self.venue.zone_thresholds, dict):
+            self.venue.zone_thresholds = {}
+
+        if reset:
+            self.venue.zone_thresholds.pop(zone_id, None)
+        else:
+            w = float(warning_threshold)
+            c = float(critical_threshold)
+            if w <= 0 or c <= 0:
+                raise ValueError("Thresholds must be greater than 0%.")
+            if w >= c:
+                raise ValueError("Warning threshold (Min) must be strictly less than Critical threshold (Max).")
+            self.venue.zone_thresholds[zone_id] = {
+                "warning_threshold": round(w, 1),
+                "critical_threshold": round(c, 1)
+            }
+
+        self.apply_zone_thresholds()
+
+        if hasattr(self.venue, "save"):
+            self.venue.save()
+
+        return target_zone

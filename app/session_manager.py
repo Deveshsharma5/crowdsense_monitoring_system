@@ -22,6 +22,7 @@ class SessionManager:
 
         self.sessions = []
         self.current_session = None
+        self.last_completed_session = None
 
         self.load()
 
@@ -92,7 +93,19 @@ class SessionManager:
             "warning_events":
                 0,
 
+            "warning_count":
+                0,
+
+            "warnings":
+                0,
+
             "critical_events":
+                0,
+
+            "critical_count":
+                0,
+
+            "critical":
                 0,
 
             "total_updates":
@@ -246,12 +259,16 @@ class SessionManager:
             self.current_session[
                 "warning_events"
             ] += 1
+            self.current_session["warning_count"] = self.current_session["warning_events"]
+            self.current_session["warnings"] = self.current_session["warning_events"]
 
         if critical:
 
             self.current_session[
                 "critical_events"
             ] += 1
+            self.current_session["critical_count"] = self.current_session["critical_events"]
+            self.current_session["critical"] = self.current_session["critical_events"]
 
         # -----------------------------------------------------
         # TIME
@@ -336,6 +353,7 @@ class SessionManager:
             completed_session
         )
 
+        self.last_completed_session = completed_session
         self.current_session = None
 
         self.save()
@@ -356,7 +374,31 @@ class SessionManager:
         if self.current_session is None:
             return None
 
-        return self.current_session.copy()
+        session = self.current_session.copy()
+
+        # Update live elapsed duration dynamically if session is ACTIVE
+        if session.get("status") == "ACTIVE" and session.get("start_time"):
+            st = self._parse_time(session.get("start_time"))
+            if st:
+                now = datetime.now()
+                dur = max(0, int((now - st).total_seconds()))
+                session["duration_seconds"] = dur
+                h = dur // 3600
+                m = (dur % 3600) // 60
+                s = dur % 60
+                session["duration"] = f"{h:02d}:{m:02d}:{s:02d}"
+
+        return session
+
+    def get_last_session(self):
+        """
+        Returns the last completed session if available.
+        """
+        if getattr(self, "last_completed_session", None):
+            return self.last_completed_session.copy()
+        if self.sessions:
+            return self.sessions[-1].copy()
+        return None
 
     # =========================================================
     # CHECK ACTIVE
@@ -616,6 +658,30 @@ class SessionManager:
                 self.current_session = data.get(
                     "current_session"
                 )
+
+                for s in self.sessions:
+                    if isinstance(s, dict):
+                        we = s.get("warning_events") or s.get("warning_count") or s.get("warnings") or 0
+                        ce = s.get("critical_events") or s.get("critical_count") or s.get("critical") or 0
+                        s["warning_events"] = we
+                        s["warning_count"] = we
+                        s["warnings"] = we
+                        s["critical_events"] = ce
+                        s["critical_count"] = ce
+                        s["critical"] = ce
+
+                if isinstance(self.current_session, dict):
+                    we = self.current_session.get("warning_events") or self.current_session.get("warning_count") or self.current_session.get("warnings") or 0
+                    ce = self.current_session.get("critical_events") or self.current_session.get("critical_count") or self.current_session.get("critical") or 0
+                    self.current_session["warning_events"] = we
+                    self.current_session["warning_count"] = we
+                    self.current_session["warnings"] = we
+                    self.current_session["critical_events"] = ce
+                    self.current_session["critical_count"] = ce
+                    self.current_session["critical"] = ce
+
+                if self.sessions:
+                    self.last_completed_session = self.sessions[-1]
 
             else:
 

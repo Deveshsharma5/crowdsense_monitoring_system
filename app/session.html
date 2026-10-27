@@ -1,1637 +1,510 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CrowdSense - Sessions</title>
-
+    <link rel="stylesheet" href="/static/css/common.css">
     <style>
-
-        * {
-            box-sizing: border-box;
+        .live-timer {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-emerald);
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: var(--radius-sm);
+            padding: 4px 10px;
         }
-
-        body {
-            margin: 0;
-            background: #050805;
-            color: #ffffff;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        header {
-            background: #0b120d;
-            border-bottom: 1px solid #1f3b26;
-            padding: 18px 25px;
-
+        .session-status-banner {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .title {
-            color: #32ff6a;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .subtitle {
-            color: #9ca89f;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-
-        nav {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: #d9e0da;
-
-            background: #111a13;
-            border: 1px solid #243d29;
-
-            padding: 9px 13px;
-            border-radius: 6px;
-
-            font-size: 13px;
-        }
-
-        nav a:hover {
-            border-color: #32ff6a;
-            color: #32ff6a;
-        }
-
-        nav a.active {
-            background: #12351c;
-            border-color: #32ff6a;
-            color: #32ff6a;
-        }
-
-        main {
-            max-width: 1500px;
-            margin: auto;
-            padding: 25px;
-        }
-
-        .topbar {
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-
             flex-wrap: wrap;
-            gap: 15px;
-
-            margin-bottom: 20px;
+            gap: 14px;
+            padding: 16px 22px;
+            border-radius: var(--radius-md);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
         }
-
-        h2 {
-            margin: 0;
+        .session-status-banner.active {
+            border-color: rgba(16, 185, 129, 0.4);
+            background: rgba(16, 185, 129, 0.06);
         }
-
-        button {
-            border: none;
-            border-radius: 6px;
-
-            padding: 10px 16px;
-
-            cursor: pointer;
-            font-weight: bold;
+        .session-status-banner.no-session {
+            border-color: rgba(100, 116, 139, 0.3);
+            background: rgba(100, 116, 139, 0.05);
         }
-
-        .refresh {
-            background: #32ff6a;
-            color: #031007;
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-
-        .refresh:hover {
-            background: #20d653;
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            animation: pulse-glow 1.4s ease-in-out infinite;
         }
-
-        .refresh:disabled {
-            opacity: 0.6;
-            cursor: wait;
+        .pulse-dot.inactive {
+            background: var(--text-secondary);
+            animation: none;
         }
-
-        .cards {
-            display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
-            gap: 15px;
-
-            margin-bottom: 20px;
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
         }
-
-        .card {
-            background: #0b120d;
-
-            border: 1px solid #1d3623;
-
-            border-radius: 10px;
-
-            padding: 18px;
-        }
-
-        .card-title {
-            color: #8e9c91;
-
+        .summary-chips {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
             font-size: 13px;
-
-            margin-bottom: 10px;
+            color: var(--text-secondary);
         }
-
-        .card-value {
-            color: #32ff6a;
-
-            font-size: 28px;
-
-            font-weight: bold;
+        .summary-chips span {
+            color: var(--text-primary);
+            font-weight: 600;
         }
-
-        .warning {
-            color: #ffd43b;
-        }
-
-        .danger {
-            color: #ff3b3b;
-        }
-
-        .section {
-            background: #0b120d;
-
-            border: 1px solid #1d3623;
-
-            border-radius: 10px;
-
-            padding: 20px;
-
-            margin-bottom: 20px;
-        }
-
-        .section h3 {
-            color: #32ff6a;
-
-            margin-top: 0;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-
-            padding: 12px;
-
-            background: #111a13;
-
-            color: #32ff6a;
-
-            border-bottom: 1px solid #28452f;
-
+        .toast-notify {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
             font-size: 13px;
+            font-weight: 600;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
         }
-
-        td {
-            padding: 12px;
-
-            border-bottom: 1px solid #17251a;
-
-            color: #d9dfda;
-
-            font-size: 13px;
+        .toast-notify.success {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-emerald);
+            color: var(--accent-emerald);
         }
-
-        tr:hover {
-            background: #0e170f;
+        .toast-notify.error {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-critical);
+            color: var(--accent-critical);
         }
-
-        .status {
-            font-weight: bold;
-        }
-
-        .status-active {
-            color: #32ff6a;
-        }
-
-        .status-ended {
-            color: #8e9c91;
-        }
-
-        .status-warning {
-            color: #ffd43b;
-        }
-
-        .status-critical {
-            color: #ff3b3b;
-        }
-
-        .empty {
-            text-align: center;
-
-            color: #68736b;
-
-            padding: 25px;
-        }
-
-        .error {
-            color: #ff3b3b;
-
-            padding: 10px 0;
-        }
-
-        @media (max-width: 1000px) {
-
-            .cards {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-        }
-
-        @media (max-width: 600px) {
-
-            main {
-                padding: 15px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-
-            header {
-                padding: 15px;
-            }
-
-        }
-
     </style>
-
 </head>
-
-
 <body>
 
-
-<header>
-
-    <div>
-
-        <div class="title">
-            CROWDSENSE
+    <header class="app-header">
+        <div class="logo">
+            <div class="logo-icon">C</div>
+            <div class="logo-text">Crowd<span>Sense</span></div>
         </div>
-
-        <div class="subtitle">
-            Session & Monitoring History
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="goBack()">Back</button>
+            <button class="btn btn-secondary" id="refreshButton" onclick="refreshSessions()">Refresh</button>
         </div>
+    </header>
 
-    </div>
-
-
-    <nav>
-
-        <a href="/">
-            Dashboard
-        </a>
-
-        <a href="/cameras">
-            Cameras
-        </a>
-
-        <a href="/venue">
-            Venue
-        </a>
-
-        <a href="/zones">
-            Zones
-        </a>
-
-        <a href="/alerts">
-            Alerts
-        </a>
-
-        <a href="/analytics">
-            Analytics
-        </a>
-
-        <a
-            href="/session"
-            class="active"
-        >
-            Session
-        </a>
-
+    <nav class="app-nav">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/cameras">Cameras</a>
+        <a href="/zones">Zones</a>
+        <a href="/alerts">Alerts</a>
+        <a href="/analytics">Analytics</a>
+        <a href="/reports">Reports</a>
+        <a href="/session" class="active">Sessions</a>
+        <a href="/venue">Venue</a>
+        <a href="/calibration">Calibration</a>
+        <a href="/admin">Admin</a>
     </nav>
 
-</header>
+    <main class="page-container">
 
-
-<main>
-
-
-    <!-- TOP BAR -->
-
-    <div class="topbar">
-
-        <div>
-
-            <h2>
-                Sessions
-            </h2>
-
-            <div class="subtitle">
-                Crowd monitoring session history
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Session Management</h1>
+                <p class="page-subtitle">Live session telemetry, monitoring lifecycle controls and historical session audit logs</p>
             </div>
-
+            <div id="liveTimer" class="live-timer" style="display:none;">00:00:00</div>
         </div>
 
-
-        <button
-            id="refreshButton"
-            class="refresh"
-            type="button"
-            onclick="refreshSessions()"
-        >
-            Refresh
-        </button>
-
-    </div>
-
-
-    <!-- CURRENT SESSION -->
-
-    <div class="section">
-
-        <h3>
-            Current Session
-        </h3>
-
-
-        <div class="cards">
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    Status
+        <!-- Live Session Status Banner -->
+        <div class="session-status-banner no-session" id="sessionBanner">
+            <div class="status-indicator">
+                <div class="pulse-dot inactive" id="statusDot"></div>
+                <div>
+                    <div style="font-size:15px; font-weight:700; color:var(--text-primary);" id="bannerStatus">No Active Session</div>
+                    <div style="font-size:12px; color:var(--text-secondary);" id="bannerSubtext">Monitoring is not running</div>
                 </div>
-
-                <div
-                    id="currentStatus"
-                    class="card-value"
-                >
-                    -
-                </div>
-
             </div>
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    People
-                </div>
-
-                <div
-                    id="currentPeople"
-                    class="card-value"
-                >
-                    0
-                </div>
-
+            <div class="summary-chips" id="bannerChips" style="display:none;">
+                <div>People: <span id="chipPeople">0</span></div>
+                <div>Peak: <span id="chipPeak">0</span></div>
+                <div>Occupancy: <span id="chipOccupancy">0%</span></div>
             </div>
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    Peak People
-                </div>
-
-                <div
-                    id="currentPeak"
-                    class="card-value"
-                >
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    Occupancy
-                </div>
-
-                <div
-                    id="currentOccupancy"
-                    class="card-value"
-                >
-                    0%
-                </div>
-
-            </div>
-
-
         </div>
 
-    </div>
-
-
-    <!-- SESSION HISTORY -->
-
-    <div class="section">
-
-        <h3>
-            Session History
-        </h3>
-
-
-        <div class="table-wrapper">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Session ID
-                        </th>
-
-                        <th>
-                            Start Time
-                        </th>
-
-                        <th>
-                            End Time
-                        </th>
-
-                        <th>
-                            Duration
-                        </th>
-
-                        <th>
-                            Peak People
-                        </th>
-
-                        <th>
-                            Average People
-                        </th>
-
-                        <th>
-                            Average Occupancy
-                        </th>
-
-                        <th>
-                            Warnings
-                        </th>
-
-                        <th>
-                            Critical
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="sessionTable">
-
-                    <tr>
-
-                        <td
-                            colspan="10"
-                            class="empty"
-                        >
-                            Loading sessions...
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
+        <!-- Current Session KPI Cards -->
+        <div class="kpi-grid">
+            <div class="card">
+                <div class="card-title">Session Status</div>
+                <div class="card-value" id="currentStatus" style="font-size:20px;">—</div>
+                <div class="card-hint" id="statusHint">Awaiting data</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Live People Count</div>
+                <div class="card-value" id="currentPeople">0</div>
+                <div class="card-hint">Detected in current frame</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Session Peak</div>
+                <div class="card-value value-warning" id="currentPeak">0</div>
+                <div class="card-hint">Maximum recorded this session</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Occupancy Rate</div>
+                <div class="card-value value-emerald" id="currentOccupancy">0%</div>
+                <div class="card-hint">Against configured capacity</div>
+            </div>
         </div>
 
-    </div>
-
-
-    <!-- SESSION SUMMARY -->
-
-    <div class="section">
-
-        <h3>
-            Session Summary
-        </h3>
-
-
-        <div id="summary">
-            Loading...
+        <!-- Session History Table -->
+        <div class="card mb-4">
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h2 class="card-title" style="font-size:15px; color:var(--text-primary); font-weight:600;">Session History</h2>
+                    <div style="font-size:12px; color:var(--text-secondary);">All completed monitoring sessions sorted by most recent</div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Started</th>
+                            <th>Ended</th>
+                            <th>Duration</th>
+                            <th>Peak</th>
+                            <th>Average</th>
+                            <th>Avg Occupancy</th>
+                            <th>Warnings</th>
+                            <th>Critical</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessionTable">
+                        <tr>
+                            <td colspan="10" class="text-secondary" style="text-align:center; padding:24px;">Loading session history...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-    </div>
+        <!-- Aggregate Summary Panel -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title" style="font-size:15px; color:var(--text-primary); font-weight:600;">Aggregate Session Summary</h2>
+            </div>
+            <div id="summary" style="padding:16px 0; font-size:13px; color:var(--text-secondary); line-height:2;">
+                Loading summary data...
+            </div>
+        </div>
 
+    </main>
 
-</main>
+    <div id="toastMessage" class="toast-notify"></div>
 
+    <script>
+        let sessionStartTime = null;
+        let timerInterval = null;
 
-<script>
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-
-function number(value) {
-
-    const n =
-        Number(value);
-
-
-    if (
-        !Number.isFinite(n)
-    ) {
-
-        return 0;
-
-    }
-
-
-    return n;
-
-}
-
-
-function formatNumber(value) {
-
-    return number(value)
-        .toLocaleString(
-            undefined,
-            {
-                maximumFractionDigits: 1
+        function goBack() {
+            if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+                window.history.back();
+            } else {
+                window.location.href = "/dashboard";
             }
-        );
-
-}
-
-
-function formatDate(value) {
-
-    if (!value) {
-
-        return "-";
-
-    }
-
-
-    const date =
-        new Date(value);
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return value;
-
-    }
-
-
-    return date.toLocaleString();
-
-}
-
-
-function formatDuration(seconds) {
-
-    seconds =
-        number(seconds);
-
-
-    if (
-        seconds <= 0
-    ) {
-
-        return "-";
-
-    }
-
-
-    const hours =
-        Math.floor(
-            seconds / 3600
-        );
-
-
-    const minutes =
-        Math.floor(
-            (seconds % 3600) / 60
-        );
-
-
-    const secs =
-        Math.floor(
-            seconds % 60
-        );
-
-
-    if (
-        hours > 0
-    ) {
-
-        return (
-            `${hours}h ${minutes}m`
-        );
-
-    }
-
-
-    if (
-        minutes > 0
-    ) {
-
-        return (
-            `${minutes}m ${secs}s`
-        );
-
-    }
-
-
-    return (
-        `${secs}s`
-    );
-
-}
-
-
-function statusClass(status) {
-
-    status =
-        String(
-            status || ""
-        )
-        .toUpperCase();
-
-
-    if (
-        status === "ACTIVE" ||
-        status === "RUNNING"
-    ) {
-
-        return "status-active";
-
-    }
-
-
-    if (
-        status === "CRITICAL"
-    ) {
-
-        return "status-critical";
-
-    }
-
-
-    if (
-        status === "WARNING"
-    ) {
-
-        return "status-warning";
-
-    }
-
-
-    return "status-ended";
-
-}
-
-
-/* =========================================================
-   CURRENT PEOPLE
-========================================================= */
-
-function getCurrentPeople(
-    session
-) {
-
-    /*
-     * IMPORTANT:
-     *
-     * SessionManager stores the live detected
-     * people count in "last_people".
-     *
-     * This must be checked before the older
-     * generic fields.
-     */
-
-    if (
-        session.last_people !== undefined &&
-        session.last_people !== null
-    ) {
-
-        return number(
-            session.last_people
-        );
-
-    }
-
-
-    /*
-     * Compatibility with other possible
-     * session response formats.
-     */
-
-    if (
-        session.people !== undefined &&
-        session.people !== null
-    ) {
-
-        return number(
-            session.people
-        );
-
-    }
-
-
-    if (
-        session.current_people !== undefined &&
-        session.current_people !== null
-    ) {
-
-        return number(
-            session.current_people
-        );
-
-    }
-
-
-    if (
-        session.total_people !== undefined &&
-        session.total_people !== null
-    ) {
-
-        return number(
-            session.total_people
-        );
-
-    }
-
-
-    return 0;
-
-}
-
-
-/* =========================================================
-   CURRENT OCCUPANCY
-========================================================= */
-
-function getCurrentOccupancy(
-    session,
-    people
-) {
-
-    /*
-     * If the API already provides current occupancy,
-     * use it.
-     */
-
-    if (
-        session.occupancy !== undefined &&
-        session.occupancy !== null
-    ) {
-
-        return number(
-            session.occupancy
-        );
-
-    }
-
-
-    if (
-        session.current_occupancy !== undefined &&
-        session.current_occupancy !== null
-    ) {
-
-        return number(
-            session.current_occupancy
-        );
-
-    }
-
-
-    /*
-     * Otherwise calculate it from:
-     *
-     * current people / venue capacity × 100
-     */
-
-    const capacity =
-        number(
-            session.capacity ??
-            session.venue_capacity ??
-            0
-        );
-
-
-    if (
-        capacity > 0
-    ) {
-
-        return (
-            people /
-            capacity
-        ) * 100;
-
-    }
-
-
-    return 0;
-
-}
-
-
-/* =========================================================
-   MANUAL REFRESH
-========================================================= */
-
-
-async function refreshSessions() {
-
-    const button =
-        document.getElementById(
-            "refreshButton"
-        );
-
-
-    if (button) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "Refreshing...";
-
-    }
-
-
-    try {
-
-        await loadSessions(
-            true
-        );
-
-    } finally {
-
-        if (button) {
-
-            button.disabled = false;
-
-            button.textContent =
-                "Refresh";
-
         }
 
-    }
-
-}
-
-
-/* =========================================================
-   CURRENT SESSION
-========================================================= */
-
-
-async function loadCurrentSession(
-    cacheBuster
-) {
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/session?_=" +
-                cacheBuster,
-                {
-                    method: "GET",
-
-                    cache: "no-store",
-
-                    headers: {
-                        "Cache-Control":
-                            "no-cache",
-
-                        "Pragma":
-                            "no-cache"
-                    }
-                }
-            );
-
-
-        if (
-            !response.ok
-        ) {
-
-            throw new Error(
-                "Current session API returned " +
-                response.status
-            );
-
+        /* ---- Helpers ---- */
+        function number(v) {
+            const n = Number(v);
+            return Number.isFinite(n) ? n : 0;
         }
 
-
-        const data =
-            await response.json();
-
-
-        renderCurrentSession(
-            data
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Current session error:",
-            error
-        );
-
-
-        const status =
-            document.getElementById(
-                "currentStatus"
-            );
-
-
-        status.textContent =
-            "OFFLINE";
-
-
-        status.className =
-            "card-value danger";
-
-    }
-
-}
-
-
-function renderCurrentSession(
-    data
-) {
-
-    if (!data) {
-
-        return;
-
-    }
-
-
-    const session =
-        data.session ||
-        data.current_session ||
-        data;
-
-
-    /*
-     * =====================================================
-     * LIVE PEOPLE COUNT
-     *
-     * This is the important fix.
-     *
-     * SessionManager stores the latest detected
-     * people count in:
-     *
-     * session.last_people
-     * =====================================================
-     */
-
-    const people =
-        getCurrentPeople(
-            session
-        );
-
-
-    const peak =
-        session.peak_people ??
-        session.peak ??
-        0;
-
-
-    const occupancy =
-        getCurrentOccupancy(
-            session,
-            people
-        );
-
-
-    const status =
-        session.status ||
-        (
-            session.active
-                ? "ACTIVE"
-                : "NO SESSION"
-        );
-
-
-    document.getElementById(
-        "currentStatus"
-    ).textContent =
-        String(
-            status
-        ).toUpperCase();
-
-
-    document.getElementById(
-        "currentStatus"
-    ).className =
-        "card-value " +
-        statusClass(
-            status
-        );
-
-
-    document.getElementById(
-        "currentPeople"
-    ).textContent =
-        formatNumber(
-            people
-        );
-
-
-    document.getElementById(
-        "currentPeak"
-    ).textContent =
-        formatNumber(
-            peak
-        );
-
-
-    document.getElementById(
-        "currentOccupancy"
-    ).textContent =
-        formatNumber(
-            occupancy
-        ) + "%";
-
-}
-
-
-/* =========================================================
-   SESSION HISTORY
-========================================================= */
-
-
-async function loadSessions(
-    forceRefresh = false
-) {
-
-    const cacheBuster =
-        Date.now();
-
-
-    await loadCurrentSession(
-        cacheBuster
-    );
-
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/sessions?_=" +
-                cacheBuster,
-                {
-                    method: "GET",
-
-                    cache: "no-store",
-
-                    headers: {
-                        "Cache-Control":
-                            "no-cache",
-
-                        "Pragma":
-                            "no-cache"
-                    }
-                }
-            );
-
-
-        if (
-            !response.ok
-        ) {
-
-            throw new Error(
-                "Sessions API returned " +
-                response.status
-            );
-
+        function formatNumber(v) {
+            return number(v).toLocaleString(undefined, { maximumFractionDigits: 1 });
         }
 
-
-        const data =
-            await response.json();
-
-
-        renderSessions(
-            data
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Sessions error:",
-            error
-        );
-
-
-        document.getElementById(
-            "sessionTable"
-        ).innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="10"
-                    class="error"
-                >
-
-                    Unable to load session history.
-
-                    <br><br>
-
-                    ${error.message}
-
-                </td>
-
-            </tr>
-
-        `;
-
-    }
-
-}
-
-
-/* =========================================================
-   RENDER SESSIONS
-========================================================= */
-
-
-function renderSessions(
-    data
-) {
-
-    let sessions =
-        data.sessions ||
-        data.history ||
-        data;
-
-
-    if (
-        !Array.isArray(
-            sessions
-        )
-    ) {
-
-        sessions = [];
-
-    }
-
-
-    const table =
-        document.getElementById(
-            "sessionTable"
-        );
-
-
-    table.innerHTML = "";
-
-
-    if (
-        sessions.length === 0
-    ) {
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="10"
-                    class="empty"
-                >
-
-                    No completed sessions yet.
-
-                </td>
-
-            </tr>
-
-        `;
-
-
-        renderSummary(
-            []
-        );
-
-
-        return;
-
-    }
-
-
-    sessions =
-        [...sessions]
-        .reverse();
-
-
-    sessions.forEach(
-        session => {
-
-            const id =
-                session.session_id ||
-                session.id ||
-                "-";
-
-
-            const start =
-                session.start_time ||
-                session.started_at ||
-                session.start;
-
-
-            const end =
-                session.end_time ||
-                session.ended_at ||
-                session.end;
-
-
-            const peak =
-                session.peak_people ??
-                session.peak ??
-                0;
-
-
-            const average =
-                session.average_people ??
-                session.average ??
-                0;
-
-
-            const occupancy =
-                session.average_occupancy ??
-                session.occupancy ??
-                0;
-
-
-            const warnings =
-                session.warning_count ??
-                session.warnings ??
-                0;
-
-
-            const critical =
-                session.critical_count ??
-                session.critical ??
-                0;
-
-
-            const status =
-                session.status ||
-                (
-                    end
-                        ? "ENDED"
-                        : "ACTIVE"
-                );
-
-
-            let duration =
-                session.duration_seconds;
-
-
-            if (
-                duration === undefined &&
-                start &&
-                end
-            ) {
-
-                const startDate =
-                    new Date(
-                        start
-                    );
-
-
-                const endDate =
-                    new Date(
-                        end
-                    );
-
-
-                if (
-                    !Number.isNaN(
-                        startDate.getTime()
-                    ) &&
-                    !Number.isNaN(
-                        endDate.getTime()
-                    )
-                ) {
-
-                    duration =
-                        (
-                            endDate.getTime() -
-                            startDate.getTime()
-                        ) / 1000;
-
+        function formatDate(v) {
+            if (!v) return "—";
+            const d = new Date(v);
+            return isNaN(d.getTime()) ? String(v) : d.toLocaleString();
+        }
+
+        function formatDuration(seconds) {
+            seconds = number(seconds);
+            if (seconds <= 0) return "—";
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            if (h > 0) return `${h}h ${m}m`;
+            if (m > 0) return `${m}m ${s}s`;
+            return `${s}s`;
+        }
+
+        function formatElapsed(startIso) {
+            if (!startIso) return "00:00:00";
+            const parsedTime = typeof startIso === 'string' ? new Date(startIso.replace(' ', 'T')).getTime() : new Date(startIso).getTime();
+            if (isNaN(parsedTime)) return "00:00:00";
+            const elapsed = Math.max(0, Math.floor((Date.now() - parsedTime) / 1000));
+            const h = Math.floor(elapsed / 3600);
+            const m = Math.floor((elapsed % 3600) / 60);
+            const s = elapsed % 60;
+            return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+
+        function statusBadgeClass(status) {
+            const s = String(status || "").toUpperCase();
+            if (s === "ACTIVE" || s === "RUNNING") return "badge-emerald";
+            if (s === "CRITICAL") return "badge-critical";
+            if (s === "WARNING") return "badge-warning";
+            return "badge-neutral";
+        }
+
+        /* ---- Live Timer ---- */
+        function startLiveTimer(startIso) {
+            if (timerInterval) clearInterval(timerInterval);
+            sessionStartTime = startIso;
+            const timerEl = document.getElementById("liveTimer");
+            timerEl.style.display = "block";
+            timerEl.textContent = formatElapsed(startIso);
+            timerInterval = setInterval(() => {
+                timerEl.textContent = formatElapsed(startIso);
+            }, 1000);
+        }
+
+        function stopLiveTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            document.getElementById("liveTimer").style.display = "none";
+        }
+
+        /* ---- Render Current Session ---- */
+        function renderCurrentSession(data) {
+            if (!data) return;
+            const session = data.session || data.current_session || data;
+
+            // Extract live people from possible field names (SessionManager uses last_people)
+            let people = 0;
+            for (const key of ["last_people", "people", "current_people", "total_people"]) {
+                if (session[key] !== undefined && session[key] !== null) {
+                    people = number(session[key]);
+                    break;
                 }
-
             }
 
+            const peak = number(session.peak_people ?? session.peak ?? 0);
+            const status = String(session.status || (session.active ? "ACTIVE" : "NO SESSION")).toUpperCase();
+            const isActive = status === "ACTIVE" || status === "RUNNING";
 
-            const row =
-                document.createElement(
-                    "tr"
-                );
+            // Occupancy
+            let occ = 0;
+            if (session.occupancy !== undefined && session.occupancy !== null) {
+                occ = number(session.occupancy);
+            } else if (session.current_occupancy !== undefined) {
+                occ = number(session.current_occupancy);
+            } else {
+                const cap = number(session.capacity ?? session.venue_capacity ?? 0);
+                if (cap > 0) occ = (people / cap) * 100;
+            }
 
+            // KPI cards
+            document.getElementById("currentStatus").textContent = status;
+            document.getElementById("currentStatus").className = "card-value " + (isActive ? "value-emerald" : "");
+            document.getElementById("statusHint").textContent = isActive ? "Session is running" : "Monitoring inactive";
+            document.getElementById("currentPeople").textContent = formatNumber(people);
+            document.getElementById("currentPeak").textContent = formatNumber(peak);
+            document.getElementById("currentOccupancy").textContent = formatNumber(occ) + "%";
 
-            row.innerHTML = `
+            // Banner
+            const banner = document.getElementById("sessionBanner");
+            const dot = document.getElementById("statusDot");
+            const bannerStatus = document.getElementById("bannerStatus");
+            const bannerSubtext = document.getElementById("bannerSubtext");
+            const chips = document.getElementById("bannerChips");
 
-                <td>
-                    ${id}
-                </td>
+            if (isActive) {
+                banner.className = "session-status-banner active";
+                dot.className = "pulse-dot";
+                bannerStatus.textContent = "Session Active";
+                bannerSubtext.textContent = "Started: " + formatDate(session.start_time || session.started_at || session.start || "");
+                chips.style.display = "flex";
+                document.getElementById("chipPeople").textContent = formatNumber(people);
+                document.getElementById("chipPeak").textContent = formatNumber(peak);
+                document.getElementById("chipOccupancy").textContent = formatNumber(occ) + "%";
 
-                <td>
-                    ${formatDate(
-                        start
-                    )}
-                </td>
+                if (session.start_time || session.started_at || session.start) {
+                    startLiveTimer(session.start_time || session.started_at || session.start);
+                }
+            } else {
+                banner.className = "session-status-banner no-session";
+                dot.className = "pulse-dot inactive";
+                bannerStatus.textContent = "No Active Session";
+                bannerSubtext.textContent = "Monitoring is not running";
+                chips.style.display = "none";
+                stopLiveTimer();
+            }
+        }
 
-                <td>
-                    ${formatDate(
-                        end
-                    )}
-                </td>
+        /* ---- Render Session History Table ---- */
+        function renderSessions(data) {
+            let sessions = data.sessions || data.history || data;
+            if (!Array.isArray(sessions)) sessions = [];
 
-                <td>
-                    ${formatDuration(
-                        duration
-                    )}
-                </td>
+            const table = document.getElementById("sessionTable");
+            table.innerHTML = "";
 
-                <td>
-                    ${formatNumber(
-                        peak
-                    )}
-                </td>
+            if (!sessions.length) {
+                table.innerHTML = `<tr><td colspan="10" class="text-secondary" style="text-align:center;padding:28px;">No completed sessions recorded yet.</td></tr>`;
+                renderSummary([]);
+                return;
+            }
 
-                <td>
-                    ${formatNumber(
-                        average
-                    )}
-                </td>
+            // Most recent first
+            const sorted = [...sessions].reverse();
 
-                <td>
-                    ${formatNumber(
-                        occupancy
-                    )}%
-                </td>
+            sorted.forEach(session => {
+                const id = session.session_id || session.id || "—";
+                const start = session.start_time || session.started_at || session.start;
+                const end   = session.end_time   || session.ended_at   || session.end;
+                const peak  = number(session.peak_people   ?? session.peak    ?? 0);
+                const avg   = number(session.average_people ?? session.average ?? 0);
+                const occ   = number(session.average_occupancy ?? session.occupancy ?? 0);
+                const warns = number(session.warning_count  ?? session.warnings  ?? session.warning_events ?? 0);
+                const crits = number(session.critical_count ?? session.critical  ?? session.critical_events ?? 0);
+                const status = String(session.status || (end ? "ENDED" : "ACTIVE")).toUpperCase();
 
-                <td class="warning">
-                    ${formatNumber(
-                        warnings
-                    )}
-                </td>
+                let dur = session.duration_seconds;
+                if (dur === undefined && start && end) {
+                    const diff = new Date(end).getTime() - new Date(start).getTime();
+                    if (!isNaN(diff)) dur = diff / 1000;
+                }
 
-                <td class="danger">
-                    ${formatNumber(
-                        critical
-                    )}
-                </td>
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><strong style="font-family:monospace;">${escapeHtml(id)}</strong></td>
+                    <td>${formatDate(start)}</td>
+                    <td>${formatDate(end)}</td>
+                    <td>${formatDuration(dur)}</td>
+                    <td><strong>${formatNumber(peak)}</strong></td>
+                    <td>${formatNumber(avg)}</td>
+                    <td>${formatNumber(occ)}%</td>
+                    <td style="color:var(--accent-warning);">${formatNumber(warns)}</td>
+                    <td style="color:var(--accent-critical);">${formatNumber(crits)}</td>
+                    <td><span class="badge ${statusBadgeClass(status)}">${escapeHtml(status)}</span></td>
+                `;
+                table.appendChild(tr);
+            });
 
-                <td
-                    class="
-                        status
-                        ${statusClass(
-                            status
-                        )}
-                    "
-                >
+            renderSummary(sessions);
+        }
 
-                    ${String(
-                        status
-                    ).toUpperCase()}
+        /* ---- Aggregate Summary ---- */
+        function renderSummary(sessions) {
+            const summaryEl = document.getElementById("summary");
+            if (!sessions.length) {
+                summaryEl.innerHTML = '<span style="color:var(--text-secondary);">No session data available.</span>';
+                return;
+            }
 
-                </td>
+            let totalPeak = 0, totalAvg = 0, totalWarns = 0, totalCrits = 0;
+            sessions.forEach(s => {
+                totalPeak  += number(s.peak_people   ?? s.peak    ?? 0);
+                totalAvg   += number(s.average_people ?? s.average ?? 0);
+                totalWarns += number(s.warning_count  ?? s.warnings  ?? s.warning_events ?? 0);
+                totalCrits += number(s.critical_count ?? s.critical  ?? s.critical_events ?? 0);
+            });
 
+            const count = sessions.length;
+            summaryEl.innerHTML = `
+                Sessions recorded: <strong>${count}</strong>
+                &nbsp;&bull;&nbsp;
+                Total peak readings: <strong>${formatNumber(totalPeak)}</strong>
+                &nbsp;&bull;&nbsp;
+                Mean session people: <strong>${formatNumber(totalAvg / count)}</strong>
+                &nbsp;&bull;&nbsp;
+                Total warnings: <strong style="color:var(--accent-warning);">${formatNumber(totalWarns)}</strong>
+                &nbsp;&bull;&nbsp;
+                Total critical events: <strong style="color:var(--accent-critical);">${formatNumber(totalCrits)}</strong>
             `;
-
-
-            table.appendChild(
-                row
-            );
-
         }
-    );
 
-
-    renderSummary(
-        sessions
-    );
-
-}
-
-
-/* =========================================================
-   SUMMARY
-========================================================= */
-
-
-function renderSummary(
-    sessions
-) {
-
-    if (
-        !sessions.length
-    ) {
-
-        document.getElementById(
-            "summary"
-        ).innerHTML =
-            "No session data available.";
-
-        return;
-
-    }
-
-
-    let totalPeak = 0;
-
-    let totalAverage = 0;
-
-    let totalWarnings = 0;
-
-    let totalCritical = 0;
-
-
-    sessions.forEach(
-        session => {
-
-            totalPeak +=
-                number(
-                    session.peak_people ??
-                    session.peak ??
-                    0
-                );
-
-
-            totalAverage +=
-                number(
-                    session.average_people ??
-                    session.average ??
-                    0
-                );
-
-
-            totalWarnings +=
-                number(
-                    session.warning_count ??
-                    session.warnings ??
-                    0
-                );
-
-
-            totalCritical +=
-                number(
-                    session.critical_count ??
-                    session.critical ??
-                    0
-                );
-
+        /* ---- API Calls ---- */
+        async function loadCurrentSession(cacheBuster) {
+            try {
+                const res = await fetch("/api/session?_=" + cacheBuster, {
+                    cache: "no-store",
+                    headers: { "Cache-Control": "no-cache", "Pragma": "no-cache" }
+                });
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const data = await res.json();
+                renderCurrentSession(data);
+            } catch (err) {
+                console.warn("Current session API error:", err);
+                document.getElementById("currentStatus").textContent = "OFFLINE";
+                document.getElementById("currentStatus").className = "card-value";
+                stopLiveTimer();
+            }
         }
-    );
 
+        async function loadSessions(forceRefresh = false) {
+            const cb = Date.now();
+            await loadCurrentSession(cb);
+            try {
+                const res = await fetch("/api/sessions?_=" + cb, {
+                    cache: "no-store",
+                    headers: { "Cache-Control": "no-cache", "Pragma": "no-cache" }
+                });
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const data = await res.json();
+                renderSessions(data);
+            } catch (err) {
+                console.warn("Sessions history API error:", err);
+                document.getElementById("sessionTable").innerHTML = `
+                    <tr><td colspan="10" style="text-align:center;padding:24px;color:var(--accent-critical);">Unable to load session history: ${escapeHtml(err.message)}</td></tr>
+                `;
+            }
+        }
 
-    const count =
-        sessions.length;
+        async function refreshSessions() {
+            const btn = document.getElementById("refreshButton");
+            btn.disabled = true;
+            btn.textContent = "Refreshing...";
+            try {
+                await loadSessions(true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Refresh";
+            }
+        }
 
+        function showToast(text, type) {
+            const toast = document.getElementById("toastMessage");
+            toast.textContent = text;
+            toast.className = "toast-notify " + type;
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 3000);
+        }
 
-    document.getElementById(
-        "summary"
-    ).innerHTML = `
+        function escapeHtml(v) {
+            return String(v ?? "")
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
 
-        <strong>
-            Sessions recorded:
-        </strong>
-
-        ${count}
-
-        &nbsp;&nbsp; | &nbsp;&nbsp;
-
-        <strong>
-            Total peak readings:
-        </strong>
-
-        ${formatNumber(
-            totalPeak
-        )}
-
-        &nbsp;&nbsp; | &nbsp;&nbsp;
-
-        <strong>
-            Average session people:
-        </strong>
-
-        ${formatNumber(
-            totalAverage / count
-        )}
-
-        &nbsp;&nbsp; | &nbsp;&nbsp;
-
-        <strong>
-            Warnings:
-        </strong>
-
-        <span class="warning">
-
-            ${formatNumber(
-                totalWarnings
-            )}
-
-        </span>
-
-        &nbsp;&nbsp; | &nbsp;&nbsp;
-
-        <strong>
-            Critical events:
-        </strong>
-
-        <span class="danger">
-
-            ${formatNumber(
-                totalCritical
-            )}
-
-        </span>
-
-    `;
-
-}
-
-
-/* =========================================================
-   INITIAL LOAD
-========================================================= */
-
-loadSessions();
-
-
-/* =========================================================
-   AUTOMATIC REFRESH
-========================================================= */
-
-setInterval(
-    function() {
-
-        loadSessions(
-            true
-        );
-
-    },
-    10000
-);
-
-
-</script>
-
-
+        // Bootstrap
+        loadSessions();
+        setInterval(() => loadSessions(true), 10000);
+    </script>
 </body>
-
 </html>

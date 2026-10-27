@@ -406,7 +406,27 @@ class AnalyticsManager:
         # CREATE CURRENT ZONES
         # -----------------------------------------------------
 
+        thresholds_map = getattr(self.venue_config, "zone_thresholds", {}) or {}
+        default_warn = float(getattr(self.venue_config, "warning_threshold", 70.0))
+        default_crit = float(getattr(self.venue_config, "critical_threshold", 90.0))
+
+        zone_capacities = {}
+        if self.venue_config is not None:
+            try:
+                zm = PhysicalZoneManager(self.venue_config)
+                for z in zm.get_zones():
+                    zid = str(z.get("id"))
+                    zone_capacities[zid] = float(z.get("zone_capacity", 0.0))
+            except Exception:
+                pass
+
         for zone_id in current_zone_ids:
+
+            th = thresholds_map.get(zone_id, {})
+            warn_th = float(th.get("warning_threshold", default_warn))
+            crit_th = float(th.get("critical_threshold", default_crit))
+            has_custom = zone_id in thresholds_map
+            cap_val = zone_capacities.get(zone_id, 0.0)
 
             zones[zone_id] = {
 
@@ -442,6 +462,21 @@ class AnalyticsManager:
                 "records":
                     0,
 
+                "warning_threshold":
+                    warn_th,
+
+                "critical_threshold":
+                    crit_th,
+
+                "has_custom_threshold":
+                    has_custom,
+
+                "capacity":
+                    cap_val,
+
+                "zone_capacity":
+                    cap_val,
+
                 # Internal field used to determine
                 # the latest state of this zone.
                 "_latest_timestamp":
@@ -471,6 +506,12 @@ class AnalyticsManager:
                 continue
 
             if zone_id not in zones:
+
+                th = thresholds_map.get(zone_id, {})
+                warn_th = float(th.get("warning_threshold", default_warn))
+                crit_th = float(th.get("critical_threshold", default_crit))
+                has_custom = zone_id in thresholds_map
+                cap_val = zone_capacities.get(zone_id, 0.0)
 
                 zones[zone_id] = {
 
@@ -503,6 +544,21 @@ class AnalyticsManager:
 
                     "records":
                         0,
+
+                    "warning_threshold":
+                        warn_th,
+
+                    "critical_threshold":
+                        crit_th,
+
+                    "has_custom_threshold":
+                        has_custom,
+
+                    "capacity":
+                        cap_val,
+
+                    "zone_capacity":
+                        cap_val,
 
                     "_latest_timestamp":
                         None

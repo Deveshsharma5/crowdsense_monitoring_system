@@ -42,6 +42,7 @@ class CameraManager:
         # ----------------------------------------------------
 
         self.active_camera_id = None
+        self.active_stream_status_provider = None
 
         os.makedirs(
             CAMERA_FOLDER,
@@ -49,6 +50,9 @@ class CameraManager:
         )
 
         self.load()
+
+    def set_active_stream_status_provider(self, provider):
+        self.active_stream_status_provider = provider
 
     # ========================================================
     # LOAD
@@ -637,16 +641,25 @@ class CameraManager:
         with self.lock:
 
             cameras = [
-
                 dict(camera)
-
                 for camera in self.cameras
-
             ]
 
             workers = dict(
                 self.workers
             )
+
+        active_info = None
+        if self.active_stream_status_provider is not None:
+            try:
+                active_info = self.active_stream_status_provider()
+            except Exception as e:
+                print(f"Active stream status provider error: {e}")
+
+        active_source = str(active_info.get("camera_source", "")).strip() if active_info else ""
+        active_people = active_info.get("total_people", 0) if active_info else 0
+        is_active = active_info.get("is_active", False) if active_info else False
+        active_cam_id = str(active_info.get("active_camera_id") or self.active_camera_id or "").strip() if active_info else str(self.active_camera_id or "").strip()
 
         results = []
 
@@ -662,32 +675,39 @@ class CameraManager:
                 )
             )
 
-            worker = workers.get(
-                camera_id
+            cam_src = str(
+                camera.get("source", "")
+            ).strip()
+
+            is_matching_active = is_active and (
+                (active_source and (cam_src == active_source or (cam_src.isdigit() and active_source.isdigit() and int(cam_src) == int(active_source))))
+                or (active_cam_id and camera_id == active_cam_id)
             )
 
-            if worker is not None:
-
-                try:
-
-                    status = (
-                        worker.get_status()
-                    )
-
-                    if isinstance(
-                        status,
-                        dict
-                    ):
-
-                        result.update(
-                            status
-                        )
-
-                except Exception as error:
-
-                    result["error"] = (
-                        str(error)
-                    )
+            if is_matching_active:
+                result["status"] = "CONNECTED"
+                result["people"] = int(active_people)
+                result["error"] = None
+                self.active_camera_id = camera_id
+                with self.lock:
+                    w = self.workers.pop(camera_id, None)
+                    if w is not None:
+                        try:
+                            w.stop()
+                        except Exception:
+                            pass
+            else:
+                worker = workers.get(camera_id)
+                if worker is not None:
+                    try:
+                        status = worker.get_status()
+                        if isinstance(status, dict):
+                            result.update(status)
+                    except Exception as error:
+                        result["error"] = str(error)
+                else:
+                    if str(result.get("status", "")).upper() == "CONNECTING":
+                        result["status"] = "STANDBY"
 
             results.append(
                 result
@@ -739,6 +759,38 @@ class CameraManager:
                 return dict(
                     camera
                 )
+
+            active_info = None
+            if self.active_stream_status_provider is not None:
+                try:
+                    active_info = self.active_stream_status_provider()
+                except Exception:
+                    active_info = None
+
+            active_source = str(active_info.get("camera_source", "")).strip() if active_info else ""
+            active_people = active_info.get("total_people", 0) if active_info else 0
+            is_active = active_info.get("is_active", False) if active_info else False
+            active_cam_id = str(active_info.get("active_camera_id") or self.active_camera_id or "").strip() if active_info else str(self.active_camera_id or "").strip()
+
+            cam_src = str(camera.get("source", "")).strip()
+            is_matching_active = is_active and (
+                (active_source and (cam_src == active_source or (cam_src.isdigit() and active_source.isdigit() and int(cam_src) == int(active_source))))
+                or (active_cam_id and camera_id == active_cam_id)
+            )
+
+            if is_matching_active:
+                w = self.workers.pop(camera_id, None)
+                if w is not None:
+                    try:
+                        w.stop()
+                    except Exception:
+                        pass
+                camera["status"] = "CONNECTED"
+                camera["people"] = int(active_people)
+                camera["error"] = None
+                self.active_camera_id = camera_id
+                self.save()
+                return dict(camera)
 
             existing = self.workers.get(
                 camera_id
@@ -901,6 +953,44 @@ class CameraManager:
                 "camera_id":
                     camera_id
 
+            }
+
+        # Check if requested camera is active in main.py
+        active_info = None
+        if self.active_stream_status_provider is not None:
+            try:
+                active_info = self.active_stream_status_provider()
+            except Exception:
+                active_info = None
+
+        active_source = str(active_info.get("camera_source", "")).strip() if active_info else ""
+        active_people = active_info.get("total_people", 0) if active_info else 0
+        is_active = active_info.get("is_active", False) if active_info else False
+        active_cam_id = str(active_info.get("active_camera_id") or self.active_camera_id or "").strip() if active_info else str(self.active_camera_id or "").strip()
+
+        cam_src = str(camera.get("source", "")).strip()
+        is_matching_active = is_active and (
+            (active_source and (cam_src == active_source or (cam_src.isdigit() and active_source.isdigit() and int(cam_src) == int(active_source))))
+            or (active_cam_id and camera_id == active_cam_id)
+        )
+
+        if is_matching_active:
+            with self.lock:
+                w = self.workers.pop(camera_id, None)
+                if w is not None:
+                    try:
+                        w.stop()
+                    except Exception:
+                        pass
+                camera["status"] = "CONNECTED"
+                camera["people"] = int(active_people)
+                camera["error"] = None
+                self.active_camera_id = camera_id
+                self.save()
+            return {
+                "success": True,
+                "camera": dict(camera),
+                "camera_id": camera_id
             }
 
         # ----------------------------------------------------
@@ -1257,12 +1347,53 @@ class CameraManager:
         )
 
         # ----------------------------------------------------
-        # IMPORTANT:
-        # If CameraWorker is already running this camera,
-        # do NOT open the physical camera a second time.
-        # Use the existing worker instead.
+        # Check active stream in main.py first
         # ----------------------------------------------------
+        active_info = None
+        if self.active_stream_status_provider is not None:
+            try:
+                active_info = self.active_stream_status_provider()
+            except Exception:
+                active_info = None
 
+        active_source = str(active_info.get("camera_source", "")).strip() if active_info else ""
+        active_people = active_info.get("total_people", 0) if active_info else 0
+        is_active = active_info.get("is_active", False) if active_info else False
+        active_cam_id = str(active_info.get("active_camera_id") or self.active_camera_id or "").strip() if active_info else str(self.active_camera_id or "").strip()
+
+        with self.lock:
+            camera = self._find_camera(camera_id)
+            if camera is None:
+                return None
+            source = camera["source"]
+
+        cam_src = str(source).strip()
+
+        if is_active and (
+            (active_source and (cam_src == active_source or (cam_src.isdigit() and active_source.isdigit() and int(cam_src) == int(active_source))))
+            or (active_cam_id and camera_id == active_cam_id)
+        ):
+            with self.lock:
+                w = self.workers.pop(camera_id, None)
+                if w is not None:
+                    try:
+                        w.stop()
+                    except Exception:
+                        pass
+                camera = self._find_camera(camera_id)
+                if camera is None:
+                    return None
+                camera["status"] = "CONNECTED"
+                camera["error"] = None
+                camera["people"] = int(active_people)
+                camera["last_check"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self.active_camera_id = camera_id
+                self.save()
+                return dict(camera)
+
+        # ----------------------------------------------------
+        # If CameraWorker is running this camera, use it
+        # ----------------------------------------------------
         worker = self.get_worker(
             camera_id
         )
@@ -1398,11 +1529,20 @@ class CameraManager:
                     )
 
         # ----------------------------------------------------
-        # Worker is NOT running.
-        #
-        # Only now is it safe to perform a
-        # standalone OpenCV connection test.
+        # Check if this camera is the active camera in main.py
         # ----------------------------------------------------
+
+        active_info = None
+        if self.active_stream_status_provider is not None:
+            try:
+                active_info = self.active_stream_status_provider()
+            except Exception:
+                active_info = None
+
+        active_source = str(active_info.get("camera_source", "")).strip() if active_info else ""
+        active_people = active_info.get("total_people", 0) if active_info else 0
+        is_active = active_info.get("is_active", False) if active_info else False
+        active_cam_id = str(active_info.get("active_camera_id") or self.active_camera_id or "").strip()
 
         with self.lock:
 
@@ -1417,6 +1557,51 @@ class CameraManager:
                 "source"
             ]
 
+        cam_src = str(source).strip()
+
+        if is_active and (
+            (active_source and (cam_src == active_source or (cam_src.isdigit() and active_source.isdigit() and int(cam_src) == int(active_source))))
+            or (active_cam_id and camera_id == active_cam_id)
+        ):
+
+            # Authoritative: main.py is currently running this camera successfully.
+            # Do NOT open cv2.VideoCapture a second time (would fail on Windows).
+            with self.lock:
+
+                camera = self._find_camera(
+                    camera_id
+                )
+
+                if camera is None:
+                    return None
+
+                camera["status"] = (
+                    "CONNECTED"
+                )
+
+                camera["error"] = None
+
+                camera["people"] = int(
+                    active_people
+                )
+
+                camera["last_check"] = (
+                    datetime.now().strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    )
+                )
+
+                self.save()
+
+                return dict(
+                    camera
+                )
+
+        # ----------------------------------------------------
+        # Camera is NOT running in worker or main loop.
+        # Safe to perform a standalone OpenCV connection test.
+        # ----------------------------------------------------
+
         capture = None
 
         try:
@@ -1427,13 +1612,23 @@ class CameraManager:
                     source
                 )
 
+                if os.name == "nt":
+                    capture = cv2.VideoCapture(
+                        source_value,
+                        cv2.CAP_DSHOW
+                    )
+                else:
+                    capture = cv2.VideoCapture(
+                        source_value
+                    )
+
             else:
 
                 source_value = source
 
-            capture = cv2.VideoCapture(
-                source_value
-            )
+                capture = cv2.VideoCapture(
+                    source_value
+                )
 
             if not capture.isOpened():
 
@@ -1443,7 +1638,7 @@ class CameraManager:
                         "DISCONNECTED",
 
                     "error":
-                        "Could not open camera."
+                        "Could not open camera connection."
 
                 }
 
@@ -1453,7 +1648,7 @@ class CameraManager:
                     capture.read()
                 )
 
-                if success:
+                if success and frame is not None:
 
                     status = {
 
@@ -1473,8 +1668,7 @@ class CameraManager:
                             "DISCONNECTED",
 
                         "error":
-                            "Camera opened but "
-                            "no frame received."
+                            "Camera opened but no frame received."
 
                     }
 
