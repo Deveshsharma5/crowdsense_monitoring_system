@@ -70,3 +70,4 @@ CrowdSense is strictly designed under a **Privacy-by-Design** architecture:
 - **Edge Inference**: Inference and coordinate homography run entirely locally on-premise. No raw video frames are uploaded to any third-party cloud.
 - **Synthetic Test Policy**: This repository contains zero private facial images or identifiable surveillance data. All sample logs provided in this folder are completely synthetic and mathematically generated.
 - **Compliance**: The data processing model complies with GDPR / CCPA guidelines for anonymous aggregate crowd counting.
+
